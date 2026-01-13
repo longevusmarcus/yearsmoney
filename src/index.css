@@ -2,75 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* TimeCost Design System - existential, minimal, black & white focus
+   All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    /* HARA brand - deep indigo (presence), soft sand (calm), gentle gold (trust) */
-    --background: 237 30% 8%;
-    --foreground: 35 25% 90%;
+    /* Dark mode by default - stark, existential */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
 
-    --card: 237 25% 12%;
-    --card-foreground: 35 25% 90%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 237 25% 12%;
-    --popover-foreground: 35 25% 90%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Deep indigo - presence */
-    --primary: 237 45% 65%;
-    --primary-foreground: 237 30% 10%;
+    /* Muted white as primary - clean, minimal */
+    --primary: 0 0% 90%;
+    --primary-foreground: 0 0% 4%;
 
-    /* Soft sand - calm */
-    --secondary: 35 35% 75%;
-    --secondary-foreground: 237 30% 10%;
+    /* Subtle gray for secondary */
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 237 15% 20%;
-    --muted-foreground: 35 15% 55%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
 
-    /* Gentle gold - trust */
-    --accent: 45 80% 65%;
-    --accent-foreground: 237 30% 10%;
+    /* Warm gold accent for emphasis */
+    --accent: 45 80% 60%;
+    --accent-foreground: 0 0% 4%;
 
     --success: 142 70% 45%;
-    --success-foreground: 35 25% 90%;
+    --success-foreground: 0 0% 98%;
 
     --destructive: 0 62% 50%;
-    --destructive-foreground: 35 25% 90%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 237 20% 20%;
-    --input: 237 20% 20%;
-    --ring: 237 45% 65%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 90%;
 
     --radius: 1.25rem;
   }
 
   .light {
-    /* Light mode - clean, breathable, sophisticated */
-    --background: 35 40% 98%;
-    --foreground: 237 30% 15%;
+    /* Light mode - clean white */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 237 30% 15%;
+    --card-foreground: 0 0% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 237 30% 15%;
+    --popover-foreground: 0 0% 8%;
 
-    /* Deep indigo - softer in light */
-    --primary: 237 50% 55%;
-    --primary-foreground: 0 0% 100%;
+    /* Dark as primary in light mode */
+    --primary: 0 0% 12%;
+    --primary-foreground: 0 0% 98%;
 
-    /* Warm sand */
-    --secondary: 35 40% 85%;
-    --secondary-foreground: 237 30% 15%;
+    /* Light gray secondary */
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 35 20% 92%;
-    --muted-foreground: 237 15% 40%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
     /* Warm gold accent */
     --accent: 45 85% 55%;
-    --accent-foreground: 237 30% 15%;
+    --accent-foreground: 0 0% 8%;
 
     --success: 142 70% 45%;
     --success-foreground: 0 0% 100%;
@@ -78,9 +78,9 @@ All colors MUST be HSL.
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 237 20% 88%;
-    --input: 237 20% 88%;
-    --ring: 237 50% 55%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 12%;
   }
 }
 
@@ -92,4 +92,11 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom font for headings - Cormorant Garamond for that existential feel */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', serif;
 }
