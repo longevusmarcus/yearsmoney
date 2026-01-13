@@ -5,7 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
 import About from "./pages/About";
-import Calculator from "./pages/Calculator";
+import Home from "./pages/Home";
+import Purchase from "./pages/Purchase";
+import Risks from "./pages/Risks";
+import Opportunities from "./pages/Opportunities";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
@@ -25,8 +28,11 @@ const App = () => {
             <Route path="/" element={<Navigate to="/about" replace />} />
             <Route path="/about" element={<About />} />
             
-            {/* Calculator */}
-            <Route path="/calculator" element={<Calculator />} />
+            {/* App screens */}
+            <Route path="/home" element={<Home />} />
+            <Route path="/purchase" element={<Purchase />} />
+            <Route path="/risks" element={<Risks />} />
+            <Route path="/opportunities" element={<Opportunities />} />
             
             {/* Legal pages */}
             <Route path="/terms" element={<Terms />} />
