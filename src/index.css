@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* HARA brand - deep indigo (presence), soft sand (calm), gentle gold (trust) */
+    --background: 237 30% 8%;
+    --foreground: 35 25% 90%;
+
+    --card: 237 25% 12%;
+    --card-foreground: 35 25% 90%;
+
+    --popover: 237 25% 12%;
+    --popover-foreground: 35 25% 90%;
+
+    /* Deep indigo - presence */
+    --primary: 237 45% 65%;
+    --primary-foreground: 237 30% 10%;
+
+    /* Soft sand - calm */
+    --secondary: 35 35% 75%;
+    --secondary-foreground: 237 30% 10%;
+
+    --muted: 237 15% 20%;
+    --muted-foreground: 35 15% 55%;
+
+    /* Gentle gold - trust */
+    --accent: 45 80% 65%;
+    --accent-foreground: 237 30% 10%;
+
+    --success: 142 70% 45%;
+    --success-foreground: 35 25% 90%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 35 25% 90%;
+
+    --border: 237 20% 20%;
+    --input: 237 20% 20%;
+    --ring: 237 45% 65%;
+
+    --radius: 1.25rem;
+  }
+
+  .light {
+    /* Light mode - clean, breathable, sophisticated */
+    --background: 35 40% 98%;
+    --foreground: 237 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 237 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 237 30% 15%;
+
+    /* Deep indigo - softer in light */
+    --primary: 237 50% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Warm sand */
+    --secondary: 35 40% 85%;
+    --secondary-foreground: 237 30% 15%;
+
+    --muted: 35 20% 92%;
+    --muted-foreground: 237 15% 40%;
+
+    /* Warm gold accent */
+    --accent: 45 85% 55%;
+    --accent-foreground: 237 30% 15%;
+
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 237 20% 88%;
+    --input: 237 20% 88%;
+    --ring: 237 50% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
