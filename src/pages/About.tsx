@@ -367,7 +367,7 @@ const About = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Measure your real freedom: how long can you live without being forced into action?
+            Measure your real freedom: How long can you live without being forced into action? What can your time buy?
           </motion.p>
 
           <motion.div
