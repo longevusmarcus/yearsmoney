@@ -18,8 +18,8 @@ const ManifestoText = () => {
       highlights: ["Time is wealth", "stored time"],
     },
     {
-      text: "LifeBuffer makes this visible.",
-      highlights: ["LifeBuffer"],
+      text: "Years makes this visible.",
+      highlights: ["Years"],
       isAccent: true,
     },
     {
@@ -258,7 +258,7 @@ const About = () => {
               to="/about"
               className="text-xl font-cursive italic tracking-wide bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent"
             >
-              LifeBuffer
+              Years
             </Link>
             <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#manifesto" className="hover:text-foreground transition-colors">
@@ -590,7 +590,7 @@ const About = () => {
       <footer className="py-12 px-6 border-t border-border/50">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-muted-foreground text-sm">
-            © 2025 LifeBuffer. Time is the only currency that matters.
+            © 2025 Years. Time is the only currency that matters.
           </div>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link to="/privacy" className="hover:text-foreground transition-colors">
