@@ -277,56 +277,58 @@ const Opportunities = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="block bg-card border border-border rounded-2xl p-4 hover:border-foreground/30 transition-colors overflow-hidden"
+                  className="block bg-card border border-border rounded-2xl p-4 hover:border-foreground/30 transition-colors"
                 >
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-muted/50 rounded-xl flex items-center justify-center shrink-0">
+                  {/* Top row: Icon + Title/Price + Time */}
+                  <div className="flex gap-3 items-start">
+                    <div className="w-9 h-9 bg-muted/50 rounded-lg flex items-center justify-center shrink-0">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      {/* Header row */}
-                      <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-light truncate">{product.title}</p>
-                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                            <p className="text-[10px] text-muted-foreground">${product.price?.toLocaleString()}</p>
+                          <p className="text-sm font-light truncate pr-2">{product.title}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] text-muted-foreground">${product.price?.toLocaleString()}</span>
                             {product.source && (
-                              <span className="text-[10px] text-primary truncate">{product.source}</span>
+                              <span className="text-[10px] text-primary">{product.source}</span>
                             )}
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-lg font-light leading-tight">{formatTime(product)}</p>
+                          <p className="text-base font-light">{formatTime(product)}</p>
                           {yearlyBufferDays > 0 && (
-                            <p className="text-[9px] text-muted-foreground">
-                              {percentOfBudget.toFixed(0)}% of year
-                            </p>
+                            <p className="text-[9px] text-muted-foreground">{percentOfBudget.toFixed(0)}% of year</p>
                           )}
                         </div>
                       </div>
-                      
-                      {/* Description - hidden on very small cards */}
-                      {product.description && (
-                        <p className="text-[11px] text-muted-foreground font-light mt-1.5 line-clamp-2">{product.description}</p>
-                      )}
-                      
-                      {/* Time breakdown */}
-                      <p className="mt-1.5 text-[10px] text-muted-foreground/70 font-light truncate">
-                        {formatFullTime(product)}
-                      </p>
-                      
-                      {/* ROI badge - constrained width */}
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        {product.roi && (
-                          <span className="text-[9px] bg-foreground/10 px-2 py-1 rounded-md font-light line-clamp-1 flex-1 min-w-0">
-                            {product.roi}
-                          </span>
-                        )}
-                        <span className="text-[10px] text-primary flex items-center gap-1 shrink-0">
-                          View <ExternalLink className="w-2.5 h-2.5" />
-                        </span>
-                      </div>
                     </div>
+                  </div>
+                  
+                  {/* Description */}
+                  {product.description && (
+                    <p className="text-[11px] text-muted-foreground/80 font-light mt-2 line-clamp-2 leading-relaxed">
+                      {product.description}
+                    </p>
+                  )}
+                  
+                  {/* Time breakdown */}
+                  <p className="text-[9px] text-muted-foreground/60 font-light mt-2">
+                    {formatFullTime(product)}
+                  </p>
+                  
+                  {/* Footer: ROI + View */}
+                  <div className="mt-2 pt-2 border-t border-border/50 flex items-center justify-between gap-3">
+                    {product.roi ? (
+                      <p className="text-[9px] text-muted-foreground font-light truncate flex-1 min-w-0">
+                        {product.roi}
+                      </p>
+                    ) : (
+                      <span />
+                    )}
+                    <span className="text-[10px] text-primary flex items-center gap-1 shrink-0">
+                      View <ExternalLink className="w-2.5 h-2.5" />
+                    </span>
                   </div>
                 </motion.a>
               );
