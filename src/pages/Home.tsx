@@ -201,7 +201,7 @@ const Home = () => {
       </div>
 
       {/* Input Fields */}
-      <div className="px-6 mb-8 space-y-4">
+      <div className="px-6 mb-4 space-y-4">
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Income/mo</label>
@@ -233,6 +233,31 @@ const Home = () => {
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Connect Accounts - Coming Soon */}
+      <div className="px-6 mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">sync accounts</h2>
+          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">soon</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { icon: Building2, label: "Schwab" },
+            { icon: CreditCard, label: "Stripe" },
+            { icon: Landmark, label: "Bank" },
+            { icon: Coins, label: "Crypto" },
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              disabled
+              className="group flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border/50 bg-card/30 opacity-40 cursor-not-allowed transition-opacity"
+            >
+              <item.icon className="w-4 h-4 text-muted-foreground" />
+              <span className="text-[9px] text-muted-foreground font-light">{item.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -375,31 +400,6 @@ const Home = () => {
           </div>
         </div>
       )}
-
-      {/* Connect Accounts - Coming Soon */}
-      <div className="px-6 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">sync accounts</h2>
-          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">soon</span>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { icon: Building2, label: "Schwab" },
-            { icon: CreditCard, label: "Stripe" },
-            { icon: Landmark, label: "Bank" },
-            { icon: Coins, label: "Crypto" },
-          ].map((item, idx) => (
-            <button
-              key={idx}
-              disabled
-              className="group flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border/50 bg-card/30 opacity-40 cursor-not-allowed transition-opacity"
-            >
-              <item.icon className="w-4 h-4 text-muted-foreground" />
-              <span className="text-[9px] text-muted-foreground font-light">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Chat Button */}
       <button
