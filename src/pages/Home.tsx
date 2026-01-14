@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2, Settings } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import AuthModal from "@/components/AuthModal";
@@ -12,6 +13,7 @@ interface Message {
 }
 
 const Home = () => {
+  const navigate = useNavigate();
   // Auth state
   const [user, setUser] = useState<any>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -235,7 +237,15 @@ const Home = () => {
       {/* Header */}
       <div className="p-6 flex justify-between items-center">
         <h1 className="text-2xl font-cursive italic text-foreground tracking-tight">Years</h1>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={() => navigate("/settings")}
+            className="p-2 rounded-full hover:bg-muted/50 transition-colors"
+          >
+            <Settings className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </div>
       </div>
 
       {/* Input Fields */}
