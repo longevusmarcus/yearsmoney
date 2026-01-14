@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Loader2, Info } from "lucide-react";
+import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Loader2, Info, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
@@ -7,7 +7,8 @@ interface Opportunity {
   id: string;
   category: string;
   title: string;
-  hours: number;
+  price: number;
+  workingDays: number;
   description: string;
   icon: string;
   roi?: string;
@@ -35,18 +36,21 @@ const Opportunities = () => {
   const freeCash = income - expenses;
   const hasData = income > 0 && expenses > 0;
 
-  // Calculate hours based on life advancement rate
-  // Hours = (price / freeCash) * hours_per_month
-  const calculateHours = (priceValue: number) => {
+  // CORE CALCULATION: Working days to earn back a purchase
+  const WORKING_DAYS_PER_MONTH = 22;
+  const dailyEarnings = freeCash > 0 ? freeCash / WORKING_DAYS_PER_MONTH : 0;
+
+  const calculateWorkingDays = (priceValue: number) => {
     if (freeCash <= 0) {
-      return expenses > 0 ? (priceValue / expenses) * 30 * 24 : 0;
+      return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : 0;
     }
-    return (priceValue / freeCash) * 30 * 24;
+    return priceValue / dailyEarnings;
   };
 
-  // Yearly optional hours = hours gained per month * 12
-  const monthlyHoursGained = freeCash > 0 ? (freeCash / expenses) * 30 * 24 : 0;
-  const yearlyOptionalHours = monthlyHoursGained * 12;
+  // Yearly working days of buffer = working days in a year = ~260
+  const WORKING_DAYS_PER_YEAR = 260;
+  // How many "days of buffer" can you accumulate per year
+  const yearlyBufferDays = freeCash > 0 ? (freeCash * 12) / dailyEarnings : 0;
 
   useEffect(() => {
     loadOpportunities();
@@ -54,36 +58,9 @@ const Opportunities = () => {
 
   const loadOpportunities = async () => {
     setIsLoading(true);
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/time-advisor`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          type: "opportunities",
-          yearlyOptionalHours,
-          freeCash,
-          income,
-          expenses
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to load");
-
-      const data = await response.json();
-      // Recalculate hours using our formula
-      const opps = (data.opportunities || getDefaultOpportunities()).map((opp: any) => ({
-        ...opp,
-        hours: opp.price ? calculateHours(opp.price) : opp.hours
-      }));
-      setOpportunities(opps);
-    } catch (error) {
-      setOpportunities(getDefaultOpportunities());
-    }
-    
+    // Use default opportunities with real price estimates
+    // These can be enhanced with SerpAPI searches later
+    setOpportunities(getDefaultOpportunities());
     setIsLoading(false);
   };
 
@@ -91,17 +68,19 @@ const Opportunities = () => {
     {
       id: "1",
       category: "travel",
-      title: "Trip to Japan",
-      hours: Math.round(calculateHours(3000)),
-      description: "2-week adventure exploring Tokyo, Kyoto, and Osaka",
+      title: "Trip to Japan (2 weeks)",
+      price: 4500,
+      workingDays: calculateWorkingDays(4500),
+      description: "Flights, hotels, food, and experiences in Tokyo, Kyoto, Osaka",
       icon: "travel",
       roi: "High life satisfaction"
     },
     {
       id: "2",
       category: "tech",
-      title: "New MacBook Pro",
-      hours: Math.round(calculateHours(2500)),
+      title: "MacBook Pro M3",
+      price: 2499,
+      workingDays: calculateWorkingDays(2499),
       description: "Productivity boost for work and creative projects",
       icon: "tech",
       roi: "Medium - if work-related"
@@ -110,7 +89,8 @@ const Opportunities = () => {
       id: "3",
       category: "learning",
       title: "Online Bootcamp",
-      hours: Math.round(calculateHours(1500)),
+      price: 1500,
+      workingDays: calculateWorkingDays(1500),
       description: "12-week coding or design intensive course",
       icon: "learning",
       roi: "High - career advancement"
@@ -118,17 +98,19 @@ const Opportunities = () => {
     {
       id: "4",
       category: "fitness",
-      title: "Year Gym Membership",
-      hours: Math.round(calculateHours(600)),
-      description: "Investment in health and longevity",
+      title: "Year Gym + Trainer",
+      price: 1800,
+      workingDays: calculateWorkingDays(1800),
+      description: "Premium gym membership with personal training sessions",
       icon: "fitness",
-      roi: "Very high - adds life hours"
+      roi: "Very high - adds life years"
     },
     {
       id: "5",
       category: "experience",
-      title: "Concert & Dining",
-      hours: Math.round(calculateHours(300)),
+      title: "Concert VIP + Dinner",
+      price: 500,
+      workingDays: calculateWorkingDays(500),
       description: "Premium experience with friends or partner",
       icon: "experience",
       roi: "Medium - memories & connection"
@@ -136,11 +118,32 @@ const Opportunities = () => {
     {
       id: "6",
       category: "tech",
-      title: "Smart Home Setup",
-      hours: Math.round(calculateHours(800)),
-      description: "Automate your home, save daily minutes",
+      title: "iPhone 16 Pro",
+      price: 1199,
+      workingDays: calculateWorkingDays(1199),
+      description: "Latest smartphone with pro camera system",
       icon: "tech",
-      roi: "Medium - saves 5-10 hours/year"
+      roi: "Low - unless needed for work"
+    },
+    {
+      id: "7",
+      category: "travel",
+      title: "Weekend City Break",
+      price: 800,
+      workingDays: calculateWorkingDays(800),
+      description: "2-night getaway to a nearby city",
+      icon: "travel",
+      roi: "Medium - recharge & explore"
+    },
+    {
+      id: "8",
+      category: "learning",
+      title: "Annual Learning Subscriptions",
+      price: 400,
+      workingDays: calculateWorkingDays(400),
+      description: "Masterclass, Skillshare, or professional courses",
+      icon: "learning",
+      roi: "High - continuous growth"
     }
   ];
 
@@ -162,7 +165,7 @@ const Opportunities = () => {
       {/* Header */}
       <div className="px-6 pt-12 pb-4">
         <h1 className="text-2xl font-light tracking-tight">Ideas</h1>
-        <p className="text-muted-foreground text-sm font-light mt-1">Ways to spend your optional hours</p>
+        <p className="text-muted-foreground text-sm font-light mt-1">See what your time could buy</p>
       </div>
 
       {/* Warning if no data */}
@@ -171,20 +174,23 @@ const Opportunities = () => {
           <div className="bg-muted/30 border border-border rounded-2xl p-4 flex items-start gap-3">
             <Info className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
             <p className="text-sm text-muted-foreground font-light">
-              Add your income and expenses on the Home page for personalized suggestions.
+              Add your income and expenses on the Home page for personalized time costs.
             </p>
           </div>
         </div>
       )}
 
-      {/* Your budget */}
+      {/* Your rate summary */}
       {hasData && (
         <div className="px-6 py-4">
           <div className="bg-foreground text-background rounded-2xl p-5">
-            <p className="text-xs opacity-60 font-light">Your yearly optional hours</p>
-            <p className="text-4xl font-light mt-1">{Math.round(yearlyOptionalHours).toLocaleString()}</p>
+            <p className="text-xs opacity-60 font-light">Your yearly buffer capacity</p>
+            <p className="text-4xl font-light mt-1">{Math.round(yearlyBufferDays)} days</p>
             <p className="text-xs opacity-60 mt-2 font-light">
-              Based on ${freeCash.toLocaleString()}/mo free cash
+              Earning ${dailyEarnings.toFixed(0)}/day toward your buffer
+            </p>
+            <p className="text-[10px] opacity-40 mt-1 font-light">
+              (${freeCash.toLocaleString()}/mo surplus ÷ {WORKING_DAYS_PER_MONTH} working days × 12 months)
             </p>
           </div>
         </div>
@@ -219,8 +225,8 @@ const Opportunities = () => {
           <div className="space-y-3">
             {filteredOpportunities.map((opp, index) => {
               const Icon = iconMap[opp.icon] || iconMap.default;
-              const percentOfBudget = yearlyOptionalHours > 0 
-                ? (opp.hours / yearlyOptionalHours) * 100 
+              const percentOfBudget = yearlyBufferDays > 0 
+                ? (opp.workingDays / yearlyBufferDays) * 100 
                 : 0;
               
               return (
@@ -240,10 +246,11 @@ const Opportunities = () => {
                         <div>
                           <p className="text-sm font-light">{opp.title}</p>
                           <p className="text-xs text-muted-foreground font-light">{opp.description}</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">${opp.price.toLocaleString()}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-lg font-light">{opp.hours.toLocaleString()}h</p>
-                          {yearlyOptionalHours > 0 && (
+                          <p className="text-lg font-light">{opp.workingDays.toFixed(1)}d</p>
+                          {yearlyBufferDays > 0 && (
                             <p className="text-[10px] text-muted-foreground">
                               {percentOfBudget.toFixed(0)}% of year
                             </p>
@@ -273,12 +280,12 @@ const Opportunities = () => {
             <p className="text-xs text-muted-foreground font-light">
               These {filteredOpportunities.length} options would cost{" "}
               <span className="font-medium text-foreground">
-                {filteredOpportunities.reduce((sum, o) => sum + o.hours, 0).toLocaleString()} hours
+                {filteredOpportunities.reduce((sum, o) => sum + o.workingDays, 0).toFixed(0)} working days
               </span>
             </p>
-            {filteredOpportunities.reduce((sum, o) => sum + o.hours, 0) > yearlyOptionalHours && (
+            {filteredOpportunities.reduce((sum, o) => sum + o.workingDays, 0) > yearlyBufferDays && (
               <p className="text-[10px] text-destructive mt-1 font-light">
-                That's more than your yearly budget — choose wisely
+                That's more than your yearly capacity — choose wisely
               </p>
             )}
           </div>
