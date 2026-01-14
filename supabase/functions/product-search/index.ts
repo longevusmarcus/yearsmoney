@@ -5,17 +5,119 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Keywords that indicate this is a travel/experience search, not a product
-const experienceKeywords = [
-  "vacation", "trip", "travel", "holiday", "getaway", "tour",
-  "flight", "hotel", "resort", "cruise", "week", "weeks",
-  "days", "night", "nights", "visit", "bali", "japan", "europe",
-  "thailand", "mexico", "hawaii", "paris", "italy", "spain"
+// Categories that need special handling (not Google Shopping)
+const categoryPatterns: { keywords: string[]; category: string }[] = [
+  { 
+    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "real estate", "home", "rent", "buy"],
+    category: "real_estate"
+  },
+  { 
+    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort", "cruise", "week", "weeks", "days", "night", "nights", "visit"],
+    category: "travel"
+  },
+  {
+    keywords: ["car", "vehicle", "tesla", "bmw", "mercedes", "audi", "porsche", "ferrari", "lamborghini", "toyota", "honda", "ford", "chevrolet"],
+    category: "automotive"
+  },
+  {
+    keywords: ["course", "bootcamp", "degree", "certification", "training", "class", "lesson", "tutor", "education", "mba", "university"],
+    category: "education"
+  },
+  {
+    keywords: ["surgery", "treatment", "therapy", "medical", "dental", "lasik", "procedure"],
+    category: "medical"
+  }
 ];
 
-function isExperienceSearch(query: string): boolean {
+// Location keywords
+const locationKeywords = ["minorca", "menorca", "ibiza", "mallorca", "majorca", "marbella", "barcelona", "madrid", "london", "paris", "new york", "miami", "los angeles", "bali", "tokyo", "singapore", "dubai"];
+
+function detectCategory(query: string): string {
   const lowerQuery = query.toLowerCase();
-  return experienceKeywords.some(keyword => lowerQuery.includes(keyword));
+  
+  for (const pattern of categoryPatterns) {
+    if (pattern.keywords.some(keyword => lowerQuery.includes(keyword))) {
+      return pattern.category;
+    }
+  }
+  
+  return "product"; // Default to Google Shopping
+}
+
+function hasLocation(query: string): boolean {
+  const lowerQuery = query.toLowerCase();
+  return locationKeywords.some(loc => lowerQuery.includes(loc));
+}
+
+// Use Lovable AI to get intelligent price estimates
+async function getAIPriceEstimate(query: string, category: string): Promise<{ price: number; description: string; source: string }> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) {
+    throw new Error("LOVABLE_API_KEY not configured");
+  }
+
+  const categoryPrompts: Record<string, string> = {
+    real_estate: `You are a real estate pricing expert. Estimate the current market price for: "${query}". 
+Consider location, property type, and current market conditions.
+Return ONLY a JSON object: {"price": number_in_USD, "description": "brief description", "source": "Real estate estimate"}`,
+    
+    travel: `You are a travel pricing expert. Estimate the total cost per person for: "${query}".
+Include flights, accommodation, food, and activities.
+Return ONLY a JSON object: {"price": number_in_USD, "description": "what's included", "source": "Travel estimate"}`,
+    
+    automotive: `You are an automotive pricing expert. Estimate the current market price for: "${query}".
+Consider whether it's new or used, model year, and trim level.
+Return ONLY a JSON object: {"price": number_in_USD, "description": "model details", "source": "Automotive estimate"}`,
+    
+    education: `You are an education pricing expert. Estimate the total cost for: "${query}".
+Include tuition, materials, and any typical fees.
+Return ONLY a JSON object: {"price": number_in_USD, "description": "what's included", "source": "Education estimate"}`,
+    
+    medical: `You are a medical pricing expert. Estimate the typical cost for: "${query}" in the US.
+Consider typical insurance and out-of-pocket costs.
+Return ONLY a JSON object: {"price": number_in_USD, "description": "procedure details", "source": "Medical estimate"}`
+  };
+
+  const systemPrompt = categoryPrompts[category] || `Estimate the current market price in USD for: "${query}". Return ONLY a JSON object: {"price": number, "description": "brief description", "source": "Price estimate"}`;
+
+  console.log(`Using Lovable AI for ${category} price estimate`);
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: query }
+      ],
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!response.ok) {
+    console.error(`AI gateway error: ${response.status}`);
+    throw new Error(`AI gateway error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content;
+  
+  try {
+    const parsed = JSON.parse(content);
+    console.log(`AI price estimate: $${parsed.price}`);
+    return {
+      price: parsed.price || 0,
+      description: parsed.description || query,
+      source: parsed.source || "AI estimate"
+    };
+  } catch {
+    console.error("Failed to parse AI response:", content);
+    throw new Error("Failed to parse AI price estimate");
+  }
 }
 
 serve(async (req) => {
@@ -27,89 +129,38 @@ serve(async (req) => {
     const { query, type } = await req.json();
     
     const SERPAPI_KEY = Deno.env.get("SERPAPI_KEY");
-    if (!SERPAPI_KEY) {
-      console.error("SERPAPI_KEY is not configured");
-      throw new Error("SERPAPI_KEY is not configured");
-    }
-
+    
     console.log(`Searching for: ${query}, type: ${type}`);
 
     if (type === "product") {
-      // Check if this is a travel/experience query
-      if (isExperienceSearch(query)) {
-        console.log("Detected experience/travel query, using Google Search");
-        
-        // Use regular Google Search for experiences
-        const searchUrl = new URL("https://serpapi.com/search.json");
-        searchUrl.searchParams.set("engine", "google");
-        searchUrl.searchParams.set("q", `${query} cost budget USD total price per person`);
-        searchUrl.searchParams.set("api_key", SERPAPI_KEY);
-        searchUrl.searchParams.set("num", "15");
-
-        const searchResponse = await fetch(searchUrl.toString());
-        
-        if (!searchResponse.ok) {
-          throw new Error(`SerpAPI error: ${searchResponse.status}`);
-        }
-
-        const searchData = await searchResponse.json();
-        const results = searchData.organic_results || [];
-        
-        // Extract price mentions from snippets - look for realistic travel prices
-        const priceMatches: number[] = [];
-        const patterns = [
-          /\$[\d,]+(?:\.\d{2})?/g,  // $1,500 or $1500.00
-          /USD\s*[\d,]+/gi,         // USD 1500
-          /[\d,]+\s*(?:USD|dollars)/gi  // 1500 USD or 1500 dollars
-        ];
-        
-        results.forEach((result: any) => {
-          const text = (result.snippet || "") + " " + (result.title || "");
-          patterns.forEach(pattern => {
-            const matches = text.match(pattern);
-            if (matches) {
-              matches.forEach((m: string) => {
-                const price = parseFloat(m.replace(/[^0-9.]/g, ""));
-                // Filter for realistic travel prices (between $200 and $20000)
-                if (price >= 200 && price <= 20000) {
-                  priceMatches.push(price);
-                }
-              });
-            }
-          });
-        });
-
-        console.log(`Found ${priceMatches.length} price mentions:`, priceMatches);
-
-        // Calculate median price (more robust than average)
-        let estimatedPrice = 0;
-        if (priceMatches.length > 0) {
-          priceMatches.sort((a, b) => a - b);
-          const mid = Math.floor(priceMatches.length / 2);
-          estimatedPrice = priceMatches.length % 2 === 0
-            ? (priceMatches[mid - 1] + priceMatches[mid]) / 2
-            : priceMatches[mid];
-        } else {
-          // Default estimates based on query keywords
-          if (query.toLowerCase().includes("bali")) estimatedPrice = 2500;
-          else if (query.toLowerCase().includes("japan")) estimatedPrice = 4000;
-          else if (query.toLowerCase().includes("europe")) estimatedPrice = 3500;
-          else if (query.toLowerCase().includes("hawaii")) estimatedPrice = 3000;
-          else estimatedPrice = 2000; // Generic vacation estimate
+      const category = detectCategory(query);
+      console.log(`Detected category: ${category}`);
+      
+      // For non-product categories, use AI to estimate price
+      if (category !== "product") {
+        try {
+          const estimate = await getAIPriceEstimate(query, category);
           
-          console.log("Using default estimate for travel:", estimatedPrice);
+          return new Response(JSON.stringify({
+            success: true,
+            productName: query,
+            price: Math.round(estimate.price),
+            source: estimate.source,
+            description: estimate.description,
+            link: "",
+            alternatives: []
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        } catch (aiError) {
+          console.error("AI estimation failed, falling back to web search:", aiError);
         }
-
-        return new Response(JSON.stringify({
-          success: true,
-          productName: query,
-          price: Math.round(estimatedPrice),
-          source: "Travel estimate",
-          link: results[0]?.link || "",
-          alternatives: []
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      }
+      
+      // For regular products, use Google Shopping
+      if (!SERPAPI_KEY) {
+        console.error("SERPAPI_KEY is not configured");
+        throw new Error("SERPAPI_KEY is not configured");
       }
 
       // For products, use Google Shopping
