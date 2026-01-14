@@ -270,11 +270,11 @@ const About = () => {
               <a href="#manifesto" className="hover:text-foreground transition-colors">
                 Philosophy
               </a>
-              <a href="#features" className="hover:text-foreground transition-colors">
-                Buffers
-              </a>
               <a href="#how-it-works" className="hover:text-foreground transition-colors">
                 How It Works
+              </a>
+              <a href="#features" className="hover:text-foreground transition-colors">
+                Buffers
               </a>
             </div>
           </div>
@@ -563,13 +563,9 @@ const About = () => {
             className="text-center mb-16"
           >
             <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
-              The Buffers
+              How It Works
             </span>
-            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">Two measures of freedom</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into
-              it.
-            </p>
+            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">From money to time</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -612,9 +608,13 @@ const About = () => {
             className="text-center mb-16"
           >
             <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
-              How It Works
+              The Buffers
             </span>
-            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">From money to time</h2>
+            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">Two measures of freedom</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into
+              it.
+            </p>
           </motion.div>
 
           <div className="space-y-6">
