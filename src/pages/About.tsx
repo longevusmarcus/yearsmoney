@@ -1,6 +1,18 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Clock, Shield, TrendingUp, Sparkles, Hourglass, Layers, Eye, Home, Search, AlertTriangle } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  Shield,
+  TrendingUp,
+  Sparkles,
+  Hourglass,
+  Layers,
+  Eye,
+  Home,
+  Search,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
@@ -360,10 +372,10 @@ const About = () => {
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl md:text-6xl lg:text-7xl text-foreground mb-6 md:mb-8 leading-tight"
           >
-            <span className="font-light block md:inline">See your wealth</span>
+            <span className="font-light block md:inline">Turn your money</span>
             <br className="hidden md:block" />
             <span className="font-cormorant italic font-light text-3xl md:text-6xl lg:text-7xl block md:inline whitespace-nowrap">
-              in units of time
+              into time
             </span>
           </motion.h1>
 
@@ -373,7 +385,8 @@ const About = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Measure your real freedom: how long can you live without being forced into action? What can your time buy?
+            Understand your financial runway. See what every expense really costs. Know how many years of freedom your
+            money buys. Measure your real freedom.
           </motion.p>
 
           <motion.div
@@ -452,12 +465,11 @@ const About = () => {
             className="text-center mb-20"
           >
             <h2 className="text-4xl md:text-6xl text-foreground mb-6">
-              <span className="font-cormorant italic">Your</span>{" "}
-              <span className="font-light">Life Buffer OS</span>
+              <span className="font-cormorant italic">Your</span> <span className="font-light">Life Buffer OS</span>
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-              Redefining wealth with time-based visualization, personalized projections, 
-              and temporal decision-making—so you can optimize with clarity, purpose, and freedom.
+              Redefining wealth with time-based visualization, personalized projections, and temporal decision-making—so
+              you can optimize with clarity, purpose, and freedom.
             </p>
           </motion.div>
 
@@ -511,24 +523,26 @@ const About = () => {
                   className="group relative"
                 >
                   {/* Phone Frame with Parallax */}
-                  <motion.div 
+                  <motion.div
                     style={{ y }}
                     className="relative bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-background/50 transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-primary/10"
                   >
                     {/* Top Bar */}
                     <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 border-b border-border/30">
-                      <span className="text-[10px] md:text-xs text-muted-foreground font-light tracking-wide">{screen.title.toLowerCase()}</span>
+                      <span className="text-[10px] md:text-xs text-muted-foreground font-light tracking-wide">
+                        {screen.title.toLowerCase()}
+                      </span>
                       <div className="flex items-center gap-1.5 md:gap-2">
                         <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
                         <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
                         <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
                       </div>
                     </div>
-                    
+
                     {/* Screenshot */}
                     <div className="aspect-[9/16] overflow-hidden">
-                      <img 
-                        src={screen.image} 
+                      <img
+                        src={screen.image}
                         alt={`${screen.title} screen`}
                         className="w-full h-full object-cover object-top"
                       />
@@ -706,9 +720,7 @@ const About = () => {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border/50">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-muted-foreground text-sm">
-            © 2025 Years. Time is the only currency that matters.
-          </div>
+          <div className="text-muted-foreground text-sm">© 2025 Years. Time is the only currency that matters.</div>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link to="/ubi" className="hover:text-foreground transition-colors">
               UBI
