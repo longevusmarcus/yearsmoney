@@ -9,7 +9,7 @@ const BottomNav = () => {
     { icon: Home, label: "Home", path: "/home" },
     { icon: Search, label: "Purchase", path: "/purchase" },
     { icon: AlertTriangle, label: "Risks", path: "/risks" },
-    { icon: Sparkles, label: "Ideas", path: "/opportunities" },
+    { icon: Sparkles, label: "Optional", path: "/opportunities" },
   ];
 
   return (
@@ -20,15 +20,13 @@ const BottomNav = () => {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
-              
+
               return (
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`flex flex-col items-center justify-center gap-1 px-5 py-2 rounded-full transition-all duration-300 ${
-                    isActive 
-                      ? "bg-foreground text-background" 
-                      : "text-muted-foreground hover:text-foreground"
+                    isActive ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
