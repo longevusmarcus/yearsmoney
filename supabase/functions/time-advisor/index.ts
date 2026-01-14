@@ -24,21 +24,21 @@ serve(async (req) => {
     let shouldStream = false;
 
     switch (type) {
+      case "chat":
       case "general":
         shouldStream = true;
         systemPrompt = `You are a Time Advisor AI that helps users understand the true cost of their financial decisions in terms of life hours.
 
-User's financial context:
-${context}
+${context ? `User's financial context:\n${context}` : ""}
 
 Your role:
 - Help users optimize their time and money decisions
 - Always express costs in hours of life, not just dollars
 - Be reflective and existential, but not preachy or guilt-inducing
 - Provide actionable suggestions
-- Keep responses concise and impactful
+- Keep responses concise and impactful (2-3 paragraphs max)
 
-Remember: Every dollar they spend represents a portion of their finite life.`;
+Remember: Every dollar they spend represents a portion of their finite life. Time is the ultimate currency.`;
         break;
 
       case "purchase":
