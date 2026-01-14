@@ -102,8 +102,8 @@ const Risks = () => {
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
       <div className="px-6 pt-12 pb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Time-Risk Alerts</h1>
-        <p className="text-muted-foreground text-sm mt-1">See investments in hours at stake</p>
+        <h1 className="text-2xl font-light tracking-tight">Risks</h1>
+        <p className="text-muted-foreground text-sm font-light mt-1">See investments in hours at stake</p>
       </div>
 
       {!result ? (
