@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, X, TrendingUp, TrendingDown } from "lucide-react";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, Legend } from "recharts";
@@ -375,6 +375,31 @@ const Home = () => {
           </div>
         </div>
       )}
+
+      {/* Connect Accounts - Coming Soon */}
+      <div className="px-6 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">sync accounts</h2>
+          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">soon</span>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { icon: Building2, label: "Schwab" },
+            { icon: CreditCard, label: "Stripe" },
+            { icon: Landmark, label: "Bank" },
+            { icon: Coins, label: "Crypto" },
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              disabled
+              className="group flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border/50 bg-card/30 opacity-40 cursor-not-allowed transition-opacity"
+            >
+              <item.icon className="w-4 h-4 text-muted-foreground" />
+              <span className="text-[9px] text-muted-foreground font-light">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Chat Button */}
       <button
