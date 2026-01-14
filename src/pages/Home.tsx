@@ -241,9 +241,9 @@ const Home = () => {
         <div className="grid grid-cols-2 gap-3">
           {/* Without Income */}
           <div className="bg-card border border-border rounded-2xl p-4">
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-1 mb-2">
               <TrendingDown className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">if you stop</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">if you stop</span>
             </div>
             <p className="text-3xl font-light text-foreground tracking-tight">
               {formatLifeBuffer(lifeBufferWithoutIncome)}
@@ -253,9 +253,9 @@ const Home = () => {
 
           {/* With Income - 1 year projection */}
           <div className="bg-card border border-border rounded-2xl p-4">
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-1 mb-2">
               <TrendingUp className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">if you keep earning</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">keep earning</span>
             </div>
             <p className="text-3xl font-light text-foreground tracking-tight">
               {formatLifeBuffer(calculateProjectionWithIncome(1))}
