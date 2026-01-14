@@ -277,50 +277,53 @@ const Opportunities = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="block bg-card border border-border rounded-2xl p-4 hover:border-foreground/30 transition-colors"
+                  className="block bg-card border border-border rounded-2xl p-4 hover:border-foreground/30 transition-colors overflow-hidden"
                 >
-                  <div className="flex gap-4">
-                    <div className="w-11 h-11 bg-muted/50 rounded-xl flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5" />
+                  <div className="flex gap-3">
+                    <div className="w-10 h-10 bg-muted/50 rounded-xl flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      {/* Header row */}
                       <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="text-sm font-light truncate">{product.title}</p>
-                          {product.description && (
-                            <p className="text-xs text-muted-foreground font-light truncate">{product.description}</p>
-                          )}
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                             <p className="text-[10px] text-muted-foreground">${product.price?.toLocaleString()}</p>
                             {product.source && (
-                              <span className="text-[10px] text-primary">{product.source}</span>
+                              <span className="text-[10px] text-primary truncate">{product.source}</span>
                             )}
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-xl font-light">{formatTime(product)}</p>
+                          <p className="text-lg font-light leading-tight">{formatTime(product)}</p>
                           {yearlyBufferDays > 0 && (
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-[9px] text-muted-foreground">
                               {percentOfBudget.toFixed(0)}% of year
                             </p>
                           )}
                         </div>
                       </div>
                       
-                      {/* Full time breakdown */}
-                      <div className="mt-2 text-[10px] text-muted-foreground font-light">
-                        {formatFullTime(product)}
-                      </div>
+                      {/* Description - hidden on very small cards */}
+                      {product.description && (
+                        <p className="text-[11px] text-muted-foreground font-light mt-1.5 line-clamp-2">{product.description}</p>
+                      )}
                       
-                      {/* ROI and affiliate link indicator */}
-                      <div className="mt-2 flex items-center justify-between">
+                      {/* Time breakdown */}
+                      <p className="mt-1.5 text-[10px] text-muted-foreground/70 font-light truncate">
+                        {formatFullTime(product)}
+                      </p>
+                      
+                      {/* ROI badge - constrained width */}
+                      <div className="mt-2 flex items-center justify-between gap-2">
                         {product.roi && (
-                          <span className="text-[10px] bg-foreground/10 px-2 py-0.5 rounded-full font-light">
-                            ROI: {product.roi}
+                          <span className="text-[9px] bg-foreground/10 px-2 py-1 rounded-md font-light line-clamp-1 flex-1 min-w-0">
+                            {product.roi}
                           </span>
                         )}
-                        <span className="text-[10px] text-primary flex items-center gap-1">
-                          View deal <ExternalLink className="w-2.5 h-2.5" />
+                        <span className="text-[10px] text-primary flex items-center gap-1 shrink-0">
+                          View <ExternalLink className="w-2.5 h-2.5" />
                         </span>
                       </div>
                     </div>
