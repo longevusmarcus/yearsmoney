@@ -3,6 +3,7 @@ import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard,
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
+import MobileOnly from "@/components/MobileOnly";
 import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, Legend } from "recharts";
 
@@ -231,6 +232,7 @@ const Home = () => {
   };
 
   return (
+    <MobileOnly>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <PageHeader title="Years">
@@ -538,6 +540,7 @@ const Home = () => {
         onSuccess={() => setShowAuthModal(false)}
       />
     </div>
+    </MobileOnly>
   );
 };
 

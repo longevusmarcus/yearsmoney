@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, AlertTriangle, Loader2, RefreshCw } from "luc
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
+import MobileOnly from "@/components/MobileOnly";
 
 interface RiskAnalysis {
   asset: string;
@@ -100,6 +101,7 @@ const Risks = () => {
   };
 
   return (
+    <MobileOnly>
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
       <PageHeader 
@@ -248,6 +250,7 @@ const Risks = () => {
 
       <BottomNav />
     </div>
+    </MobileOnly>
   );
 };
 

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import { ProductSkeletonList } from "@/components/ProductCardSkeleton";
 import { PageHeader } from "@/components/PageHeader";
+import MobileOnly from "@/components/MobileOnly";
 
 interface Product {
   title: string;
@@ -151,6 +152,7 @@ const Opportunities = () => {
   };
 
   return (
+    <MobileOnly>
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
       <PageHeader 
@@ -360,6 +362,7 @@ const Opportunities = () => {
 
       <BottomNav />
     </div>
+    </MobileOnly>
   );
 };
 
