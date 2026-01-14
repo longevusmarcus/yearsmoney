@@ -10,6 +10,7 @@ import Purchase from "./pages/Purchase";
 import Risks from "./pages/Risks";
 import Opportunities from "./pages/Opportunities";
 import Settings from "./pages/Settings";
+import UBI from "./pages/UBI";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
@@ -36,7 +37,8 @@ const App = () => {
             <Route path="/opportunities" element={<Opportunities />} />
             <Route path="/settings" element={<Settings />} />
             
-            {/* Legal pages */}
+            {/* Legal/Info pages */}
+            <Route path="/ubi" element={<UBI />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             
