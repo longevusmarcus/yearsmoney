@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Clock, TrendingDown, Loader2, Info } from "lucide-react";
+import { Search, Clock, TrendingDown, Loader2, Info, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
@@ -7,8 +7,11 @@ interface Alternative {
   title: string;
   price: number;
   hoursCost: number;
+  workingDays: number;
   hoursSaved: number;
+  daysSaved: number;
   source: string;
+  link?: string;
 }
 
 interface AnalysisResult {
@@ -16,8 +19,8 @@ interface AnalysisResult {
   price: number;
   hoursCost: number;
   workingDays: number;
-  waitSuggestion?: string;
-  hoursSavedWaiting?: number;
+  source?: string;
+  link?: string;
   alternatives: Alternative[];
 }
 
@@ -35,17 +38,33 @@ const Purchase = () => {
   const freeCash = income - expenses;
   const hasData = income > 0 && expenses > 0;
 
-  // Life cost calculation: based on rate at which optional life advances
-  // Hours cost = (price / freeCash) * hours in a month
-  // This represents how many hours of "optional life advancement" this purchase costs
-  const calculateHours = (priceValue: number) => {
+  // CORE CALCULATION: How much time does it take to earn $1 back?
+  // Rate = netWorth / (income - expenses) = months of buffer
+  // Dollar per hour = (income - expenses) / working_hours_per_month
+  // Working hours per month = 22 days * 8 hours = 176 hours
+  const WORKING_HOURS_PER_MONTH = 176; // 22 working days * 8 hours
+  const WORKING_DAYS_PER_MONTH = 22;
+
+  // $/hour earned toward buffer = monthly surplus / working hours
+  const dollarPerHour = freeCash > 0 ? freeCash / WORKING_HOURS_PER_MONTH : 0;
+  
+  // Time to earn back $1 (in hours) = 1 / dollarPerHour
+  const hoursPerDollar = dollarPerHour > 0 ? 1 / dollarPerHour : 0;
+
+  // Calculate working days to earn back a purchase
+  const calculateWorkingDays = (priceValue: number) => {
     if (freeCash <= 0) {
-      // If no free cash, base it on how many months of runway it takes
-      return expenses > 0 ? (priceValue / expenses) * 30 * 24 : 0;
+      // If losing money, show it in terms of runway consumption
+      return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : 0;
     }
-    // Hours = (price / monthly_savings) * hours_per_month
-    // This shows how many hours of life-advancement this purchase delays
-    return (priceValue / freeCash) * 30 * 24;
+    // Working days = price / (daily savings rate)
+    // Daily savings = freeCash / WORKING_DAYS_PER_MONTH
+    return (priceValue / freeCash) * WORKING_DAYS_PER_MONTH;
+  };
+
+  // Calculate hours to earn back
+  const calculateHours = (priceValue: number) => {
+    return calculateWorkingDays(priceValue) * 8;
   };
 
   const analyze = async () => {
@@ -56,64 +75,76 @@ const Purchase = () => {
     // If just a price, do simple calculation
     if (price && !query) {
       const priceNum = parseFloat(price);
-      const hours = calculateHours(priceNum);
+      const days = calculateWorkingDays(priceNum);
       setResult({
         productName: "Your purchase",
         price: priceNum,
-        hoursCost: hours,
-        workingDays: hours / 8,
+        hoursCost: days * 8,
+        workingDays: days,
         alternatives: []
       });
       setIsAnalyzing(false);
       return;
     }
 
-    // Call AI for product analysis
+    // Call SerpAPI for real product prices
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/time-advisor`, {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/product-search`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
-          type: "purchase",
           query,
-          price: price ? parseFloat(price) : null,
-          freeCash,
-          expenses
+          type: "product"
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to analyze");
+      if (!response.ok) throw new Error("Failed to search");
 
       const data = await response.json();
       
-      // Calculate hours for each result
+      if (!data.success) throw new Error(data.error || "Search failed");
+      
+      // Use scraped price or user input
       const productPrice = data.price || parseFloat(price) || 0;
+      const days = calculateWorkingDays(productPrice);
+      
       const analysisResult: AnalysisResult = {
         productName: data.productName || query,
         price: productPrice,
-        hoursCost: calculateHours(productPrice),
-        workingDays: calculateHours(productPrice) / 8,
-        waitSuggestion: data.waitSuggestion,
-        hoursSavedWaiting: data.hoursSavedWaiting ? calculateHours(data.hoursSavedWaiting) : undefined,
-        alternatives: (data.alternatives || []).map((alt: any) => ({
-          ...alt,
-          hoursCost: calculateHours(alt.price),
-          hoursSaved: calculateHours(productPrice - alt.price)
-        }))
+        hoursCost: days * 8,
+        workingDays: days,
+        source: data.source,
+        link: data.link,
+        alternatives: (data.alternatives || []).map((alt: any) => {
+          const altDays = calculateWorkingDays(alt.price);
+          const savedDays = days - altDays;
+          return {
+            title: alt.title,
+            price: alt.price,
+            hoursCost: altDays * 8,
+            workingDays: altDays,
+            hoursSaved: savedDays * 8,
+            daysSaved: savedDays,
+            source: alt.source,
+            link: alt.link
+          };
+        })
       };
       
       setResult(analysisResult);
     } catch (error) {
+      console.error("Search error:", error);
       // Fallback to simple calculation
       const priceNum = parseFloat(price) || 500;
+      const days = calculateWorkingDays(priceNum);
       setResult({
         productName: query || "Product",
         price: priceNum,
-        hoursCost: calculateHours(priceNum),
-        workingDays: calculateHours(priceNum) / 8,
+        hoursCost: days * 8,
+        workingDays: days,
         alternatives: []
       });
     }
@@ -151,12 +182,15 @@ const Purchase = () => {
       {hasData && !result && (
         <div className="px-6 mb-6">
           <div className="bg-card border border-border rounded-2xl p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your life-time rate</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your time-cost rate</p>
             <p className="text-lg font-light text-foreground">
-              ${freeCash.toLocaleString()}/month savings
+              ${dollarPerHour.toFixed(2)}/hour earned
             </p>
             <p className="text-xs text-muted-foreground font-light mt-1">
-              Each ${freeCash > 0 ? Math.round(freeCash / 720) : '—'} spent = 1 hour of life delayed
+              Each ${Math.round(freeCash / WORKING_DAYS_PER_MONTH)} spent = 1 working day to earn back
+            </p>
+            <p className="text-[10px] text-muted-foreground font-light mt-2 opacity-70">
+              Based on ${freeCash.toLocaleString()}/mo surplus ÷ {WORKING_DAYS_PER_MONTH} working days
             </p>
           </div>
         </div>
@@ -230,59 +264,72 @@ const Purchase = () => {
         >
           {/* Main result */}
           <div className="text-center py-8">
-            <p className="text-muted-foreground text-sm font-light mb-2">{result.productName}</p>
+            <p className="text-muted-foreground text-sm font-light mb-2">
+              {result.productName}
+              {result.source && <span className="opacity-60"> via {result.source}</span>}
+            </p>
+            <p className="text-lg text-muted-foreground font-light mb-4">
+              ${result.price.toLocaleString()}
+            </p>
             <div className="text-6xl font-light tracking-tighter">
-              {result.hoursCost.toFixed(0)}
+              {result.workingDays.toFixed(1)}
             </div>
-            <div className="text-muted-foreground mt-2 font-light">hours of life</div>
+            <div className="text-muted-foreground mt-2 font-light">working days to earn back</div>
             <div className="text-xs text-muted-foreground mt-1 font-light">
-              ≈ {result.workingDays.toFixed(0)} working days
+              ≈ {result.hoursCost.toFixed(0)} working hours
             </div>
+            {result.link && (
+              <a 
+                href={result.link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-primary mt-3 underline"
+              >
+                View product <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
           </div>
 
           {/* Explanation */}
           <div className="bg-card border border-border rounded-2xl p-4 mb-4">
             <p className="text-xs text-muted-foreground font-light">
-              Based on your savings rate of ${freeCash.toLocaleString()}/mo, this purchase delays your optional life by {result.hoursCost.toFixed(0)} hours.
+              At your rate of ${dollarPerHour.toFixed(2)}/hour toward your buffer, this purchase requires{" "}
+              <span className="text-foreground font-medium">{result.workingDays.toFixed(1)} working days</span> of earnings to recover.
+            </p>
+            <p className="text-[10px] text-muted-foreground font-light mt-2 opacity-70">
+              Formula: ${result.price.toLocaleString()} ÷ (${freeCash.toLocaleString()}/mo ÷ {WORKING_DAYS_PER_MONTH} days) = {result.workingDays.toFixed(1)} days
             </p>
           </div>
-
-          {/* Wait suggestion */}
-          {result.waitSuggestion && (
-            <div className="bg-card border border-border rounded-2xl p-4 mb-4">
-              <div className="flex items-start gap-3">
-                <Clock className="w-4 h-4 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-sm font-light">{result.waitSuggestion}</p>
-                  {result.hoursSavedWaiting && (
-                    <p className="text-xs text-muted-foreground mt-1 font-light">
-                      Save {result.hoursSavedWaiting.toFixed(0)} hours of life
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Alternatives */}
           {result.alternatives.length > 0 && (
             <div className="mt-6">
               <h3 className="text-xs text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-wider">
                 <TrendingDown className="w-3 h-3" />
-                Cheaper alternatives
+                Cheaper alternatives found
               </h3>
               <div className="space-y-2">
                 {result.alternatives.map((alt, i) => (
                   <div key={i} className="bg-card border border-border rounded-xl p-4">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-sm font-light">{alt.title}</p>
-                        <p className="text-xs text-muted-foreground">{alt.source}</p>
+                      <div className="flex-1 min-w-0 pr-3">
+                        <p className="text-sm font-light truncate">{alt.title}</p>
+                        <p className="text-xs text-muted-foreground">${alt.price.toLocaleString()} • {alt.source}</p>
+                        {alt.link && (
+                          <a 
+                            href={alt.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] text-primary mt-1"
+                          >
+                            View <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-light">{alt.hoursCost.toFixed(0)}h</p>
+                      <div className="text-right shrink-0">
+                        <p className="text-lg font-light">{alt.workingDays.toFixed(1)}d</p>
                         <p className="text-xs text-green-500 font-light">
-                          Save {alt.hoursSaved.toFixed(0)}h
+                          Save {alt.daysSaved.toFixed(1)} days
                         </p>
                       </div>
                     </div>
@@ -294,9 +341,10 @@ const Purchase = () => {
 
           {/* Share card preview */}
           <div className="mt-8 bg-foreground text-background rounded-2xl p-6 text-center">
-            <p className="text-xs opacity-60 mb-2 font-light">This {result.productName.toLowerCase()} costs me</p>
-            <p className="text-5xl font-light">{result.hoursCost.toFixed(0)} hours</p>
-            <p className="text-xs opacity-60 mt-2 font-light">of my life</p>
+            <p className="text-xs opacity-60 mb-2 font-light">This {result.productName.split(" ").slice(0, 3).join(" ").toLowerCase()} costs me</p>
+            <p className="text-5xl font-light">{result.workingDays.toFixed(1)}</p>
+            <p className="text-lg opacity-80 font-light">working days</p>
+            <p className="text-xs opacity-60 mt-2 font-light">to earn back</p>
           </div>
 
           <button
