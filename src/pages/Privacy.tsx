@@ -1,23 +1,19 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import VoiceBubbleLogo from "@/components/VoiceBubbleLogo";
 
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <Link 
-          to="/auth" 
+          to="/about" 
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to sign in
+          Back to home
         </Link>
 
-        <div className="flex items-center gap-3 mb-8">
-          <VoiceBubbleLogo size="sm" />
-          <h1 className="text-3xl font-cursive text-foreground">Privacy Policy</h1>
-        </div>
+        <h1 className="text-3xl font-cursive text-foreground mb-8">Privacy Policy</h1>
 
         <div className="prose prose-sm max-w-none space-y-6 text-muted-foreground">
           <section>
