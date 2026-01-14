@@ -152,7 +152,7 @@ const Opportunities = () => {
   return (
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
-      <div className="px-6 pt-12 pb-4">
+      <div className="px-6 pt-6 pb-4">
         <h1 className="text-2xl font-light tracking-tight">Optional Life</h1>
         <p className="text-muted-foreground text-sm font-light mt-1">See what your time could buy</p>
       </div>

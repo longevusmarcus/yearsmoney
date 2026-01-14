@@ -58,11 +58,11 @@ const Settings = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="p-6 space-y-6">
-        <button onClick={() => navigate(-1)} className="mb-4">
-          <ArrowLeft className="w-6 h-6 text-foreground" />
+        <button onClick={() => navigate(-1)}>
+          <ArrowLeft className="w-5 h-5 text-foreground" />
         </button>
 
-        <h1 className="text-3xl font-cursive italic text-foreground tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-cursive italic text-foreground tracking-tight">Settings</h1>
 
         {/* Account */}
         <div className="space-y-3">
