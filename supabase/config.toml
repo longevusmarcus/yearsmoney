@@ -1,1 +1,16 @@
 project_id = "kujhuokvyobamhmesxfv"
+
+[functions.gut-coach]
+verify_jwt = false
+
+[functions.product-search]
+verify_jwt = false
+
+[functions.time-advisor]
+verify_jwt = false
+
+[functions.transcribe-audio]
+verify_jwt = false
+
+[functions.affiliate-search]
+verify_jwt = false
