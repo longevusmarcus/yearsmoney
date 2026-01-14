@@ -118,7 +118,7 @@ serve(async (req) => {
       shoppingUrl.searchParams.set("engine", "google_shopping");
       shoppingUrl.searchParams.set("q", query);
       shoppingUrl.searchParams.set("api_key", SERPAPI_KEY);
-      shoppingUrl.searchParams.set("num", "15");
+      shoppingUrl.searchParams.set("num", "20");
 
       const shoppingResponse = await fetch(shoppingUrl.toString());
       
@@ -132,8 +132,43 @@ serve(async (req) => {
 
       const results = shoppingData.shopping_results || [];
       
-      // Extract prices and find best deals
-      const products = results.slice(0, 10).map((item: any) => {
+      // Determine minimum expected price based on product keywords
+      const lowerQuery = query.toLowerCase();
+      let minExpectedPrice = 50; // Default minimum
+      
+      // Set minimum price thresholds for known expensive products
+      if (lowerQuery.includes("iphone")) {
+        minExpectedPrice = lowerQuery.includes("pro") ? 900 : 600;
+      } else if (lowerQuery.includes("macbook")) {
+        minExpectedPrice = lowerQuery.includes("pro") ? 1500 : 900;
+      } else if (lowerQuery.includes("tesla")) {
+        minExpectedPrice = 25000;
+      } else if (lowerQuery.includes("ps5") || lowerQuery.includes("playstation 5")) {
+        minExpectedPrice = 350;
+      } else if (lowerQuery.includes("xbox")) {
+        minExpectedPrice = 300;
+      } else if (lowerQuery.includes("airpods")) {
+        minExpectedPrice = lowerQuery.includes("pro") ? 180 : 100;
+      } else if (lowerQuery.includes("ipad")) {
+        minExpectedPrice = lowerQuery.includes("pro") ? 700 : 300;
+      } else if (lowerQuery.includes("apple watch")) {
+        minExpectedPrice = 250;
+      } else if (lowerQuery.includes("samsung") && lowerQuery.includes("galaxy")) {
+        minExpectedPrice = 500;
+      } else if (lowerQuery.includes("rolex") || lowerQuery.includes("omega")) {
+        minExpectedPrice = 3000;
+      } else if (lowerQuery.includes("laptop") || lowerQuery.includes("computer")) {
+        minExpectedPrice = 300;
+      } else if (lowerQuery.includes("tv") || lowerQuery.includes("television")) {
+        minExpectedPrice = 200;
+      } else if (lowerQuery.includes("camera")) {
+        minExpectedPrice = 200;
+      }
+      
+      console.log(`Minimum expected price for "${query}": $${minExpectedPrice}`);
+      
+      // Extract prices and filter by minimum expected price
+      const products = results.map((item: any) => {
         let price = 0;
         if (item.extracted_price) {
           price = item.extracted_price;
@@ -149,27 +184,54 @@ serve(async (req) => {
           link: item.link || "",
           thumbnail: item.thumbnail || ""
         };
-      }).filter((p: any) => p.price > 0);
+      }).filter((p: any) => p.price >= minExpectedPrice);
 
-      // Sort by price ascending
-      products.sort((a: any, b: any) => a.price - b.price);
-
-      // Try to find the main product (best match by title similarity)
-      const queryWords: string[] = query.toLowerCase().split(" ").filter((w: string) => w.length > 2);
-      let mainProduct = products.find((p: any) => {
-        const titleLower = p.title.toLowerCase();
-        const matchCount = queryWords.filter((word: string) => titleLower.includes(word)).length;
-        return matchCount >= Math.min(2, queryWords.length);
-      });
+      console.log(`Products after filtering: ${products.length}`);
       
-      // Fallback to first result with reasonable price
-      if (!mainProduct) {
-        mainProduct = products[0];
+      // If no products meet minimum price, use all results but warn
+      let validProducts = products;
+      if (products.length === 0) {
+        console.log("No products met minimum price threshold, using unfiltered results");
+        validProducts = results.map((item: any) => {
+          let price = 0;
+          if (item.extracted_price) {
+            price = item.extracted_price;
+          } else if (item.price) {
+            const priceStr = item.price.replace(/[^0-9.]/g, "");
+            price = parseFloat(priceStr) || 0;
+          }
+          return {
+            title: item.title || "Unknown Product",
+            price,
+            source: item.source || "Unknown",
+            link: item.link || "",
+          };
+        }).filter((p: any) => p.price > 0);
       }
 
-      // Alternatives = other options (cheaper or similar price)
-      const alternatives = products
-        .filter((p: any) => p !== mainProduct)
+      // Sort by price - find median price for main product
+      validProducts.sort((a: any, b: any) => a.price - b.price);
+      
+      // Try to find the main product by matching query words in title
+      const queryWords: string[] = query.toLowerCase().split(" ").filter((w: string) => w.length > 2);
+      const keyWords = queryWords.filter((w: string) => !["the", "and", "for", "new", "with"].includes(w));
+      
+      let mainProduct = validProducts.find((p: any) => {
+        const titleLower = p.title.toLowerCase();
+        const matchCount = keyWords.filter((word: string) => titleLower.includes(word)).length;
+        // Require more matches for better accuracy
+        return matchCount >= Math.ceil(keyWords.length * 0.6);
+      });
+      
+      // Fallback to product closest to median price (more likely to be the actual product)
+      if (!mainProduct && validProducts.length > 0) {
+        const midIndex = Math.floor(validProducts.length / 2);
+        mainProduct = validProducts[midIndex];
+      }
+
+      // Alternatives = other options within 50% of main product price
+      const alternatives = validProducts
+        .filter((p: any) => p !== mainProduct && mainProduct && p.price <= mainProduct.price * 1.5)
         .slice(0, 4);
 
       return new Response(JSON.stringify({
