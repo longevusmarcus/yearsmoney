@@ -375,7 +375,7 @@ const About = () => {
             <span className="font-light block md:inline">Turn your money</span>
             <br className="hidden md:block" />
             <span className="font-cormorant italic font-light text-3xl md:text-6xl lg:text-7xl block md:inline whitespace-nowrap">
-              into time
+              into time (yes, time)
             </span>
           </motion.h1>
 
@@ -385,8 +385,8 @@ const About = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Understand your financial runway. See what every expense really costs. Know how many years of freedom your
-            money buys. Measure your real freedom.
+            Understand your financial runway, see what every expense really costs, and know how many years of freedom
+            your money buys.
           </motion.p>
 
           <motion.div
