@@ -15,7 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        cursive: ['Dancing Script', 'cursive'],
+        cursive: ['Playfair Display', 'serif'],
+        italiana: ['Italiana', 'serif'],
         cormorant: ['Cormorant Garamond', 'serif'],
       },
       colors: {
