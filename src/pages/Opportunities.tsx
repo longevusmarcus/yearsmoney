@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Loader2, Info, RefreshCw } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
@@ -24,47 +24,31 @@ const iconMap: Record<string, any> = {
 };
 
 const Opportunities = () => {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Get user's financial data from Home (localStorage with tc_ prefix)
   const income = Number(localStorage.getItem("tc_income")) || 0;
   const expenses = Number(localStorage.getItem("tc_expenses")) || 0;
-  const netWorth = Number(localStorage.getItem("tc_networth")) || 0;
   
   const freeCash = income - expenses;
   const hasData = income > 0 && expenses > 0;
 
   // CORE CALCULATION: Working days to earn back a purchase
   const WORKING_DAYS_PER_MONTH = 22;
-  const dailyEarnings = freeCash > 0 ? freeCash / WORKING_DAYS_PER_MONTH : 0;
+  const dailyEarnings = freeCash > 0 ? freeCash / WORKING_DAYS_PER_MONTH : 1; // Fallback to 1 to avoid division by zero
 
   const calculateWorkingDays = (priceValue: number) => {
     if (freeCash <= 0) {
-      return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : 0;
+      return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : priceValue / 100;
     }
     return priceValue / dailyEarnings;
   };
 
-  // Yearly working days of buffer = working days in a year = ~260
-  const WORKING_DAYS_PER_YEAR = 260;
   // How many "days of buffer" can you accumulate per year
-  const yearlyBufferDays = freeCash > 0 ? (freeCash * 12) / dailyEarnings : 0;
+  const yearlyBufferDays = freeCash > 0 ? (freeCash * 12) / dailyEarnings : 264;
 
-  useEffect(() => {
-    loadOpportunities();
-  }, []);
-
-  const loadOpportunities = async () => {
-    setIsLoading(true);
-    // Use default opportunities with real price estimates
-    // These can be enhanced with SerpAPI searches later
-    setOpportunities(getDefaultOpportunities());
-    setIsLoading(false);
-  };
-
-  const getDefaultOpportunities = (): Opportunity[] => [
+  // Generate opportunities with memoization to prevent recalc on every render
+  const opportunities = useMemo<Opportunity[]>(() => [
     {
       id: "1",
       category: "travel",
@@ -145,7 +129,7 @@ const Opportunities = () => {
       icon: "learning",
       roi: "High - continuous growth"
     }
-  ];
+  ], [freeCash, expenses, dailyEarnings]);
 
   const categories = [
     { id: "all", label: "All" },
@@ -217,17 +201,12 @@ const Opportunities = () => {
 
       {/* Opportunities list */}
       <div className="px-6 py-4">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {filteredOpportunities.map((opp, index) => {
-              const Icon = iconMap[opp.icon] || iconMap.default;
-              const percentOfBudget = yearlyBufferDays > 0 
-                ? (opp.workingDays / yearlyBufferDays) * 100 
-                : 0;
+        <div className="space-y-3">
+          {filteredOpportunities.map((opp, index) => {
+            const Icon = iconMap[opp.icon] || iconMap.default;
+            const percentOfBudget = yearlyBufferDays > 0 
+              ? (opp.workingDays / yearlyBufferDays) * 100 
+              : 0;
               
               return (
                 <motion.div
@@ -268,13 +247,12 @@ const Opportunities = () => {
                   </div>
                 </motion.div>
               );
-            })}
-          </div>
-        )}
+          })}
+        </div>
       </div>
 
       {/* Summary */}
-      {!isLoading && hasData && (
+      {hasData && (
         <div className="px-6 py-4">
           <div className="bg-card border border-border rounded-2xl p-4 text-center">
             <p className="text-xs text-muted-foreground font-light">
