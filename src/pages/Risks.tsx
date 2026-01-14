@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, AlertTriangle, Loader2, RefreshCw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { TrendingUp, TrendingDown, AlertTriangle, Loader2, RefreshCw, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface RiskAnalysis {
   asset: string;
@@ -13,6 +15,7 @@ interface RiskAnalysis {
 }
 
 const Risks = () => {
+  const navigate = useNavigate();
   const [asset, setAsset] = useState("");
   const [amount, setAmount] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -101,9 +104,20 @@ const Risks = () => {
   return (
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
-      <div className="px-6 pt-6 pb-4">
-        <h1 className="text-2xl font-light tracking-tight">Risks</h1>
-        <p className="text-muted-foreground text-sm font-light mt-1">See investments in hours at stake</p>
+      <div className="px-6 pt-6 pb-4 flex justify-between items-start">
+        <div>
+          <h1 className="text-2xl font-light tracking-tight">Risks</h1>
+          <p className="text-muted-foreground text-sm font-light mt-1">See investments in hours at stake</p>
+        </div>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <button
+            onClick={() => navigate("/settings")}
+            className="p-1 hover:opacity-70 transition-opacity"
+          >
+            <Settings className="w-4 h-4 text-muted-foreground" />
+          </button>
+        </div>
       </div>
 
       {!result ? (
