@@ -5,125 +5,258 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Categories that need special handling with web search
-const categoryPatterns: { keywords: string[]; category: string }[] = [
+// Minimum realistic prices by category (USD)
+const categoryMinPrices: Record<string, number> = {
+  real_estate_sale: 50000,    // Minimum for property sale
+  real_estate_rent: 500,       // Minimum monthly rent
+  automotive: 5000,            // Minimum for used car
+  travel: 200,                 // Minimum for travel package
+  product: 10                  // Minimum for products
+};
+
+// Categories with detection
+const categoryPatterns: { keywords: string[]; category: string; isRental?: boolean }[] = [
   { 
-    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "real estate", "home for sale", "home for rent"],
-    category: "real_estate"
+    keywords: ["house for sale", "villa for sale", "apartment for sale", "property for sale", "buy house", "buy apartment", "buy villa"],
+    category: "real_estate_sale"
   },
   { 
-    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort", "cruise", "weeks in", "week in", "days in", "night in", "nights in", "visit"],
+    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "home"],
+    category: "real_estate_sale" // Default to sale
+  },
+  { 
+    keywords: ["rent", "rental", "for rent", "monthly rent", "lease"],
+    category: "real_estate_rent",
+    isRental: true
+  },
+  { 
+    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort"],
     category: "travel"
   },
   {
-    keywords: ["car for sale", "used car", "new car", "buy car", "lease car", "tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini"],
+    keywords: ["tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini", "car", "vehicle", "suv"],
     category: "automotive"
-  },
-  {
-    keywords: ["course", "bootcamp", "degree", "certification", "training program", "class", "online course", "mba program", "university"],
-    category: "education"
   }
 ];
 
-function detectCategory(query: string): string {
+function detectCategory(query: string): { category: string; isRental: boolean } {
   const lowerQuery = query.toLowerCase();
+  
+  // Check for rental keywords first
+  const isRental = ["rent", "rental", "for rent", "monthly", "per month", "/month"].some(k => lowerQuery.includes(k));
   
   for (const pattern of categoryPatterns) {
     if (pattern.keywords.some(keyword => lowerQuery.includes(keyword))) {
-      return pattern.category;
+      if (pattern.category.includes("real_estate")) {
+        return { 
+          category: isRental ? "real_estate_rent" : "real_estate_sale",
+          isRental 
+        };
+      }
+      return { category: pattern.category, isRental: false };
     }
   }
   
-  return "product";
+  return { category: "product", isRental: false };
 }
 
-// Use Exa API for real web search - returns multiple results with images
-async function searchWithExa(query: string, category: string): Promise<{ results: any[]; success: boolean }> {
-  const EXA_API_KEY = Deno.env.get("exa_API_key");
-  if (!EXA_API_KEY) {
-    console.error("exa_API_key not configured");
-    throw new Error("Exa API key not configured");
-  }
-
-  console.log(`Searching Exa for: ${query} (category: ${category})`);
+// Get minimum expected price for category
+function getMinPrice(category: string, query: string): number {
+  const lowerQuery = query.toLowerCase();
   
-  // Build optimized search query based on category
+  // Special handling for known expensive items
+  if (category === "real_estate_sale") {
+    if (lowerQuery.includes("menorca") || lowerQuery.includes("minorca") || lowerQuery.includes("ibiza") || lowerQuery.includes("mallorca")) {
+      return 200000; // Mediterranean islands are expensive
+    }
+    if (lowerQuery.includes("villa")) return 300000;
+    if (lowerQuery.includes("apartment")) return 80000;
+    return 100000;
+  }
+  
+  if (category === "automotive") {
+    if (lowerQuery.includes("tesla")) return 30000;
+    if (lowerQuery.includes("porsche")) return 50000;
+    if (lowerQuery.includes("ferrari") || lowerQuery.includes("lamborghini")) return 150000;
+    if (lowerQuery.includes("bmw") || lowerQuery.includes("mercedes")) return 25000;
+    return 10000;
+  }
+  
+  if (category === "product") {
+    if (lowerQuery.includes("macbook")) return 800;
+    if (lowerQuery.includes("iphone")) return 500;
+    if (lowerQuery.includes("ipad")) return 300;
+    if (lowerQuery.includes("rolex")) return 3000;
+    return 20;
+  }
+  
+  return categoryMinPrices[category] || 50;
+}
+
+// Search with Exa
+async function searchWithExa(query: string, category: string): Promise<any[]> {
+  const EXA_API_KEY = Deno.env.get("exa_API_key");
+  if (!EXA_API_KEY) return [];
+
+  console.log(`[Exa] Searching: ${query}`);
+  
   let searchQuery = query;
-  if (category === "real_estate") {
-    searchQuery = `${query} property listing for sale price`;
-  } else if (category === "travel") {
-    searchQuery = `${query} booking price per night cost`;
+  if (category === "real_estate_sale") {
+    searchQuery = `${query} for sale price listing EUR USD`;
+  } else if (category === "real_estate_rent") {
+    searchQuery = `${query} monthly rent price`;
   } else if (category === "automotive") {
     searchQuery = `${query} for sale price listing`;
-  } else {
-    searchQuery = `${query} buy price`;
   }
 
-  const response = await fetch("https://api.exa.ai/search", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${EXA_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: searchQuery,
-      type: "neural",
-      useAutoprompt: true,
-      numResults: 15,
-      contents: {
-        text: { maxCharacters: 1500 }
-      }
-    }),
-  });
+  try {
+    const response = await fetch("https://api.exa.ai/search", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${EXA_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: searchQuery,
+        type: "neural",
+        useAutoprompt: true,
+        numResults: 12,
+        contents: { text: { maxCharacters: 2000 } }
+      }),
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`Exa API error: ${response.status} - ${errorText}`);
-    throw new Error(`Exa API error: ${response.status}`);
+    if (!response.ok) {
+      console.error(`[Exa] Error: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`[Exa] Found ${data.results?.length || 0} results`);
+    return data.results || [];
+  } catch (e) {
+    console.error("[Exa] Error:", e);
+    return [];
   }
-
-  const data = await response.json();
-  console.log(`Exa returned ${data.results?.length || 0} results`);
-  
-  return { results: data.results || [], success: true };
 }
 
-// Use Lovable AI to extract multiple listings with prices from search results
-async function extractListingsFromResults(query: string, results: any[], category: string): Promise<any[]> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY not configured");
+// Search with SerpAPI for products
+async function searchWithSerpAPI(query: string): Promise<any[]> {
+  const SERPAPI_KEY = Deno.env.get("SERPAPI_KEY");
+  if (!SERPAPI_KEY) return [];
+
+  console.log(`[SerpAPI] Searching: ${query}`);
+
+  try {
+    const url = new URL("https://serpapi.com/search.json");
+    url.searchParams.set("engine", "google_shopping");
+    url.searchParams.set("q", query);
+    url.searchParams.set("api_key", SERPAPI_KEY);
+    url.searchParams.set("num", "15");
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      console.error(`[SerpAPI] Error: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    const results = data.shopping_results || [];
+    console.log(`[SerpAPI] Found ${results.length} products`);
+    
+    return results.map((item: any) => ({
+      title: item.title,
+      price: item.extracted_price || parseFloat(item.price?.replace(/[^0-9.]/g, "")) || 0,
+      source: item.source,
+      link: item.link,
+      image: item.thumbnail
+    }));
+  } catch (e) {
+    console.error("[SerpAPI] Error:", e);
+    return [];
   }
+}
 
-  // Prepare context from search results
-  const context = results.slice(0, 12).map((r, i) => {
-    return `[${i}] URL: ${r.url}
-Title: ${r.title}
-Text: ${r.text?.substring(0, 800) || "No text"}`;
-  }).join("\n\n");
+// Search with SerpAPI for real estate (Google Search)
+async function searchRealEstateWithSerpAPI(query: string): Promise<any[]> {
+  const SERPAPI_KEY = Deno.env.get("SERPAPI_KEY");
+  if (!SERPAPI_KEY) return [];
 
-  const systemPrompt = `You are analyzing search results to extract MULTIPLE listings/products for "${query}".
+  console.log(`[SerpAPI Real Estate] Searching: ${query}`);
 
-For each valid listing found, extract:
-- title: A clear name for the listing
-- price: The price in USD (convert from other currencies if needed)
-- description: Brief description (property size, features, etc.)
-- image: Look for image URLs in the text or infer from the website (use a realistic placeholder if none found)
-- resultIndex: Which search result this came from (0-11)
+  try {
+    const url = new URL("https://serpapi.com/search.json");
+    url.searchParams.set("engine", "google");
+    url.searchParams.set("q", `${query} for sale price listing site:idealista.com OR site:kyero.com OR site:fotocasa.es OR site:rightmove.co.uk`);
+    url.searchParams.set("api_key", SERPAPI_KEY);
+    url.searchParams.set("num", "10");
 
-Search Results:
-${context}
+    const response = await fetch(url.toString());
+    if (!response.ok) return [];
 
-Return a JSON array of listings found. Extract AS MANY VALID LISTINGS AS POSSIBLE (aim for 5-10).
-Format: [{"title": "...", "price": number, "description": "...", "image": "url or null", "resultIndex": 0}, ...]
+    const data = await response.json();
+    const results = data.organic_results || [];
+    console.log(`[SerpAPI Real Estate] Found ${results.length} results`);
+    
+    return results.map((item: any) => ({
+      title: item.title,
+      snippet: item.snippet,
+      link: item.link,
+      source: new URL(item.link || "https://example.com").hostname.replace("www.", "")
+    }));
+  } catch (e) {
+    console.error("[SerpAPI Real Estate] Error:", e);
+    return [];
+  }
+}
 
-IMPORTANT: 
-- Only include listings with actual prices found
-- For real estate, extract each property separately
-- For products, extract each product variant
-- Sort by price from HIGHEST to LOWEST`;
+// Use AI to extract and validate listings
+async function extractValidListings(query: string, exaResults: any[], serpResults: any[], category: string, minPrice: number): Promise<any[]> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-  console.log(`Using AI to extract listings from ${results.length} Exa results`);
+  // Combine results for context
+  const exaContext = exaResults.slice(0, 8).map((r, i) => 
+    `[EXA-${i}] URL: ${r.url}\nTitle: ${r.title}\nText: ${r.text?.substring(0, 600) || ""}`
+  ).join("\n\n");
+  
+  const serpContext = serpResults.slice(0, 8).map((r, i) => 
+    `[SERP-${i}] Title: ${r.title}\nPrice: $${r.price || "unknown"}\nSource: ${r.source}\nLink: ${r.link}`
+  ).join("\n\n");
+
+  const isRealEstate = category.includes("real_estate");
+  const isRental = category === "real_estate_rent";
+  
+  const systemPrompt = `You are extracting REAL, LEGITIMATE listings for "${query}" from web search results.
+
+CRITICAL RULES:
+1. MINIMUM PRICE: $${minPrice.toLocaleString()} - Reject anything cheaper as likely scam/rental/fake
+2. ${isRealEstate ? (isRental ? "These are RENTAL prices (per month)" : "These are SALE prices (full property cost) - NOT rentals") : "These are purchase prices"}
+3. Only include listings from REPUTABLE sources (idealista, kyero, fotocasa, rightmove, zillow, redfin, etc.)
+4. Convert EUR to USD (multiply by 1.10 roughly)
+5. Prices must be REALISTIC for the location and property type
+6. Skip expired listings, scams, or suspicious prices
+7. For ${category === "real_estate_sale" ? "Mediterranean island properties, expect €300,000-€2,000,000+ for villas" : category}
+
+EXA RESULTS:
+${exaContext || "None"}
+
+SERPAPI RESULTS:
+${serpContext || "None"}
+
+Return a JSON array of 5-10 VALIDATED listings, sorted by price HIGH to LOW:
+[{
+  "title": "Clear property/product name",
+  "price": number_in_USD,
+  "description": "Brief details (bedrooms, sqm, features)",
+  "image": "image URL if found, or null",
+  "link": "source URL",
+  "source": "website name",
+  "confidence": "high/medium" // how confident you are this is a real, current listing
+}]
+
+ONLY include listings you're confident are REAL and CURRENT with ACCURATE prices.`;
+
+  console.log(`[AI] Extracting valid listings with min price $${minPrice}`);
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -135,86 +268,56 @@ IMPORTANT:
       model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Extract all listings with prices for: ${query}` }
+        { role: "user", content: `Extract validated listings for: ${query}` }
       ],
     }),
   });
 
-  if (!response.ok) {
-    console.error(`AI gateway error: ${response.status}`);
-    throw new Error(`AI gateway error: ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`AI error: ${response.status}`);
 
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content;
   
   try {
-    // Extract JSON array from response
     let jsonStr = content;
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
-    
-    // Try to find array in response
+    if (jsonMatch) jsonStr = jsonMatch[1].trim();
     const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-    if (arrayMatch) {
-      jsonStr = arrayMatch[0];
-    }
+    if (arrayMatch) jsonStr = arrayMatch[0];
     
     const listings = JSON.parse(jsonStr);
     
-    // Enrich with source URLs
-    const enrichedListings = listings.map((listing: any) => {
-      const sourceResult = results[listing.resultIndex] || results[0];
-      return {
-        ...listing,
-        source: sourceResult?.title?.split(" - ")[0] || "Web",
-        link: sourceResult?.url || "",
-        // Try to get image from result if not found
-        image: listing.image || getImageFromUrl(sourceResult?.url)
-      };
-    });
+    // Final validation - filter by minimum price
+    const validListings = listings.filter((l: any) => l.price >= minPrice);
     
-    // Sort by price descending (expensive first)
-    enrichedListings.sort((a: any, b: any) => b.price - a.price);
+    console.log(`[AI] Extracted ${listings.length} listings, ${validListings.length} above min price`);
     
-    console.log(`Extracted ${enrichedListings.length} listings`);
-    return enrichedListings;
+    // Sort by price descending
+    validListings.sort((a: any, b: any) => b.price - a.price);
+    
+    return validListings;
   } catch (e) {
-    console.error("Failed to parse AI response:", content, e);
+    console.error("[AI] Parse error:", content, e);
     return [];
   }
 }
 
-// Helper to generate placeholder image based on URL
-function getImageFromUrl(url: string): string | null {
-  if (!url) return null;
-  
-  // Return null - we'll use placeholders in the frontend
-  return null;
-}
-
-// Fallback: Use AI for estimation when web search fails
-async function getAIEstimates(query: string, category: string): Promise<any[]> {
+// Fallback: Get AI market estimates
+async function getMarketEstimates(query: string, category: string, minPrice: number): Promise<any[]> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY not configured");
-  }
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-  const categoryPrompts: Record<string, string> = {
-    real_estate: `Generate 5 realistic property listings for "${query}" with varying prices. Include different property types and sizes.`,
-    travel: `Generate 5 vacation/travel options for "${query}" at different price points (budget to luxury).`,
-    automotive: `Generate 5 car listings for "${query}" at different price points (used to new, base to premium).`,
-    product: `Generate 5 product options related to "${query}" at different price points.`
-  };
+  const systemPrompt = `Generate 6 REALISTIC ${category === "real_estate_sale" ? "property" : "product"} listings for "${query}".
 
-  const systemPrompt = `You are a pricing expert. ${categoryPrompts[category] || categoryPrompts.product}
+IMPORTANT:
+- Use current 2024-2025 market prices
+- Minimum price: $${minPrice.toLocaleString()}
+- For Mediterranean properties (Menorca, Ibiza, etc.): villas €400k-€2M, apartments €200k-€600k
+- Include variety from mid-range to luxury
+- Make descriptions realistic with specific details
 
-Return a JSON array with realistic current market prices (2024-2025):
-[{"title": "...", "price": number_in_USD, "description": "...", "image": null}, ...]
-
-Sort from HIGHEST to LOWEST price. Be realistic with pricing!`;
+Return JSON array sorted HIGH to LOW price:
+[{"title": "...", "price": number_USD, "description": "...", "source": "Market estimate", "link": "", "image": null, "confidence": "medium"}]`;
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -231,9 +334,7 @@ Sort from HIGHEST to LOWEST price. Be realistic with pricing!`;
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(`AI gateway error: ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`AI error: ${response.status}`);
 
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content;
@@ -241,22 +342,12 @@ Sort from HIGHEST to LOWEST price. Be realistic with pricing!`;
   try {
     let jsonStr = content;
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
+    if (jsonMatch) jsonStr = jsonMatch[1].trim();
     const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-    if (arrayMatch) {
-      jsonStr = arrayMatch[0];
-    }
+    if (arrayMatch) jsonStr = arrayMatch[0];
     
-    const listings = JSON.parse(jsonStr);
-    return listings.map((l: any) => ({
-      ...l,
-      source: "AI Estimate",
-      link: ""
-    }));
+    return JSON.parse(jsonStr);
   } catch {
-    console.error("Failed to parse AI estimates:", content);
     return [];
   }
 }
@@ -268,129 +359,58 @@ serve(async (req) => {
 
   try {
     const { query, type } = await req.json();
-    
-    console.log(`Searching for: ${query}, type: ${type}`);
+    console.log(`\n=== Product Search: ${query} ===`);
 
     if (type === "product") {
-      const category = detectCategory(query);
-      console.log(`Detected category: ${category}`);
+      const { category, isRental } = detectCategory(query);
+      const minPrice = getMinPrice(category, query);
       
-      let listings: any[] = [];
-      let searchMethod = "unknown";
-      
-      // Try Exa web search first
-      try {
-        const { results, success } = await searchWithExa(query, category);
-        
-        if (success && results.length > 0) {
-          listings = await extractListingsFromResults(query, results, category);
-          searchMethod = "Exa web search";
-        }
-      } catch (exaError) {
-        console.error("Exa search failed:", exaError);
-      }
-      
-      // Fallback to AI estimation if no listings found
-      if (listings.length === 0) {
-        try {
-          listings = await getAIEstimates(query, category);
-          searchMethod = "AI estimation";
-        } catch (aiError) {
-          console.error("AI estimation failed:", aiError);
-        }
-      }
-      
-      // If we still have listings, format response
-      if (listings.length > 0) {
-        const mainListing = listings[0]; // Most expensive
-        const alternatives = listings.slice(1);
-        
-        return new Response(JSON.stringify({
-          success: true,
-          productName: query,
-          price: Math.round(mainListing.price),
-          source: mainListing.source,
-          description: mainListing.description,
-          link: mainListing.link,
-          image: mainListing.image,
-          searchMethod,
-          category,
-          // Return all listings for gallery view
-          allListings: listings.map((l: any) => ({
-            title: l.title,
-            price: Math.round(l.price),
-            description: l.description,
-            source: l.source,
-            link: l.link,
-            image: l.image
-          })),
-          alternatives: alternatives.map((alt: any) => ({
-            title: alt.title,
-            price: Math.round(alt.price),
-            description: alt.description,
-            source: alt.source,
-            link: alt.link,
-            image: alt.image
-          }))
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      
-      // Last resort: try Google Shopping for products
-      const SERPAPI_KEY = Deno.env.get("SERPAPI_KEY");
-      if (SERPAPI_KEY && category === "product") {
-        console.log("Falling back to Google Shopping");
-        const shoppingUrl = new URL("https://serpapi.com/search.json");
-        shoppingUrl.searchParams.set("engine", "google_shopping");
-        shoppingUrl.searchParams.set("q", query);
-        shoppingUrl.searchParams.set("api_key", SERPAPI_KEY);
-        shoppingUrl.searchParams.set("num", "20");
+      console.log(`Category: ${category}, Min price: $${minPrice}, Is rental: ${isRental}`);
 
-        const shoppingResponse = await fetch(shoppingUrl.toString());
-        
-        if (shoppingResponse.ok) {
-          const shoppingData = await shoppingResponse.json();
-          const results = shoppingData.shopping_results || [];
-          
-          const products = results.map((item: any) => {
-            let price = item.extracted_price || 0;
-            if (!price && item.price) {
-              price = parseFloat(item.price.replace(/[^0-9.]/g, "")) || 0;
-            }
-            return {
-              title: item.title,
-              price,
-              description: item.snippet || "",
-              source: item.source || "Google Shopping",
-              link: item.link || "",
-              image: item.thumbnail || null
-            };
-          }).filter((p: any) => p.price > 0);
-          
-          // Sort by price descending
-          products.sort((a: any, b: any) => b.price - a.price);
-          
-          if (products.length > 0) {
-            return new Response(JSON.stringify({
-              success: true,
-              productName: products[0].title || query,
-              price: products[0].price,
-              source: products[0].source,
-              link: products[0].link,
-              image: products[0].image,
-              searchMethod: "Google Shopping",
-              category: "product",
-              allListings: products,
-              alternatives: products.slice(1, 10)
-            }), {
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            });
-          }
-        }
+      let listings: any[] = [];
+      
+      // Search both Exa and SerpAPI in parallel
+      const isRealEstate = category.includes("real_estate");
+      
+      const [exaResults, serpResults] = await Promise.all([
+        searchWithExa(query, category),
+        isRealEstate 
+          ? searchRealEstateWithSerpAPI(query)
+          : searchWithSerpAPI(query)
+      ]);
+      
+      // If we have search results, extract validated listings
+      if (exaResults.length > 0 || serpResults.length > 0) {
+        listings = await extractValidListings(query, exaResults, serpResults, category, minPrice);
       }
       
-      throw new Error("Could not find any listings for this search");
+      // If no valid listings, fall back to market estimates
+      if (listings.length === 0) {
+        console.log("No valid listings found, using market estimates");
+        listings = await getMarketEstimates(query, category, minPrice);
+      }
+      
+      if (listings.length === 0) {
+        throw new Error("Could not find valid listings for this search");
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        productName: query,
+        price: listings[0].price,
+        source: listings[0].source,
+        description: listings[0].description,
+        link: listings[0].link,
+        image: listings[0].image,
+        searchMethod: "Exa + SerpAPI validated",
+        category,
+        isRental,
+        minPriceUsed: minPrice,
+        allListings: listings,
+        alternatives: listings.slice(1)
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify({ error: "Invalid type" }), {
