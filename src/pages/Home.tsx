@@ -1,19 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, Target, Plus, X, TrendingUp, TrendingDown } from "lucide-react";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
-}
-
-interface TimeGoal {
-  id: string;
-  title: string;
-  hoursTarget: number;
-  hoursAchieved: number;
 }
 
 const Home = () => {
@@ -30,59 +23,78 @@ const Home = () => {
 
   // UI state
   const [showChat, setShowChat] = useState(false);
-  const [showGoalModal, setShowGoalModal] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [goals, setGoals] = useState<TimeGoal[]>(() => 
-    JSON.parse(localStorage.getItem("tc_goals") || "[]")
-  );
-  const [newGoalTitle, setNewGoalTitle] = useState("");
-  const [newGoalHours, setNewGoalHours] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // History for chart
-  const [history, setHistory] = useState<Array<{ month: string; withIncome: number; withoutIncome: number }>>(() => 
-    JSON.parse(localStorage.getItem("tc_history") || "[]")
-  );
 
   // Save to localStorage
   useEffect(() => {
     localStorage.setItem("tc_income", String(monthlyIncome));
     localStorage.setItem("tc_expenses", String(monthlyExpenses));
     localStorage.setItem("tc_networth", String(netWorth));
-    localStorage.setItem("tc_goals", JSON.stringify(goals));
-  }, [monthlyIncome, monthlyExpenses, netWorth, goals]);
+  }, [monthlyIncome, monthlyExpenses, netWorth]);
 
   // Calculations
   const freeCash = monthlyIncome - monthlyExpenses;
   const isNegative = freeCash < 0;
 
-  // Life buffer WITH income (sustainable months based on free cash + net worth)
-  const lifeBufferWithIncome = monthlyExpenses > 0 
-    ? (netWorth / monthlyExpenses) + (freeCash > 0 ? (freeCash * 12 / monthlyExpenses) : 0)
-    : 0;
+  // Monthly savings rate
+  const monthlySavings = Math.max(0, freeCash);
 
-  // Life buffer WITHOUT income (only net worth / expenses)
+  // Life buffer WITHOUT income (only net worth / expenses) - current runway
   const lifeBufferWithoutIncome = monthlyExpenses > 0 
     ? netWorth / monthlyExpenses 
     : 0;
 
-  // Convert to years and months
+  // Calculate projections for 1, 5, 20 years
+  const calculateProjection = (years: number) => {
+    if (monthlyExpenses <= 0) return 0;
+    
+    // Future net worth = current + (monthly savings * months)
+    const futureNetWorth = netWorth + (monthlySavings * years * 12);
+    
+    // Life buffer in months = future net worth / monthly expenses
+    const lifeBufferMonths = futureNetWorth / monthlyExpenses;
+    
+    return lifeBufferMonths;
+  };
+
+  const projectionData = [
+    { 
+      label: "Now", 
+      months: Math.round(lifeBufferWithoutIncome),
+      years: lifeBufferWithoutIncome / 12
+    },
+    { 
+      label: "1 yr", 
+      months: Math.round(calculateProjection(1)),
+      years: calculateProjection(1) / 12
+    },
+    { 
+      label: "5 yrs", 
+      months: Math.round(calculateProjection(5)),
+      years: calculateProjection(5) / 12
+    },
+    { 
+      label: "20 yrs", 
+      months: Math.round(calculateProjection(20)),
+      years: calculateProjection(20) / 12
+    },
+  ];
+
+  // Format display
   const formatLifeBuffer = (months: number) => {
     const years = Math.floor(months / 12);
     const remainingMonths = Math.round(months % 12);
     if (years > 0 && remainingMonths > 0) {
-      return { years, months: remainingMonths, display: `${years}y ${remainingMonths}m` };
+      return `${years}y ${remainingMonths}m`;
     } else if (years > 0) {
-      return { years, months: 0, display: `${years} years` };
+      return `${years} years`;
     } else {
-      return { years: 0, months: remainingMonths, display: `${remainingMonths} months` };
+      return `${remainingMonths} months`;
     }
   };
-
-  const withIncomeFormatted = formatLifeBuffer(lifeBufferWithIncome);
-  const withoutIncomeFormatted = formatLifeBuffer(lifeBufferWithoutIncome);
 
   // Hours gained/lost this month
   const hoursGainedOrLost = freeCash > 0 && monthlyExpenses > 0
@@ -90,31 +102,6 @@ const Home = () => {
     : freeCash < 0 && monthlyExpenses > 0
     ? Math.round((freeCash / monthlyExpenses) * 30 * 24)
     : 0;
-
-  // Update history monthly
-  useEffect(() => {
-    const currentMonth = new Date().toLocaleDateString('en-US', { month: 'short' });
-    const existingIndex = history.findIndex(h => h.month === currentMonth);
-    
-    if (monthlyExpenses > 0) {
-      const newEntry = {
-        month: currentMonth,
-        withIncome: Math.round(lifeBufferWithIncome * 10) / 10,
-        withoutIncome: Math.round(lifeBufferWithoutIncome * 10) / 10
-      };
-
-      let newHistory;
-      if (existingIndex >= 0) {
-        newHistory = [...history];
-        newHistory[existingIndex] = newEntry;
-      } else {
-        newHistory = [...history.slice(-5), newEntry];
-      }
-      
-      setHistory(newHistory);
-      localStorage.setItem("tc_history", JSON.stringify(newHistory));
-    }
-  }, [lifeBufferWithIncome, lifeBufferWithoutIncome]);
 
   // Chat scroll
   useEffect(() => {
@@ -138,8 +125,10 @@ const Home = () => {
 - Monthly Expenses: $${monthlyExpenses}
 - Net Worth: $${netWorth}
 - Free Cash: $${freeCash}/month
-- Life Buffer (with income): ${withIncomeFormatted.display}
-- Life Buffer (without income): ${withoutIncomeFormatted.display}
+- Current optional life (runway): ${formatLifeBuffer(lifeBufferWithoutIncome)}
+- In 1 year: ${formatLifeBuffer(calculateProjection(1))}
+- In 5 years: ${formatLifeBuffer(calculateProjection(5))}
+- In 20 years: ${formatLifeBuffer(calculateProjection(20))}
 - Hours ${hoursGainedOrLost >= 0 ? 'gained' : 'lost'} this month: ${Math.abs(hoursGainedOrLost)} hours`;
 
       const response = await fetch(
@@ -201,24 +190,6 @@ const Home = () => {
     }
   };
 
-  const addGoal = () => {
-    if (!newGoalTitle.trim() || !newGoalHours) return;
-    const newGoal: TimeGoal = {
-      id: Date.now().toString(),
-      title: newGoalTitle,
-      hoursTarget: Number(newGoalHours),
-      hoursAchieved: 0
-    };
-    setGoals([...goals, newGoal]);
-    setNewGoalTitle("");
-    setNewGoalHours("");
-    setShowGoalModal(false);
-  };
-
-  const deleteGoal = (id: string) => {
-    setGoals(goals.filter(g => g.id !== id));
-  };
-
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -263,32 +234,17 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Life Buffer Cards */}
+      {/* Current Life Buffer */}
       <div className="px-6 mb-6">
-        <div className="grid grid-cols-2 gap-3">
-          {/* With Income */}
-          <div className="bg-card border border-border rounded-2xl p-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <TrendingUp className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">with income</span>
-            </div>
-            <p className="text-3xl font-light text-foreground tracking-tight">
-              {withIncomeFormatted.display}
-            </p>
-            <p className="text-xs text-muted-foreground font-light mt-1">optional life</p>
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <TrendingDown className="w-3 h-3 text-muted-foreground" />
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">current optional life</span>
           </div>
-
-          {/* Without Income */}
-          <div className="bg-card border border-border rounded-2xl p-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <TrendingDown className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">without income</span>
-            </div>
-            <p className="text-3xl font-light text-foreground tracking-tight">
-              {withoutIncomeFormatted.display}
-            </p>
-            <p className="text-xs text-muted-foreground font-light mt-1">runway left</p>
-          </div>
+          <p className="text-4xl font-light text-foreground tracking-tight">
+            {formatLifeBuffer(lifeBufferWithoutIncome)}
+          </p>
+          <p className="text-xs text-muted-foreground font-light mt-1">if you stopped earning today</p>
         </div>
 
         {/* Hours Gained/Lost */}
@@ -311,97 +267,83 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Progress Chart */}
-      {history.length > 1 && (
-        <div className="px-6 mb-6">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">progress</h2>
-          <div className="bg-card border border-border rounded-2xl p-4 h-32">
+      {/* Projection Chart */}
+      <div className="px-6 mb-6">
+        <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">future projection</h2>
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={history}>
+              <BarChart data={projectionData} barCategoryGap="20%">
                 <XAxis 
-                  dataKey="month" 
+                  dataKey="label" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <YAxis hide />
                 <Tooltip 
+                  cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
                   contentStyle={{ 
                     background: 'hsl(var(--card))', 
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    fontSize: '12px'
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    padding: '8px 12px'
                   }}
-                  formatter={(value: number) => [`${value} months`, '']}
+                  formatter={(value: number) => [formatLifeBuffer(value), 'Optional Life']}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="withIncome" 
-                  stroke="hsl(var(--foreground))" 
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="withoutIncome" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  strokeWidth={1.5}
-                  strokeDasharray="4 4"
-                  dot={false}
-                />
-              </LineChart>
+                <Bar 
+                  dataKey="months" 
+                  radius={[8, 8, 0, 0]}
+                >
+                  {projectionData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={index === 0 ? 'hsl(var(--muted-foreground))' : 'hsl(var(--foreground))'}
+                      opacity={index === 0 ? 0.5 : 0.3 + (index * 0.2)}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-6 mt-2">
-            <div className="flex items-center gap-1.5">
-              <div className="w-4 h-0.5 bg-foreground rounded-full" />
-              <span className="text-[10px] text-muted-foreground">with income</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-4 h-0.5 bg-muted-foreground rounded-full border-dashed" style={{ borderTop: '1px dashed' }} />
-              <span className="text-[10px] text-muted-foreground">without</span>
+          
+          {/* Projection Labels */}
+          <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-border/50">
+            {projectionData.map((item, idx) => (
+              <div key={idx} className="text-center">
+                <p className="text-lg font-light text-foreground">
+                  {item.years >= 1 
+                    ? `${Math.round(item.years * 10) / 10}y` 
+                    : `${item.months}m`
+                  }
+                </p>
+                <p className="text-[10px] text-muted-foreground">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Insight */}
+      {monthlyExpenses > 0 && monthlySavings > 0 && (
+        <div className="px-6 mb-6">
+          <div className="bg-card border border-border rounded-2xl p-4">
+            <div className="flex items-start gap-3">
+              <TrendingUp className="w-4 h-4 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="text-sm font-light text-foreground">
+                  Every month you save ${monthlySavings.toLocaleString()}, you gain{" "}
+                  <span className="font-medium">
+                    {Math.round((monthlySavings / monthlyExpenses) * 30 * 24).toLocaleString()} hours
+                  </span>{" "}
+                  of optional life.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* Time Goals */}
-      <div className="px-6 mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">time goals</h2>
-          <button 
-            onClick={() => setShowGoalModal(true)}
-            className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center"
-          >
-            <Plus className="w-3 h-3" />
-          </button>
-        </div>
-
-        {goals.length === 0 ? (
-          <div className="bg-card border border-border rounded-2xl p-6 text-center">
-            <Target className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground font-light">Set time-based goals</p>
-            <p className="text-xs text-muted-foreground/60 font-light">e.g. "Save 500 hours for a vacation"</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {goals.map(goal => (
-              <div key={goal.id} className="bg-card border border-border rounded-xl p-3 flex items-center justify-between">
-                <div className="flex-1">
-                  <p className="text-sm font-light text-foreground">{goal.title}</p>
-                  <p className="text-xs text-muted-foreground">{goal.hoursTarget} hours</p>
-                </div>
-                <button 
-                  onClick={() => deleteGoal(goal.id)}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
       {/* Chat Button */}
       <button
@@ -466,49 +408,6 @@ const Home = () => {
             >
               <Send className="w-4 h-4" />
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Goal Modal */}
-      {showGoalModal && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end">
-          <div className="w-full bg-card border-t border-border rounded-t-3xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-light">New Time Goal</h2>
-              <button onClick={() => setShowGoalModal(false)}>
-                <X className="w-5 h-5 text-muted-foreground" />
-              </button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs text-muted-foreground">Goal title</label>
-                <input
-                  type="text"
-                  value={newGoalTitle}
-                  onChange={(e) => setNewGoalTitle(e.target.value)}
-                  placeholder="e.g. Vacation to Japan"
-                  className="w-full mt-1 px-4 py-3 bg-background border border-border rounded-xl text-sm font-light focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground">Hours needed</label>
-                <input
-                  type="number"
-                  value={newGoalHours}
-                  onChange={(e) => setNewGoalHours(e.target.value)}
-                  placeholder="e.g. 400"
-                  className="w-full mt-1 px-4 py-3 bg-background border border-border rounded-xl text-sm font-light focus:outline-none"
-                />
-              </div>
-              <button
-                onClick={addGoal}
-                disabled={!newGoalTitle.trim() || !newGoalHours}
-                className="w-full py-3 bg-foreground text-background rounded-xl text-sm font-light disabled:opacity-50"
-              >
-                Add Goal
-              </button>
-            </div>
           </div>
         </div>
       )}
