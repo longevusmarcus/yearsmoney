@@ -5,200 +5,212 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Categories for affiliate products
-const affiliateCategories = [
-  { id: "tech", query: "best tech gadgets affiliate deals", keywords: ["laptop", "phone", "headphones", "tablet", "camera"] },
-  { id: "travel", query: "best travel deals affiliate booking", keywords: ["flights", "hotels", "vacation", "trips", "tours"] },
-  { id: "fitness", query: "best fitness equipment affiliate deals", keywords: ["gym", "workout", "exercise", "health", "supplements"] },
-  { id: "learning", query: "best online courses affiliate", keywords: ["courses", "bootcamp", "certification", "training", "education"] },
-  { id: "lifestyle", query: "best lifestyle products affiliate deals", keywords: ["home", "kitchen", "furniture", "accessories"] }
-];
+// Category-specific search queries
+const categoryQueries: Record<string, { query: string; examples: string }> = {
+  tech: {
+    query: "best tech gadgets 2024 2025 buy recommended",
+    examples: "laptops, phones, headphones, tablets, smartwatches, cameras"
+  },
+  travel: {
+    query: "best travel deals vacation packages 2024 2025",
+    examples: "vacation packages, flights, hotels, cruises, travel gear, luggage"
+  },
+  fitness: {
+    query: "best fitness equipment home gym 2024 2025",
+    examples: "gym equipment, workout gear, fitness trackers, supplements, yoga mats"
+  },
+  learning: {
+    query: "best online courses certifications 2024 2025",
+    examples: "online courses, bootcamps, certifications, subscriptions, books"
+  },
+  lifestyle: {
+    query: "best home products lifestyle 2024 2025",
+    examples: "home decor, kitchen appliances, furniture, smart home devices"
+  }
+};
 
-// Search for affiliate products using Exa
-async function searchAffiliateProducts(category: string): Promise<any[]> {
+// Search with Exa
+async function searchWithExa(category: string): Promise<any[]> {
   const EXA_API_KEY = Deno.env.get("exa_API_key");
   if (!EXA_API_KEY) {
-    throw new Error("Exa API key not configured");
+    console.log("[Exa] No API key");
+    return [];
   }
 
-  const categoryConfig = affiliateCategories.find(c => c.id === category) || affiliateCategories[0];
-  
-  console.log(`Searching affiliate products for: ${category}`);
+  const config = categoryQueries[category] || categoryQueries.tech;
+  console.log(`[Exa] Searching for ${category}: ${config.query}`);
 
-  const response = await fetch("https://api.exa.ai/search", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${EXA_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query: `${categoryConfig.query} 2024 2025 best recommendations buy`,
-      type: "neural",
-      useAutoprompt: true,
-      numResults: 10,
-      contents: {
-        text: { maxCharacters: 1500 }
-      }
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`Exa API error: ${response.status} - ${errorText}`);
-    throw new Error(`Exa API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  console.log(`Exa returned ${data.results?.length || 0} results`);
-  
-  return data.results || [];
-}
-
-// Use AI to extract products with affiliate potential from search results
-async function extractAffiliateProducts(results: any[], category: string): Promise<any[]> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY not configured");
-  }
-
-  const context = results.slice(0, 8).map((r, i) => {
-    return `[${i}] URL: ${r.url}
-Title: ${r.title}
-Text: ${r.text?.substring(0, 1000) || ""}`;
-  }).join("\n\n---\n\n");
-
-  const systemPrompt = `You are extracting product recommendations from search results for the "${category}" category.
-
-For each product found, extract:
-- title: Product name
-- price: Estimated price in USD (be realistic based on current 2024-2025 market prices)
-- description: Brief description (max 100 chars)
-- affiliateUrl: The URL from the search result (we'll use this for affiliate tracking)
-- roi: Return on investment description (e.g., "High - productivity boost", "Medium - lifestyle upgrade")
-- image: null (will be handled by frontend)
-- resultIndex: Which search result (0-7)
-
-Search Results:
-${context}
-
-Return a JSON array of 6-10 products with realistic prices.
-Format: [{"title": "...", "price": number, "description": "...", "affiliateUrl": "...", "roi": "...", "resultIndex": 0}, ...]
-
-IMPORTANT:
-- Only include products with clear prices or that you can estimate accurately
-- Prefer products from reputable affiliate-friendly sites (Amazon, Best Buy, REI, Booking.com, Udemy, etc.)
-- Sort by price from highest to lowest
-- Be realistic with pricing!`;
-
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `Extract affiliate products for ${category}` }
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`AI gateway error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
-  
   try {
-    let jsonStr = content;
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
-    const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-    if (arrayMatch) {
-      jsonStr = arrayMatch[0];
-    }
-    
-    const products = JSON.parse(jsonStr);
-    
-    // Enrich with source data
-    return products.map((product: any) => {
-      const sourceResult = results[product.resultIndex] || results[0];
-      return {
-        ...product,
-        source: new URL(sourceResult?.url || "https://example.com").hostname.replace("www.", ""),
-        affiliateUrl: sourceResult?.url || product.affiliateUrl,
-        category
-      };
+    const response = await fetch("https://api.exa.ai/search", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${EXA_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: config.query,
+        type: "neural",
+        useAutoprompt: true,
+        numResults: 12,
+        contents: { text: { maxCharacters: 2000 } }
+      }),
     });
+
+    if (!response.ok) {
+      console.error(`[Exa] Error: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`[Exa] Found ${data.results?.length || 0} results`);
+    return data.results || [];
   } catch (e) {
-    console.error("Failed to parse AI response:", content, e);
+    console.error("[Exa] Error:", e);
     return [];
   }
 }
 
-// Fallback: Generate curated affiliate products using AI
-async function generateAffiliateProducts(category: string): Promise<any[]> {
+// Extract products with AI
+async function extractProducts(category: string, exaResults: any[]): Promise<any[]> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY not configured");
-  }
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-  const categoryPrompts: Record<string, string> = {
-    tech: "Generate 8 popular tech products with current 2024-2025 prices (laptops, phones, headphones, tablets, cameras, smart home devices)",
-    travel: "Generate 8 travel experiences/products with realistic prices (vacation packages, luggage, travel gear, flight upgrades, hotel stays)",
-    fitness: "Generate 8 fitness products/services with current prices (gym memberships, equipment, supplements, wearables, training programs)",
-    learning: "Generate 8 educational products with prices (online courses, bootcamps, certifications, books, subscriptions)",
-    lifestyle: "Generate 8 lifestyle products with prices (furniture, kitchen appliances, home office setup, accessories)"
-  };
-
-  const systemPrompt = `${categoryPrompts[category] || categoryPrompts.tech}
-
-Return a JSON array with realistic current market prices:
-[{"title": "Product Name", "price": number_in_USD, "description": "Brief description", "affiliateUrl": "https://example.com/product", "roi": "High/Medium/Low - reason", "source": "Store name"}, ...]
-
-Sort from highest to lowest price. Use real product names and realistic 2024-2025 pricing!`;
-
-  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `Generate affiliate products for ${category}` }
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`AI gateway error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const config = categoryQueries[category] || categoryQueries.tech;
   
+  const context = exaResults.slice(0, 10).map((r, i) => 
+    `[${i}] ${r.title}\nURL: ${r.url}\n${r.text?.substring(0, 600) || ""}`
+  ).join("\n\n---\n");
+
+  const systemPrompt = `Extract 8-10 ${category.toUpperCase()} products/services from these search results.
+
+Category: ${category}
+Examples: ${config.examples}
+
+Search Results:
+${context}
+
+Return a JSON array of products with realistic 2024-2025 prices, sorted HIGH to LOW:
+[{
+  "title": "Product name",
+  "price": number_in_USD,
+  "description": "Brief description (1-2 sentences)",
+  "affiliateUrl": "URL from search results",
+  "roi": "High/Medium/Low - brief reason",
+  "source": "website name"
+}]
+
+IMPORTANT:
+- Extract EXACTLY 8 products for this ${category} category
+- Use realistic current retail/market prices
+- Include a MIX of premium and affordable options
+- All products must be relevant to ${category}
+- Sort by price from highest to lowest`;
+
+  console.log(`[AI] Extracting ${category} products...`);
+
   try {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Extract ${category} products from the search results` }
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`[AI] Error: ${response.status}`);
+      throw new Error(`AI error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
     let jsonStr = content;
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
+    if (jsonMatch) jsonStr = jsonMatch[1].trim();
     const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-    if (arrayMatch) {
-      jsonStr = arrayMatch[0];
-    }
+    if (arrayMatch) jsonStr = arrayMatch[0];
     
-    return JSON.parse(jsonStr).map((p: any) => ({ ...p, category }));
-  } catch {
-    console.error("Failed to parse AI response:", content);
+    const products = JSON.parse(jsonStr);
+    console.log(`[AI] Extracted ${products.length} ${category} products`);
+    
+    // Sort by price descending and add category
+    return products
+      .map((p: any) => ({ ...p, category }))
+      .sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
+  } catch (e) {
+    console.error("[AI] Extract error:", e);
+    return [];
+  }
+}
+
+// Generate products when search fails
+async function generateProducts(category: string): Promise<any[]> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+  const config = categoryQueries[category] || categoryQueries.tech;
+  
+  const systemPrompt = `Generate 8 realistic ${category} products/services with current 2024-2025 prices.
+
+Category: ${category}
+Examples: ${config.examples}
+
+Return a JSON array sorted by price HIGH to LOW:
+[{
+  "title": "Product name",
+  "price": number_in_USD,
+  "description": "Brief description",
+  "affiliateUrl": "https://example.com",
+  "roi": "High/Medium/Low - reason",
+  "source": "Store name",
+  "category": "${category}"
+}]
+
+Include a mix of premium (expensive) and affordable options. Use realistic prices!`;
+
+  console.log(`[AI] Generating ${category} products...`);
+
+  try {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Generate ${category} product recommendations` }
+        ],
+      }),
+    });
+
+    if (!response.ok) throw new Error(`AI error: ${response.status}`);
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    let jsonStr = content;
+    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) jsonStr = jsonMatch[1].trim();
+    const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
+    if (arrayMatch) jsonStr = arrayMatch[0];
+    
+    const products = JSON.parse(jsonStr);
+    console.log(`[AI] Generated ${products.length} ${category} products`);
+    
+    return products.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
+  } catch (e) {
+    console.error("[AI] Generate error:", e);
     return [];
   }
 }
@@ -210,28 +222,31 @@ serve(async (req) => {
 
   try {
     const { category = "tech" } = await req.json();
-    
-    console.log(`Fetching affiliate products for: ${category}`);
+    console.log(`\n=== Affiliate Search: ${category} ===`);
     
     let products: any[] = [];
     
     // Try Exa search first
-    try {
-      const results = await searchAffiliateProducts(category);
-      if (results.length > 0) {
-        products = await extractAffiliateProducts(results, category);
-      }
-    } catch (exaError) {
-      console.error("Exa search failed:", exaError);
+    const exaResults = await searchWithExa(category);
+    
+    if (exaResults.length > 0) {
+      products = await extractProducts(category, exaResults);
     }
     
-    // Fallback to AI generation
-    if (products.length === 0) {
-      products = await generateAffiliateProducts(category);
+    // Fallback to generation if not enough products
+    if (products.length < 5) {
+      console.log(`Only ${products.length} products, generating more...`);
+      const generated = await generateProducts(category);
+      products = [...products, ...generated].slice(0, 10);
     }
+    
+    // Ensure all products have the category
+    products = products.map(p => ({ ...p, category }));
     
     // Sort by price descending
-    products.sort((a: any, b: any) => b.price - a.price);
+    products.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
+    
+    console.log(`Returning ${products.length} ${category} products`);
     
     return new Response(JSON.stringify({
       success: true,
@@ -245,7 +260,8 @@ serve(async (req) => {
     console.error("affiliate-search error:", error);
     return new Response(JSON.stringify({ 
       success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+      error: error instanceof Error ? error.message : "Unknown error",
+      products: []
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
