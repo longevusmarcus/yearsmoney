@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import AuthModal from "@/components/AuthModal";
+import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, Legend } from "recharts";
 
 interface Message {
@@ -10,6 +12,10 @@ interface Message {
 }
 
 const Home = () => {
+  // Auth state
+  const [user, setUser] = useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   // Financial inputs
   const [monthlyIncome, setMonthlyIncome] = useState(() => 
     Number(localStorage.getItem("tc_income")) || 0
@@ -29,12 +35,32 @@ const Home = () => {
   const [displayMode, setDisplayMode] = useState<'years' | 'months' | 'days'>('years');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Check auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Save to localStorage
   useEffect(() => {
     localStorage.setItem("tc_income", String(monthlyIncome));
     localStorage.setItem("tc_expenses", String(monthlyExpenses));
     localStorage.setItem("tc_networth", String(netWorth));
   }, [monthlyIncome, monthlyExpenses, netWorth]);
+
+  // Handle input focus - show auth modal if not logged in
+  const handleInputFocus = () => {
+    if (!user) {
+      setShowAuthModal(true);
+    }
+  };
 
   // Calculations
   const freeCash = monthlyIncome - monthlyExpenses;
@@ -221,6 +247,7 @@ const Home = () => {
               type="number"
               value={monthlyIncome || ""}
               onChange={(e) => setMonthlyIncome(Number(e.target.value))}
+              onFocus={handleInputFocus}
               placeholder="0"
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
             />
@@ -231,6 +258,7 @@ const Home = () => {
               type="number"
               value={monthlyExpenses || ""}
               onChange={(e) => setMonthlyExpenses(Number(e.target.value))}
+              onFocus={handleInputFocus}
               placeholder="0"
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
             />
@@ -241,6 +269,7 @@ const Home = () => {
               type="number"
               value={netWorth || ""}
               onChange={(e) => setNetWorth(Number(e.target.value))}
+              onFocus={handleInputFocus}
               placeholder="0"
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
             />
@@ -499,6 +528,13 @@ const Home = () => {
       )}
 
       <BottomNav />
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => setShowAuthModal(false)}
+      />
     </div>
   );
 };
