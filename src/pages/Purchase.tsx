@@ -3,6 +3,7 @@ import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
+import MobileOnly from "@/components/MobileOnly";
 
 interface Listing {
   title: string;
@@ -175,6 +176,7 @@ const Purchase = () => {
   };
 
   return (
+    <MobileOnly>
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
       <PageHeader 
@@ -423,6 +425,7 @@ const Purchase = () => {
 
       <BottomNav />
     </div>
+    </MobileOnly>
   );
 };
 

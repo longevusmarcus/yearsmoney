@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/PageHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import MobileOnly from "@/components/MobileOnly";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ const Settings = () => {
   };
 
   return (
+    <MobileOnly>
     <div className="min-h-screen bg-background pb-24">
       <PageHeader 
         title="Settings" 
@@ -140,6 +142,7 @@ const Settings = () => {
         </div>
       </div>
     </div>
+    </MobileOnly>
   );
 };
 
