@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { MessageCircle, Send, X, TrendingUp, TrendingDown } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, Legend } from "recharts";
 
 interface Message {
   role: "user" | "assistant";
@@ -47,39 +47,41 @@ const Home = () => {
     ? netWorth / monthlyExpenses 
     : 0;
 
-  // Calculate projections for 1, 5, 20 years
-  const calculateProjection = (years: number) => {
+  // Calculate projections for both scenarios
+  // Without income: just current net worth depleting over time (stays same - no growth)
+  // With income: net worth grows with savings
+  const calculateProjectionWithIncome = (years: number) => {
     if (monthlyExpenses <= 0) return 0;
-    
-    // Future net worth = current + (monthly savings * months)
     const futureNetWorth = netWorth + (monthlySavings * years * 12);
-    
-    // Life buffer in months = future net worth / monthly expenses
-    const lifeBufferMonths = futureNetWorth / monthlyExpenses;
-    
-    return lifeBufferMonths;
+    return futureNetWorth / monthlyExpenses;
   };
+
+  // Life buffer WITH income at current moment
+  // This shows total runway if you keep earning at current rate
+  const lifeBufferWithIncome = monthlyExpenses > 0 
+    ? lifeBufferWithoutIncome + (monthlySavings > 0 ? (monthlySavings * 12 / monthlyExpenses) : 0)
+    : 0;
 
   const projectionData = [
     { 
       label: "Now", 
-      months: Math.round(lifeBufferWithoutIncome),
-      years: lifeBufferWithoutIncome / 12
+      withIncome: Math.round(lifeBufferWithoutIncome),
+      withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
     { 
       label: "1 yr", 
-      months: Math.round(calculateProjection(1)),
-      years: calculateProjection(1) / 12
+      withIncome: Math.round(calculateProjectionWithIncome(1)),
+      withoutIncome: Math.round(lifeBufferWithoutIncome), // stays same - no earning
     },
     { 
       label: "5 yrs", 
-      months: Math.round(calculateProjection(5)),
-      years: calculateProjection(5) / 12
+      withIncome: Math.round(calculateProjectionWithIncome(5)),
+      withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
     { 
       label: "20 yrs", 
-      months: Math.round(calculateProjection(20)),
-      years: calculateProjection(20) / 12
+      withIncome: Math.round(calculateProjectionWithIncome(20)),
+      withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
   ];
 
@@ -126,9 +128,9 @@ const Home = () => {
 - Net Worth: $${netWorth}
 - Free Cash: $${freeCash}/month
 - Current optional life (runway): ${formatLifeBuffer(lifeBufferWithoutIncome)}
-- In 1 year: ${formatLifeBuffer(calculateProjection(1))}
-- In 5 years: ${formatLifeBuffer(calculateProjection(5))}
-- In 20 years: ${formatLifeBuffer(calculateProjection(20))}
+- In 1 year: ${formatLifeBuffer(calculateProjectionWithIncome(1))}
+- In 5 years: ${formatLifeBuffer(calculateProjectionWithIncome(5))}
+- In 20 years: ${formatLifeBuffer(calculateProjectionWithIncome(20))}
 - Hours ${hoursGainedOrLost >= 0 ? 'gained' : 'lost'} this month: ${Math.abs(hoursGainedOrLost)} hours`;
 
       const response = await fetch(
@@ -234,17 +236,32 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Current Life Buffer */}
+      {/* Life Buffer Cards - Both scenarios */}
       <div className="px-6 mb-6">
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <div className="flex items-center gap-1.5 mb-1">
-            <TrendingDown className="w-3 h-3 text-muted-foreground" />
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">current optional life</span>
+        <div className="grid grid-cols-2 gap-3">
+          {/* Without Income */}
+          <div className="bg-card border border-border rounded-2xl p-4">
+            <div className="flex items-center gap-1.5 mb-2">
+              <TrendingDown className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">if you stop</span>
+            </div>
+            <p className="text-3xl font-light text-foreground tracking-tight">
+              {formatLifeBuffer(lifeBufferWithoutIncome)}
+            </p>
+            <p className="text-[10px] text-muted-foreground font-light mt-1">runway now</p>
           </div>
-          <p className="text-4xl font-light text-foreground tracking-tight">
-            {formatLifeBuffer(lifeBufferWithoutIncome)}
-          </p>
-          <p className="text-xs text-muted-foreground font-light mt-1">if you stopped earning today</p>
+
+          {/* With Income - 1 year projection */}
+          <div className="bg-card border border-border rounded-2xl p-4">
+            <div className="flex items-center gap-1.5 mb-2">
+              <TrendingUp className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">if you keep earning</span>
+            </div>
+            <p className="text-3xl font-light text-foreground tracking-tight">
+              {formatLifeBuffer(calculateProjectionWithIncome(1))}
+            </p>
+            <p className="text-[10px] text-muted-foreground font-light mt-1">in 1 year</p>
+          </div>
         </div>
 
         {/* Hours Gained/Lost */}
@@ -271,18 +288,17 @@ const Home = () => {
       <div className="px-6 mb-6">
         <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">future projection</h2>
         <div className="bg-card border border-border rounded-2xl p-4">
-          <div className="h-44">
+          <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={projectionData} barCategoryGap="20%">
+              <LineChart data={projectionData}>
                 <XAxis 
                   dataKey="label" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <YAxis hide />
                 <Tooltip 
-                  cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
                   contentStyle={{ 
                     background: 'hsl(var(--card))', 
                     border: '1px solid hsl(var(--border))',
@@ -290,33 +306,48 @@ const Home = () => {
                     fontSize: '12px',
                     padding: '8px 12px'
                   }}
-                  formatter={(value: number) => [formatLifeBuffer(value), 'Optional Life']}
+                  formatter={(value: number, name: string) => [
+                    formatLifeBuffer(value), 
+                    name === 'withIncome' ? 'With income' : 'Without income'
+                  ]}
                 />
-                <Bar 
-                  dataKey="months" 
-                  radius={[8, 8, 0, 0]}
-                >
-                  {projectionData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={index === 0 ? 'hsl(var(--muted-foreground))' : 'hsl(var(--foreground))'}
-                      opacity={index === 0 ? 0.5 : 0.3 + (index * 0.2)}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
+                <Line 
+                  type="monotone" 
+                  dataKey="withIncome" 
+                  stroke="hsl(var(--foreground))" 
+                  strokeWidth={2}
+                  dot={{ fill: 'hsl(var(--foreground))', strokeWidth: 0, r: 3 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="withoutIncome" 
+                  stroke="hsl(var(--muted-foreground))" 
+                  strokeWidth={1.5}
+                  strokeDasharray="4 4"
+                  dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 0, r: 2 }}
+                />
+              </LineChart>
             </ResponsiveContainer>
           </div>
           
-          {/* Projection Labels */}
-          <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-border/50">
+          {/* Legend */}
+          <div className="flex justify-center gap-6 mt-3 pt-3 border-t border-border/50">
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-0.5 bg-foreground rounded-full" />
+              <span className="text-[10px] text-muted-foreground">keep earning</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-0.5 bg-muted-foreground rounded-full opacity-60" />
+              <span className="text-[10px] text-muted-foreground">stop earning</span>
+            </div>
+          </div>
+
+          {/* Projection Values */}
+          <div className="grid grid-cols-4 gap-2 mt-3">
             {projectionData.map((item, idx) => (
               <div key={idx} className="text-center">
-                <p className="text-lg font-light text-foreground">
-                  {item.years >= 1 
-                    ? `${Math.round(item.years * 10) / 10}y` 
-                    : `${item.months}m`
-                  }
+                <p className="text-sm font-light text-foreground">
+                  {formatLifeBuffer(item.withIncome)}
                 </p>
                 <p className="text-[10px] text-muted-foreground">{item.label}</p>
               </div>
