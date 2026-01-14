@@ -240,13 +240,13 @@ const Home = () => {
           <span className="font-light">Welcome to </span>
           <span className="font-cursive italic">Years</span>
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <ThemeToggle />
           <button
             onClick={() => navigate("/settings")}
-            className="p-2 rounded-full hover:bg-muted/50 transition-colors"
+            className="p-1 hover:opacity-70 transition-opacity"
           >
-            <Settings className="w-5 h-5 text-muted-foreground" />
+            <Settings className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
       </div>
