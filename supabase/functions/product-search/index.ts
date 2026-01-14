@@ -46,7 +46,7 @@ function detectCategory(query: string): { category: string; isRental: boolean } 
   return { category: "product", isRental: false };
 }
 
-// Search with Exa
+// Search with Exa - now includes image extraction
 async function searchWithExa(query: string, category: string): Promise<any[]> {
   const EXA_API_KEY = Deno.env.get("exa_API_key");
   if (!EXA_API_KEY) return [];
@@ -72,7 +72,10 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
         type: "neural",
         useAutoprompt: true,
         numResults: 15,
-        contents: { text: { maxCharacters: 2500 } }
+        contents: { 
+          text: { maxCharacters: 2500 },
+          highlights: true
+        }
       }),
     });
 
@@ -83,6 +86,38 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
   } catch (e) {
     console.error("[Exa] Error:", e);
     return [];
+  }
+}
+
+// Search for images using SerpAPI
+async function searchImages(query: string): Promise<Record<string, string>> {
+  const SERPAPI_KEY = Deno.env.get("SERPAPI_KEY");
+  if (!SERPAPI_KEY) return {};
+
+  try {
+    const url = new URL("https://serpapi.com/search.json");
+    url.searchParams.set("engine", "google_images");
+    url.searchParams.set("q", query);
+    url.searchParams.set("api_key", SERPAPI_KEY);
+    url.searchParams.set("num", "10");
+
+    const response = await fetch(url.toString());
+    if (!response.ok) return {};
+
+    const data = await response.json();
+    const images = data.images_results || [];
+    
+    // Create a map of keywords to image URLs
+    const imageMap: Record<string, string> = {};
+    images.forEach((img: any, i: number) => {
+      imageMap[`img_${i}`] = img.thumbnail || img.original;
+    });
+    
+    console.log(`[SerpAPI Images] Found ${images.length} images`);
+    return imageMap;
+  } catch (e) {
+    console.error("[SerpAPI Images] Error:", e);
+    return {};
   }
 }
 
@@ -288,11 +323,15 @@ serve(async (req) => {
       const { category, isRental } = detectCategory(query);
       console.log(`Category: ${category}`);
 
-      // Search both sources in parallel
-      const [exaResults, serpResults] = await Promise.all([
+      // Search all sources in parallel - including images
+      const [exaResults, serpResults, imageResults] = await Promise.all([
         searchWithExa(query, category),
-        searchWithSerpAPI(query, category)
+        searchWithSerpAPI(query, category),
+        searchImages(query)
       ]);
+      
+      // Get array of image URLs
+      const imageUrls = Object.values(imageResults);
       
       let listings: any[] = [];
       
@@ -314,6 +353,14 @@ serve(async (req) => {
 
       // Ensure sorted by price descending
       listings.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
+      
+      // Add images to listings that don't have them
+      listings = listings.map((listing, index) => {
+        if (!listing.image && imageUrls[index]) {
+          return { ...listing, image: imageUrls[index] };
+        }
+        return listing;
+      });
 
       return new Response(JSON.stringify({
         success: true,
