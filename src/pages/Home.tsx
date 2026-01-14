@@ -386,7 +386,7 @@ const Home = () => {
 
       {/* Chat Modal */}
       {showChat && (
-        <div className="fixed inset-0 bg-background z-50 flex flex-col">
+        <div className="fixed inset-0 bg-background z-[60] flex flex-col">
           <div className="p-4 flex items-center justify-between border-b border-border">
             <h2 className="text-lg font-light">Time Advisor</h2>
             <button onClick={() => setShowChat(false)} className="text-muted-foreground">
