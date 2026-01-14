@@ -344,7 +344,7 @@ const About = () => {
           >
             <Hourglass className="h-3 w-3 md:h-4 md:w-4 text-foreground" />
             <span className="text-[10px] md:text-sm text-muted-foreground whitespace-nowrap">
-              Wealth = Time = Optional Life
+              A financial app for the AI age
             </span>
           </motion.div>
 
