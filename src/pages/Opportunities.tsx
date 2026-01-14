@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info, ExternalLink, Loader2, RefreshCw, Calendar, Clock } from "lucide-react";
+import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info, ExternalLink, RefreshCw, Calendar, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
+import { ProductSkeletonList } from "@/components/ProductCardSkeleton";
 
 interface Product {
   title: string;
@@ -240,12 +241,7 @@ const Opportunities = () => {
       </div>
 
       {/* Loading state */}
-      {isLoading && (
-        <div className="px-6 py-12 flex flex-col items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground font-light">Finding {selectedCategory} deals...</p>
-        </div>
-      )}
+      {isLoading && <ProductSkeletonList />}
 
       {/* Error state */}
       {error && !isLoading && (
