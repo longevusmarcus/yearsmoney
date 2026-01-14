@@ -26,6 +26,7 @@ const Home = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [displayMode, setDisplayMode] = useState<'years' | 'months' | 'days'>('years');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Save to localStorage
@@ -85,17 +86,28 @@ const Home = () => {
     },
   ];
 
-  // Format display
+  // Format display based on mode
   const formatLifeBuffer = (months: number) => {
-    const years = Math.floor(months / 12);
-    const remainingMonths = Math.round(months % 12);
-    if (years > 0 && remainingMonths > 0) {
-      return `${years}y ${remainingMonths}m`;
-    } else if (years > 0) {
-      return `${years} years`;
+    if (displayMode === 'days') {
+      const days = Math.round(months * 30);
+      return `${days.toLocaleString()}d`;
+    } else if (displayMode === 'months') {
+      return `${Math.round(months)}mo`;
     } else {
-      return `${remainingMonths} months`;
+      const years = Math.floor(months / 12);
+      const remainingMonths = Math.round(months % 12);
+      if (years > 0 && remainingMonths > 0) {
+        return `${years}y ${remainingMonths}m`;
+      } else if (years > 0) {
+        return `${years} years`;
+      } else {
+        return `${remainingMonths} months`;
+      }
     }
+  };
+
+  const cycleDisplayMode = () => {
+    setDisplayMode(prev => prev === 'years' ? 'months' : prev === 'months' ? 'days' : 'years');
   };
 
   // Hours gained/lost this month
@@ -265,28 +277,46 @@ const Home = () => {
       <div className="px-6 mb-6">
         <div className="grid grid-cols-2 gap-3">
           {/* Without Income */}
-          <div className="bg-card border border-border rounded-2xl p-4">
+          <button
+            onClick={cycleDisplayMode}
+            className="bg-card border border-border rounded-2xl p-4 text-left hover:border-foreground/20 transition-colors active:scale-[0.98] duration-150"
+          >
             <div className="flex items-center gap-1 mb-2">
               <TrendingDown className="w-3 h-3 text-muted-foreground" />
               <span className="text-[9px] uppercase tracking-wider text-muted-foreground">if you stop</span>
             </div>
-            <p className="text-3xl font-light text-foreground tracking-tight">
+            <p 
+              key={displayMode + '-without'}
+              className="text-3xl font-light text-foreground tracking-tight animate-fade-in"
+            >
               {formatLifeBuffer(lifeBufferWithoutIncome)}
             </p>
-            <p className="text-[10px] text-muted-foreground font-light mt-1">runway now</p>
-          </div>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-[10px] text-muted-foreground font-light">runway now</p>
+              <span className="text-[8px] text-muted-foreground/50 uppercase tracking-wider">{displayMode}</span>
+            </div>
+          </button>
 
           {/* With Income - 1 year projection */}
-          <div className="bg-card border border-border rounded-2xl p-4">
+          <button
+            onClick={cycleDisplayMode}
+            className="bg-card border border-border rounded-2xl p-4 text-left hover:border-foreground/20 transition-colors active:scale-[0.98] duration-150"
+          >
             <div className="flex items-center gap-1 mb-2">
               <TrendingUp className="w-3 h-3 text-muted-foreground" />
               <span className="text-[9px] uppercase tracking-wider text-muted-foreground">keep earning</span>
             </div>
-            <p className="text-3xl font-light text-foreground tracking-tight">
+            <p 
+              key={displayMode + '-with'}
+              className="text-3xl font-light text-foreground tracking-tight animate-fade-in"
+            >
               {formatLifeBuffer(calculateProjectionWithIncome(1))}
             </p>
-            <p className="text-[10px] text-muted-foreground font-light mt-1">in 1 year</p>
-          </div>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-[10px] text-muted-foreground font-light">in 1 year</p>
+              <span className="text-[8px] text-muted-foreground/50 uppercase tracking-wider">{displayMode}</span>
+            </div>
+          </button>
         </div>
 
         {/* Hours Gained/Lost */}
