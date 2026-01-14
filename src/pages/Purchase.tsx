@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Search, Clock, TrendingDown, Loader2, Info, ExternalLink } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
@@ -37,34 +37,40 @@ const Purchase = () => {
   
   const freeCash = income - expenses;
   const hasData = income > 0 && expenses > 0;
+  const hasNetWorth = netWorth > 0;
 
-  // CORE CALCULATION: How much time does it take to earn $1 back?
-  // Rate = netWorth / (income - expenses) = months of buffer
-  // Dollar per hour = (income - expenses) / working_hours_per_month
+  // CORE CALCULATION: Life Buffer
+  // Life Buffer = netWorth / expenses = months you can survive without income
+  const currentBufferMonths = expenses > 0 ? netWorth / expenses : 0;
+  const currentBufferYears = currentBufferMonths / 12;
+
   // Working hours per month = 22 days * 8 hours = 176 hours
-  const WORKING_HOURS_PER_MONTH = 176; // 22 working days * 8 hours
+  const WORKING_HOURS_PER_MONTH = 176;
   const WORKING_DAYS_PER_MONTH = 22;
 
   // $/hour earned toward buffer = monthly surplus / working hours
   const dollarPerHour = freeCash > 0 ? freeCash / WORKING_HOURS_PER_MONTH : 0;
-  
-  // Time to earn back $1 (in hours) = 1 / dollarPerHour
-  const hoursPerDollar = dollarPerHour > 0 ? 1 / dollarPerHour : 0;
 
   // Calculate working days to earn back a purchase
   const calculateWorkingDays = (priceValue: number) => {
     if (freeCash <= 0) {
-      // If losing money, show it in terms of runway consumption
       return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : 0;
     }
-    // Working days = price / (daily savings rate)
-    // Daily savings = freeCash / WORKING_DAYS_PER_MONTH
     return (priceValue / freeCash) * WORKING_DAYS_PER_MONTH;
   };
 
-  // Calculate hours to earn back
-  const calculateHours = (priceValue: number) => {
-    return calculateWorkingDays(priceValue) * 8;
+  // Calculate buffer impact
+  const calculateBufferImpact = (priceValue: number) => {
+    const newNetWorth = netWorth - priceValue;
+    const newBufferMonths = expenses > 0 ? newNetWorth / expenses : 0;
+    const bufferDecrease = currentBufferMonths - newBufferMonths;
+    const percentageOfBuffer = netWorth > 0 ? (priceValue / netWorth) * 100 : 0;
+    
+    return {
+      newBufferMonths,
+      bufferDecrease,
+      percentageOfBuffer
+    };
   };
 
   const analyze = async () => {
@@ -245,103 +251,146 @@ const Purchase = () => {
         </div>
       ) : (
         /* Results */
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="px-6"
-        >
-          {/* Main result */}
-          <div className="text-center py-8">
-            <p className="text-muted-foreground text-sm font-light mb-2">
-              {result.productName}
-              {result.source && <span className="opacity-60"> via {result.source}</span>}
-            </p>
-            <p className="text-lg text-muted-foreground font-light mb-4">
-              ${result.price.toLocaleString()}
-            </p>
-            <div className="text-6xl font-light tracking-tighter">
-              {result.workingDays.toFixed(1)}
-            </div>
-            <div className="text-muted-foreground mt-2 font-light">working days to earn back</div>
-            <div className="text-xs text-muted-foreground mt-1 font-light">
-              ≈ {result.hoursCost.toFixed(0)} working hours
-            </div>
-            {result.link && (
-              <a 
-                href={result.link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-primary mt-3 underline"
-              >
-                View product <ExternalLink className="w-3 h-3" />
-              </a>
-            )}
-          </div>
+        (() => {
+          const bufferImpact = calculateBufferImpact(result.price);
+          
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="px-6"
+            >
+              {/* Main result */}
+              <div className="text-center py-8">
+                <p className="text-muted-foreground text-sm font-light mb-2">
+                  {result.productName}
+                  {result.source && <span className="opacity-60"> via {result.source}</span>}
+                </p>
+                <p className="text-lg text-muted-foreground font-light mb-4">
+                  ${result.price.toLocaleString()}
+                </p>
+                <div className="text-6xl font-light tracking-tighter">
+                  {result.workingDays.toFixed(1)}
+                </div>
+                <div className="text-muted-foreground mt-2 font-light">working days to earn back</div>
+                <div className="text-xs text-muted-foreground mt-1 font-light">
+                  ≈ {result.hoursCost.toFixed(0)} working hours
+                </div>
+                {result.link && (
+                  <a 
+                    href={result.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-primary mt-3 underline"
+                  >
+                    View product <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
 
-          {/* Explanation */}
-          <div className="bg-card border border-border rounded-2xl p-4 mb-4">
-            <p className="text-xs text-muted-foreground font-light">
-              At your rate of ${dollarPerHour.toFixed(2)}/hour toward your buffer, this purchase requires{" "}
-              <span className="text-foreground font-medium">{result.workingDays.toFixed(1)} working days</span> of earnings to recover.
-            </p>
-            <p className="text-[10px] text-muted-foreground font-light mt-2 opacity-70">
-              Formula: ${result.price.toLocaleString()} ÷ (${freeCash.toLocaleString()}/mo ÷ {WORKING_DAYS_PER_MONTH} days) = {result.workingDays.toFixed(1)} days
-            </p>
-          </div>
-
-          {/* Alternatives */}
-          {result.alternatives.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-xs text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-wider">
-                <TrendingDown className="w-3 h-3" />
-                Cheaper alternatives found
-              </h3>
-              <div className="space-y-2">
-                {result.alternatives.map((alt, i) => (
-                  <div key={i} className="bg-card border border-border rounded-xl p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1 min-w-0 pr-3">
-                        <p className="text-sm font-light truncate">{alt.title}</p>
-                        <p className="text-xs text-muted-foreground">${alt.price.toLocaleString()} • {alt.source}</p>
-                        {alt.link && (
-                          <a 
-                            href={alt.link} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[10px] text-primary mt-1"
-                          >
-                            View <ExternalLink className="w-2.5 h-2.5" />
-                          </a>
-                        )}
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-lg font-light">{alt.workingDays.toFixed(1)}d</p>
-                        <p className="text-xs text-green-500 font-light">
-                          Save {alt.daysSaved.toFixed(1)} days
-                        </p>
-                      </div>
+              {/* Buffer Impact Card */}
+              {hasNetWorth && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-2xl p-4 mb-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ArrowDown className="w-4 h-4 text-destructive" />
+                    <p className="text-xs font-medium text-destructive uppercase tracking-wider">Buffer Impact</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase">Current Buffer</p>
+                      <p className="text-lg font-light">{currentBufferMonths.toFixed(1)} mo</p>
+                      <p className="text-[10px] text-muted-foreground">{currentBufferYears.toFixed(2)} years</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-muted-foreground uppercase">After Purchase</p>
+                      <p className="text-lg font-light text-destructive">{bufferImpact.newBufferMonths.toFixed(1)} mo</p>
+                      <p className="text-[10px] text-destructive">−{bufferImpact.bufferDecrease.toFixed(1)} months</p>
                     </div>
                   </div>
-                ))}
+
+                  <div className="mt-4 pt-3 border-t border-destructive/20">
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs text-muted-foreground">% of your life buffer</p>
+                      <p className="text-sm font-medium text-destructive">−{bufferImpact.percentageOfBuffer.toFixed(1)}%</p>
+                    </div>
+                    {/* Visual bar */}
+                    <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-destructive rounded-full transition-all"
+                        style={{ width: `${Math.min(bufferImpact.percentageOfBuffer, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Explanation */}
+              <div className="bg-card border border-border rounded-2xl p-4 mb-4">
+                <p className="text-xs text-muted-foreground font-light">
+                  At your rate of ${dollarPerHour.toFixed(2)}/hour toward your buffer, this purchase requires{" "}
+                  <span className="text-foreground font-medium">{result.workingDays.toFixed(1)} working days</span> of earnings to recover.
+                </p>
+                <p className="text-[10px] text-muted-foreground font-light mt-2 opacity-70">
+                  Formula: ${result.price.toLocaleString()} ÷ (${freeCash.toLocaleString()}/mo ÷ {WORKING_DAYS_PER_MONTH} days) = {result.workingDays.toFixed(1)} days
+                </p>
               </div>
-            </div>
-          )}
 
-          {/* Share card preview */}
-          <div className="mt-8 bg-foreground text-background rounded-2xl p-6 text-center">
-            <p className="text-xs opacity-60 mb-2 font-light">This {result.productName.split(" ").slice(0, 3).join(" ").toLowerCase()} costs me</p>
-            <p className="text-5xl font-light">{result.workingDays.toFixed(1)}</p>
-            <p className="text-lg opacity-80 font-light">working days</p>
-            <p className="text-xs opacity-60 mt-2 font-light">to earn back</p>
-          </div>
+              {/* Alternatives */}
+              {result.alternatives.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-xs text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-wider">
+                    <TrendingDown className="w-3 h-3" />
+                    Cheaper alternatives found
+                  </h3>
+                  <div className="space-y-2">
+                    {result.alternatives.map((alt, i) => (
+                      <div key={i} className="bg-card border border-border rounded-xl p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1 min-w-0 pr-3">
+                            <p className="text-sm font-light truncate">{alt.title}</p>
+                            <p className="text-xs text-muted-foreground">${alt.price.toLocaleString()} • {alt.source}</p>
+                            {alt.link && (
+                              <a 
+                                href={alt.link} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[10px] text-primary mt-1"
+                              >
+                                View <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            )}
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="text-lg font-light">{alt.workingDays.toFixed(1)}d</p>
+                            <p className="text-xs text-green-500 font-light">
+                              Save {alt.daysSaved.toFixed(1)} days
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          <button
-            onClick={reset}
-            className="w-full mt-6 py-3.5 border border-border rounded-xl font-light"
-          >
-            Analyze another purchase
-          </button>
-        </motion.div>
+              {/* Share card preview */}
+              <div className="mt-8 bg-foreground text-background rounded-2xl p-6 text-center">
+                <p className="text-xs opacity-60 mb-2 font-light">This {result.productName.split(" ").slice(0, 3).join(" ").toLowerCase()} costs me</p>
+                <p className="text-5xl font-light">{result.workingDays.toFixed(1)}</p>
+                <p className="text-lg opacity-80 font-light">working days</p>
+                <p className="text-xs opacity-60 mt-2 font-light">to earn back</p>
+              </div>
+
+              <button
+                onClick={reset}
+                className="w-full mt-6 py-3.5 border border-border rounded-xl font-light"
+              >
+                Analyze another purchase
+              </button>
+            </motion.div>
+          );
+        })()
       )}
 
       <BottomNav />
