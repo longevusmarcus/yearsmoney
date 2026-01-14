@@ -26,9 +26,9 @@ interface AnalysisResult {
 
 const Purchase = () => {
   const [query, setQuery] = useState("");
-  const [price, setPrice] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Get financial data from Home (localStorage)
   const income = Number(localStorage.getItem("tc_income")) || 0;
@@ -68,27 +68,14 @@ const Purchase = () => {
   };
 
   const analyze = async () => {
-    if (!query && !price) return;
+    if (!query) return;
     
     setIsAnalyzing(true);
-    
-    // If just a price, do simple calculation
-    if (price && !query) {
-      const priceNum = parseFloat(price);
-      const days = calculateWorkingDays(priceNum);
-      setResult({
-        productName: "Your purchase",
-        price: priceNum,
-        hoursCost: days * 8,
-        workingDays: days,
-        alternatives: []
-      });
-      setIsAnalyzing(false);
-      return;
-    }
+    setError(null);
 
-    // Call SerpAPI for real product prices
+    // Call SerpAPI to find real prices
     try {
+      console.log("Searching for:", query);
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/product-search`, {
         method: "POST",
         headers: {
@@ -101,14 +88,19 @@ const Purchase = () => {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to search");
-
       const data = await response.json();
+      console.log("Search result:", data);
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Could not find price for this item");
+      }
       
-      if (!data.success) throw new Error(data.error || "Search failed");
+      if (!data.price || data.price === 0) {
+        throw new Error("No price found - try being more specific (e.g., 'iPhone 16 Pro 256GB')");
+      }
       
-      // Use scraped price or user input
-      const productPrice = data.price || parseFloat(price) || 0;
+      // Use scraped price from web
+      const productPrice = data.price;
       const days = calculateWorkingDays(productPrice);
       
       const analysisResult: AnalysisResult = {
@@ -135,18 +127,9 @@ const Purchase = () => {
       };
       
       setResult(analysisResult);
-    } catch (error) {
-      console.error("Search error:", error);
-      // Fallback to simple calculation
-      const priceNum = parseFloat(price) || 500;
-      const days = calculateWorkingDays(priceNum);
-      setResult({
-        productName: query || "Product",
-        price: priceNum,
-        hoursCost: days * 8,
-        workingDays: days,
-        alternatives: []
-      });
+    } catch (err) {
+      console.error("Search error:", err);
+      setError(err instanceof Error ? err.message : "Failed to find price. Try a more specific search.");
     }
     
     setIsAnalyzing(false);
@@ -154,8 +137,8 @@ const Purchase = () => {
 
   const reset = () => {
     setQuery("");
-    setPrice("");
     setResult(null);
+    setError(null);
   };
 
   return (
@@ -206,33 +189,35 @@ const Purchase = () => {
               <input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="MacBook Pro, vacation to Japan..."
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setError(null);
+                }}
+                onKeyDown={(e) => e.key === "Enter" && analyze()}
+                placeholder="iPhone 16 Pro, Tesla Model 3, Bali vacation..."
                 className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
               />
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2 font-light">
+              We'll find the real price from the web
+            </p>
           </div>
 
-          <div>
-            <label className="text-xs text-muted-foreground uppercase tracking-wider">Price (optional)</label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="2499"
-              className="w-full bg-card border border-border rounded-xl px-4 py-3.5 mt-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
-            />
-          </div>
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
+              <p className="text-xs text-destructive font-light">{error}</p>
+            </div>
+          )}
 
           <button
             onClick={analyze}
-            disabled={isAnalyzing || (!query && !price)}
+            disabled={isAnalyzing || !query}
             className="w-full bg-foreground text-background py-3.5 rounded-xl font-light disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isAnalyzing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Analyzing...
+                Finding price...
               </>
             ) : (
               "Calculate Life Cost"
@@ -241,13 +226,16 @@ const Purchase = () => {
 
           {/* Quick examples */}
           <div className="pt-4">
-            <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Popular</p>
+            <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Try these</p>
             <div className="flex flex-wrap gap-2">
-              {["iPhone 16 Pro", "Tesla Model 3", "Bali vacation", "PS5"].map(item => (
+              {["iPhone 16 Pro", "MacBook Pro M3", "PS5", "AirPods Pro", "Tesla Model 3", "Bali vacation 2 weeks"].map(item => (
                 <button
                   key={item}
-                  onClick={() => setQuery(item)}
-                  className="px-3 py-1.5 bg-card border border-border rounded-full text-xs font-light"
+                  onClick={() => {
+                    setQuery(item);
+                    setError(null);
+                  }}
+                  className="px-3 py-1.5 bg-card border border-border rounded-full text-xs font-light hover:bg-muted/50 transition-colors"
                 >
                   {item}
                 </button>
