@@ -1,17 +1,17 @@
-import { useState, useMemo } from "react";
-import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown } from "lucide-react";
+import { useState } from "react";
+import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car, Plane, ShoppingBag, ImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
-interface Alternative {
+interface Listing {
   title: string;
   price: number;
-  hoursCost: number;
-  workingDays: number;
-  hoursSaved: number;
-  daysSaved: number;
+  description?: string;
   source: string;
   link?: string;
+  image?: string | null;
+  hoursCost?: number;
+  workingDays?: number;
 }
 
 interface AnalysisResult {
@@ -21,8 +21,19 @@ interface AnalysisResult {
   workingDays: number;
   source?: string;
   link?: string;
-  alternatives: Alternative[];
+  image?: string | null;
+  searchMethod?: string;
+  category?: string;
+  allListings: Listing[];
 }
+
+// Category icons
+const categoryIcons: Record<string, React.ReactNode> = {
+  real_estate: <Home className="w-4 h-4" />,
+  automotive: <Car className="w-4 h-4" />,
+  travel: <Plane className="w-4 h-4" />,
+  product: <ShoppingBag className="w-4 h-4" />
+};
 
 const Purchase = () => {
   const [query, setQuery] = useState("");
@@ -40,18 +51,14 @@ const Purchase = () => {
   const hasNetWorth = netWorth > 0;
 
   // CORE CALCULATION: Life Buffer
-  // Life Buffer = netWorth / expenses = months you can survive without income
   const currentBufferMonths = expenses > 0 ? netWorth / expenses : 0;
   const currentBufferYears = currentBufferMonths / 12;
 
-  // Working hours per month = 22 days * 8 hours = 176 hours
   const WORKING_HOURS_PER_MONTH = 176;
   const WORKING_DAYS_PER_MONTH = 22;
 
-  // $/hour earned toward buffer = monthly surplus / working hours
   const dollarPerHour = freeCash > 0 ? freeCash / WORKING_HOURS_PER_MONTH : 0;
 
-  // Calculate working days to earn back a purchase
   const calculateWorkingDays = (priceValue: number) => {
     if (freeCash <= 0) {
       return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : 0;
@@ -59,7 +66,6 @@ const Purchase = () => {
     return (priceValue / freeCash) * WORKING_DAYS_PER_MONTH;
   };
 
-  // Calculate buffer impact
   const calculateBufferImpact = (priceValue: number) => {
     const newNetWorth = netWorth - priceValue;
     const newBufferMonths = expenses > 0 ? newNetWorth / expenses : 0;
@@ -79,7 +85,6 @@ const Purchase = () => {
     setIsAnalyzing(true);
     setError(null);
 
-    // Call SerpAPI to find real prices
     try {
       console.log("Searching for:", query);
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/product-search`, {
@@ -102,12 +107,21 @@ const Purchase = () => {
       }
       
       if (!data.price || data.price === 0) {
-        throw new Error("No price found - try being more specific (e.g., 'iPhone 16 Pro 256GB')");
+        throw new Error("No price found - try being more specific");
       }
       
-      // Use scraped price from web
       const productPrice = data.price;
       const days = calculateWorkingDays(productPrice);
+      
+      // Process all listings with working days calculation
+      const allListings: Listing[] = (data.allListings || []).map((listing: any) => {
+        const listingDays = calculateWorkingDays(listing.price);
+        return {
+          ...listing,
+          workingDays: listingDays,
+          hoursCost: listingDays * 8
+        };
+      });
       
       const analysisResult: AnalysisResult = {
         productName: data.productName || query,
@@ -116,20 +130,10 @@ const Purchase = () => {
         workingDays: days,
         source: data.source,
         link: data.link,
-        alternatives: (data.alternatives || []).map((alt: any) => {
-          const altDays = calculateWorkingDays(alt.price);
-          const savedDays = days - altDays;
-          return {
-            title: alt.title,
-            price: alt.price,
-            hoursCost: altDays * 8,
-            workingDays: altDays,
-            hoursSaved: savedDays * 8,
-            daysSaved: savedDays,
-            source: alt.source,
-            link: alt.link
-          };
-        })
+        image: data.image,
+        searchMethod: data.searchMethod,
+        category: data.category,
+        allListings
       };
       
       setResult(analysisResult);
@@ -145,6 +149,28 @@ const Purchase = () => {
     setQuery("");
     setResult(null);
     setError(null);
+  };
+
+  // Image component with fallback
+  const ListingImage = ({ src, alt, category }: { src?: string | null; alt: string; category?: string }) => {
+    const [imgError, setImgError] = useState(false);
+    
+    if (!src || imgError) {
+      return (
+        <div className="w-full h-full bg-muted flex items-center justify-center">
+          {categoryIcons[category || "product"] || <ImageOff className="w-6 h-6 text-muted-foreground" />}
+        </div>
+      );
+    }
+    
+    return (
+      <img 
+        src={src} 
+        alt={alt}
+        className="w-full h-full object-cover"
+        onError={() => setImgError(true)}
+      />
+    );
   };
 
   return (
@@ -178,9 +204,6 @@ const Purchase = () => {
             <p className="text-xs text-muted-foreground font-light mt-1">
               Each ${Math.round(freeCash / WORKING_DAYS_PER_MONTH)} spent = 1 working day to earn back
             </p>
-            <p className="text-[10px] text-muted-foreground font-light mt-2 opacity-70">
-              Based on ${freeCash.toLocaleString()}/mo surplus ÷ {WORKING_DAYS_PER_MONTH} working days
-            </p>
           </div>
         </div>
       )}
@@ -200,12 +223,12 @@ const Purchase = () => {
                   setError(null);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && analyze()}
-                placeholder="iPhone 16 Pro, Tesla Model 3, Bali vacation..."
+                placeholder="House in Minorca, Tesla Model S, Bali vacation..."
                 className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
               />
             </div>
             <p className="text-[10px] text-muted-foreground mt-2 font-light">
-              We'll find the real price from the web
+              We'll find real listings from the web
             </p>
           </div>
 
@@ -223,10 +246,10 @@ const Purchase = () => {
             {isAnalyzing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Finding price...
+                Searching the web...
               </>
             ) : (
-              "Calculate Life Cost"
+              "Find & Calculate"
             )}
           </button>
 
@@ -234,7 +257,7 @@ const Purchase = () => {
           <div className="pt-4">
             <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Try these</p>
             <div className="flex flex-wrap gap-2">
-              {["iPhone 16 Pro", "MacBook Pro M3", "PS5", "AirPods Pro", "Tesla Model 3", "Bali vacation 2 weeks"].map(item => (
+              {["House in Minorca", "Tesla Model S", "MacBook Pro M3", "Vacation in Bali", "Porsche 911", "iPhone 16 Pro"].map(item => (
                 <button
                   key={item}
                   onClick={() => {
@@ -251,146 +274,150 @@ const Purchase = () => {
         </div>
       ) : (
         /* Results */
-        (() => {
-          const bufferImpact = calculateBufferImpact(result.price);
-          
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="px-6"
-            >
-              {/* Main result */}
-              <div className="text-center py-8">
-                <p className="text-muted-foreground text-sm font-light mb-2">
-                  {result.productName}
-                  {result.source && <span className="opacity-60"> via {result.source}</span>}
-                </p>
-                <p className="text-lg text-muted-foreground font-light mb-4">
-                  ${result.price.toLocaleString()}
-                </p>
-                <div className="text-6xl font-light tracking-tighter">
-                  {result.workingDays.toFixed(1)}
-                </div>
-                <div className="text-muted-foreground mt-2 font-light">working days to earn back</div>
-                <div className="text-xs text-muted-foreground mt-1 font-light">
-                  ≈ {result.hoursCost.toFixed(0)} working hours
-                </div>
-                {result.link && (
-                  <a 
-                    href={result.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-primary mt-3 underline"
-                  >
-                    View product <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-              </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="px-6"
+        >
+          {/* Search info badge */}
+          <div className="flex items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted rounded-full text-xs text-muted-foreground">
+              {categoryIcons[result.category || "product"]}
+              {result.category?.replace("_", " ") || "product"}
+            </span>
+            <span className="text-xs text-muted-foreground">via {result.searchMethod}</span>
+          </div>
 
-              {/* Buffer Impact Card */}
-              {hasNetWorth && (
-                <div className="bg-destructive/10 border border-destructive/30 rounded-2xl p-4 mb-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <ArrowDown className="w-4 h-4 text-destructive" />
-                    <p className="text-xs font-medium text-destructive uppercase tracking-wider">Buffer Impact</p>
-                  </div>
+          {/* Gallery of listings */}
+          {result.allListings.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-xs text-muted-foreground mb-3 uppercase tracking-wider flex items-center gap-2">
+                <TrendingDown className="w-3 h-3" />
+                {result.allListings.length} listings found (expensive → cheaper)
+              </h3>
+              
+              <div className="space-y-3">
+                {result.allListings.map((listing, i) => {
+                  const bufferImpact = calculateBufferImpact(listing.price);
+                  const isFirst = i === 0;
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-[10px] text-muted-foreground uppercase">Current Buffer</p>
-                      <p className="text-lg font-light">{currentBufferMonths.toFixed(1)} mo</p>
-                      <p className="text-[10px] text-muted-foreground">{currentBufferYears.toFixed(2)} years</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-muted-foreground uppercase">After Purchase</p>
-                      <p className="text-lg font-light text-destructive">{bufferImpact.newBufferMonths.toFixed(1)} mo</p>
-                      <p className="text-[10px] text-destructive">−{bufferImpact.bufferDecrease.toFixed(1)} months</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-destructive/20">
-                    <div className="flex justify-between items-center">
-                      <p className="text-xs text-muted-foreground">% of your life buffer</p>
-                      <p className="text-sm font-medium text-destructive">−{bufferImpact.percentageOfBuffer.toFixed(1)}%</p>
-                    </div>
-                    {/* Visual bar */}
-                    <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-destructive rounded-full transition-all"
-                        style={{ width: `${Math.min(bufferImpact.percentageOfBuffer, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Explanation */}
-              <div className="bg-card border border-border rounded-2xl p-4 mb-4">
-                <p className="text-xs text-muted-foreground font-light">
-                  At your rate of ${dollarPerHour.toFixed(2)}/hour toward your buffer, this purchase requires{" "}
-                  <span className="text-foreground font-medium">{result.workingDays.toFixed(1)} working days</span> of earnings to recover.
-                </p>
-                <p className="text-[10px] text-muted-foreground font-light mt-2 opacity-70">
-                  Formula: ${result.price.toLocaleString()} ÷ (${freeCash.toLocaleString()}/mo ÷ {WORKING_DAYS_PER_MONTH} days) = {result.workingDays.toFixed(1)} days
-                </p>
-              </div>
-
-              {/* Alternatives */}
-              {result.alternatives.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-xs text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-wider">
-                    <TrendingDown className="w-3 h-3" />
-                    Cheaper alternatives found
-                  </h3>
-                  <div className="space-y-2">
-                    {result.alternatives.map((alt, i) => (
-                      <div key={i} className="bg-card border border-border rounded-xl p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1 min-w-0 pr-3">
-                            <p className="text-sm font-light truncate">{alt.title}</p>
-                            <p className="text-xs text-muted-foreground">${alt.price.toLocaleString()} • {alt.source}</p>
-                            {alt.link && (
-                              <a 
-                                href={alt.link} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[10px] text-primary mt-1"
-                              >
-                                View <ExternalLink className="w-2.5 h-2.5" />
-                              </a>
-                            )}
+                  return (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className={`bg-card border rounded-2xl overflow-hidden ${isFirst ? "border-primary/50" : "border-border"}`}
+                    >
+                      {/* Image */}
+                      <div className="h-40 w-full bg-muted relative">
+                        <ListingImage 
+                          src={listing.image} 
+                          alt={listing.title}
+                          category={result.category}
+                        />
+                        {isFirst && (
+                          <span className="absolute top-2 left-2 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] rounded-full">
+                            Most expensive
+                          </span>
+                        )}
+                        <span className="absolute top-2 right-2 px-2 py-1 bg-background/90 backdrop-blur text-foreground text-sm font-medium rounded-lg">
+                          ${listing.price.toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      {/* Details */}
+                      <div className="p-4">
+                        <h4 className="font-medium text-sm line-clamp-2">{listing.title}</h4>
+                        {listing.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{listing.description}</p>
+                        )}
+                        
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                          <div>
+                            <p className="text-2xl font-light">{listing.workingDays?.toFixed(1)}<span className="text-sm text-muted-foreground ml-1">days</span></p>
+                            <p className="text-[10px] text-muted-foreground">to earn back</p>
                           </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-lg font-light">{alt.workingDays.toFixed(1)}d</p>
-                            <p className="text-xs text-green-500 font-light">
-                              Save {alt.daysSaved.toFixed(1)} days
-                            </p>
-                          </div>
+                          
+                          {hasNetWorth && (
+                            <div className="text-right">
+                              <p className="text-sm text-destructive">−{bufferImpact.percentageOfBuffer.toFixed(1)}%</p>
+                              <p className="text-[10px] text-muted-foreground">of buffer</p>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center justify-between mt-3">
+                          <span className="text-[10px] text-muted-foreground">{listing.source}</span>
+                          {listing.link && (
+                            <a 
+                              href={listing.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-primary"
+                            >
+                              View listing <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Share card preview */}
-              <div className="mt-8 bg-foreground text-background rounded-2xl p-6 text-center">
-                <p className="text-xs opacity-60 mb-2 font-light">This {result.productName.split(" ").slice(0, 3).join(" ").toLowerCase()} costs me</p>
-                <p className="text-5xl font-light">{result.workingDays.toFixed(1)}</p>
-                <p className="text-lg opacity-80 font-light">working days</p>
-                <p className="text-xs opacity-60 mt-2 font-light">to earn back</p>
+                    </motion.div>
+                  );
+                })}
               </div>
+            </div>
+          )}
 
-              <button
-                onClick={reset}
-                className="w-full mt-6 py-3.5 border border-border rounded-xl font-light"
-              >
-                Analyze another purchase
-              </button>
-            </motion.div>
-          );
-        })()
+          {/* Buffer Impact Summary (for most expensive) */}
+          {hasNetWorth && result.allListings.length > 0 && (
+            <div className="bg-destructive/10 border border-destructive/30 rounded-2xl p-4 mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <ArrowDown className="w-4 h-4 text-destructive" />
+                <p className="text-xs font-medium text-destructive uppercase tracking-wider">
+                  Buffer Impact (Most Expensive)
+                </p>
+              </div>
+              
+              {(() => {
+                const impact = calculateBufferImpact(result.allListings[0].price);
+                return (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase">Current Buffer</p>
+                        <p className="text-lg font-light">{currentBufferMonths.toFixed(1)} mo</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase">After Purchase</p>
+                        <p className="text-lg font-light text-destructive">{impact.newBufferMonths.toFixed(1)} mo</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-destructive rounded-full transition-all"
+                        style={{ width: `${Math.min(impact.percentageOfBuffer, 100)}%` }}
+                      />
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Explanation */}
+          <div className="bg-card border border-border rounded-2xl p-4 mb-4">
+            <p className="text-xs text-muted-foreground font-light">
+              At your rate of ${dollarPerHour.toFixed(2)}/hour, prices above are converted to working days needed to earn them back.
+            </p>
+          </div>
+
+          <button
+            onClick={reset}
+            className="w-full mt-4 py-3.5 border border-border rounded-xl font-light"
+          >
+            Search for something else
+          </button>
+        </motion.div>
       )}
 
       <BottomNav />
