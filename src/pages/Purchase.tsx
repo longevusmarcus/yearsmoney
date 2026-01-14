@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car, Plane, ShoppingBag, ImageOff, Settings } from "lucide-react";
+import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car, Plane, ShoppingBag, ImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Listing {
   title: string;
@@ -38,7 +37,6 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const Purchase = () => {
-  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -179,21 +177,10 @@ const Purchase = () => {
   return (
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
-      <div className="px-6 pt-6 pb-4 flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-light tracking-tight">Purchase</h1>
-          <p className="text-muted-foreground text-sm font-light mt-1">See the true cost in hours of life</p>
-        </div>
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <button
-            onClick={() => navigate("/settings")}
-            className="p-1 hover:opacity-70 transition-opacity"
-          >
-            <Settings className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
-      </div>
+      <PageHeader 
+        title="Purchase" 
+        subtitle="See the true cost in hours of life" 
+      />
 
       {/* Warning if no data */}
       {!hasData && (
