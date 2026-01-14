@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Search, Clock, TrendingDown, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Search, Clock, TrendingDown, Loader2, Info } from "lucide-react";
+import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
 interface Alternative {
@@ -27,12 +27,25 @@ const Purchase = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
-  // Get expenses from localStorage for calculations
-  const expenses = parseFloat(localStorage.getItem("timecost_expenses") || "3000");
-  const hourlyLifeCost = expenses / (30 * 24); // cost per hour of life
+  // Get financial data from Home (localStorage)
+  const income = Number(localStorage.getItem("tc_income")) || 0;
+  const expenses = Number(localStorage.getItem("tc_expenses")) || 0;
+  const netWorth = Number(localStorage.getItem("tc_networth")) || 0;
+  
+  const freeCash = income - expenses;
+  const hasData = income > 0 && expenses > 0;
 
+  // Life cost calculation: based on rate at which optional life advances
+  // Hours cost = (price / freeCash) * hours in a month
+  // This represents how many hours of "optional life advancement" this purchase costs
   const calculateHours = (priceValue: number) => {
-    return priceValue / hourlyLifeCost;
+    if (freeCash <= 0) {
+      // If no free cash, base it on how many months of runway it takes
+      return expenses > 0 ? (priceValue / expenses) * 30 * 24 : 0;
+    }
+    // Hours = (price / monthly_savings) * hours_per_month
+    // This shows how many hours of life-advancement this purchase delays
+    return (priceValue / freeCash) * 30 * 24;
   };
 
   const analyze = async () => {
@@ -67,7 +80,8 @@ const Purchase = () => {
           type: "purchase",
           query,
           price: price ? parseFloat(price) : null,
-          hourlyLifeCost
+          freeCash,
+          expenses
         }),
       });
 
@@ -76,17 +90,18 @@ const Purchase = () => {
       const data = await response.json();
       
       // Calculate hours for each result
+      const productPrice = data.price || parseFloat(price) || 0;
       const analysisResult: AnalysisResult = {
         productName: data.productName || query,
-        price: data.price || parseFloat(price) || 0,
-        hoursCost: calculateHours(data.price || parseFloat(price) || 0),
-        workingDays: calculateHours(data.price || parseFloat(price) || 0) / 8,
+        price: productPrice,
+        hoursCost: calculateHours(productPrice),
+        workingDays: calculateHours(productPrice) / 8,
         waitSuggestion: data.waitSuggestion,
-        hoursSavedWaiting: data.hoursSavedWaiting,
+        hoursSavedWaiting: data.hoursSavedWaiting ? calculateHours(data.hoursSavedWaiting) : undefined,
         alternatives: (data.alternatives || []).map((alt: any) => ({
           ...alt,
           hoursCost: calculateHours(alt.price),
-          hoursSaved: calculateHours((data.price || parseFloat(price) || 0) - alt.price)
+          hoursSaved: calculateHours(productPrice - alt.price)
         }))
       };
       
@@ -116,46 +131,73 @@ const Purchase = () => {
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
       <div className="px-6 pt-12 pb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Purchase Optimizer</h1>
-        <p className="text-muted-foreground text-sm mt-1">See the true cost in hours of life</p>
+        <h1 className="text-2xl font-light tracking-tight">Purchase</h1>
+        <p className="text-muted-foreground text-sm font-light mt-1">See the true cost in hours of life</p>
       </div>
+
+      {/* Warning if no data */}
+      {!hasData && (
+        <div className="px-6 mb-4">
+          <div className="bg-muted/30 border border-border rounded-2xl p-4 flex items-start gap-3">
+            <Info className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground font-light">
+              Add your income and expenses on the Home page for accurate life-cost calculations.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Your rate info */}
+      {hasData && !result && (
+        <div className="px-6 mb-6">
+          <div className="bg-card border border-border rounded-2xl p-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your life-time rate</p>
+            <p className="text-lg font-light text-foreground">
+              ${freeCash.toLocaleString()}/month savings
+            </p>
+            <p className="text-xs text-muted-foreground font-light mt-1">
+              Each ${freeCash > 0 ? Math.round(freeCash / 720) : '—'} spent = 1 hour of life delayed
+            </p>
+          </div>
+        </div>
+      )}
 
       {!result ? (
         /* Search Form */
         <div className="px-6 space-y-4">
           <div>
-            <label className="text-sm text-muted-foreground">What do you want to buy?</label>
+            <label className="text-xs text-muted-foreground uppercase tracking-wider">What do you want to buy?</label>
             <div className="relative mt-2">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="MacBook Pro, vacation to Japan..."
-                className="w-full bg-muted/30 rounded-xl pl-12 pr-4 py-4 text-lg"
+                className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-sm text-muted-foreground">Price (optional)</label>
+            <label className="text-xs text-muted-foreground uppercase tracking-wider">Price (optional)</label>
             <input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="$2,499"
-              className="w-full bg-muted/30 rounded-xl px-4 py-4 mt-2 text-lg font-medium"
+              placeholder="2499"
+              className="w-full bg-card border border-border rounded-xl px-4 py-3.5 mt-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
             />
           </div>
 
           <button
             onClick={analyze}
             disabled={isAnalyzing || (!query && !price)}
-            className="w-full bg-foreground text-background py-4 rounded-2xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-foreground text-background py-3.5 rounded-xl font-light disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isAnalyzing ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 Analyzing...
               </>
             ) : (
@@ -164,14 +206,14 @@ const Purchase = () => {
           </button>
 
           {/* Quick examples */}
-          <div className="pt-6">
-            <p className="text-sm text-muted-foreground mb-3">Popular searches</p>
+          <div className="pt-4">
+            <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Popular</p>
             <div className="flex flex-wrap gap-2">
               {["iPhone 16 Pro", "Tesla Model 3", "Bali vacation", "PS5"].map(item => (
                 <button
                   key={item}
                   onClick={() => setQuery(item)}
-                  className="px-3 py-2 bg-muted/30 rounded-full text-sm"
+                  className="px-3 py-1.5 bg-card border border-border rounded-full text-xs font-light"
                 >
                   {item}
                 </button>
@@ -188,25 +230,32 @@ const Purchase = () => {
         >
           {/* Main result */}
           <div className="text-center py-8">
-            <p className="text-muted-foreground text-sm mb-2">{result.productName}</p>
-            <div className="text-7xl font-black tracking-tighter">
+            <p className="text-muted-foreground text-sm font-light mb-2">{result.productName}</p>
+            <div className="text-6xl font-light tracking-tighter">
               {result.hoursCost.toFixed(0)}
             </div>
-            <div className="text-muted-foreground mt-2">hours of your life</div>
-            <div className="text-sm text-muted-foreground mt-1">
+            <div className="text-muted-foreground mt-2 font-light">hours of life</div>
+            <div className="text-xs text-muted-foreground mt-1 font-light">
               ≈ {result.workingDays.toFixed(0)} working days
             </div>
           </div>
 
+          {/* Explanation */}
+          <div className="bg-card border border-border rounded-2xl p-4 mb-4">
+            <p className="text-xs text-muted-foreground font-light">
+              Based on your savings rate of ${freeCash.toLocaleString()}/mo, this purchase delays your optional life by {result.hoursCost.toFixed(0)} hours.
+            </p>
+          </div>
+
           {/* Wait suggestion */}
           {result.waitSuggestion && (
-            <div className="bg-muted/30 rounded-2xl p-4 mb-4">
+            <div className="bg-card border border-border rounded-2xl p-4 mb-4">
               <div className="flex items-start gap-3">
-                <Clock className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <Clock className="w-4 h-4 text-muted-foreground mt-0.5" />
                 <div>
-                  <p className="text-sm">{result.waitSuggestion}</p>
+                  <p className="text-sm font-light">{result.waitSuggestion}</p>
                   {result.hoursSavedWaiting && (
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground mt-1 font-light">
                       Save {result.hoursSavedWaiting.toFixed(0)} hours of life
                     </p>
                   )}
@@ -218,21 +267,21 @@ const Purchase = () => {
           {/* Alternatives */}
           {result.alternatives.length > 0 && (
             <div className="mt-6">
-              <h3 className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
-                <TrendingDown className="w-4 h-4" />
+              <h3 className="text-xs text-muted-foreground mb-3 flex items-center gap-2 uppercase tracking-wider">
+                <TrendingDown className="w-3 h-3" />
                 Cheaper alternatives
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {result.alternatives.map((alt, i) => (
-                  <div key={i} className="bg-muted/30 rounded-xl p-4">
+                  <div key={i} className="bg-card border border-border rounded-xl p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="font-medium">{alt.title}</p>
-                        <p className="text-sm text-muted-foreground">{alt.source}</p>
+                        <p className="text-sm font-light">{alt.title}</p>
+                        <p className="text-xs text-muted-foreground">{alt.source}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold">{alt.hoursCost.toFixed(0)}h</p>
-                        <p className="text-xs text-green-500">
+                        <p className="text-lg font-light">{alt.hoursCost.toFixed(0)}h</p>
+                        <p className="text-xs text-green-500 font-light">
                           Save {alt.hoursSaved.toFixed(0)}h
                         </p>
                       </div>
@@ -245,14 +294,14 @@ const Purchase = () => {
 
           {/* Share card preview */}
           <div className="mt-8 bg-foreground text-background rounded-2xl p-6 text-center">
-            <p className="text-sm opacity-60 mb-2">This {result.productName.toLowerCase()} costs me</p>
-            <p className="text-5xl font-black">{result.hoursCost.toFixed(0)} hours</p>
-            <p className="text-sm opacity-60 mt-2">of my life</p>
+            <p className="text-xs opacity-60 mb-2 font-light">This {result.productName.toLowerCase()} costs me</p>
+            <p className="text-5xl font-light">{result.hoursCost.toFixed(0)} hours</p>
+            <p className="text-xs opacity-60 mt-2 font-light">of my life</p>
           </div>
 
           <button
             onClick={reset}
-            className="w-full mt-6 py-4 border border-border rounded-2xl font-medium"
+            className="w-full mt-6 py-3.5 border border-border rounded-xl font-light"
           >
             Analyze another purchase
           </button>
