@@ -1,17 +1,19 @@
-import { useState, useMemo } from "react";
-import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info, ExternalLink, Loader2, RefreshCw, Calendar, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 
-interface Opportunity {
-  id: string;
-  category: string;
+interface Product {
   title: string;
   price: number;
-  workingDays: number;
-  description: string;
-  icon: string;
+  description?: string;
+  affiliateUrl?: string;
   roi?: string;
+  source?: string;
+  category?: string;
+  workingDays?: number;
+  workingMonths?: number;
+  workingYears?: number;
 }
 
 const iconMap: Record<string, any> = {
@@ -19,136 +21,138 @@ const iconMap: Record<string, any> = {
   tech: Laptop,
   learning: BookOpen,
   fitness: Dumbbell,
-  experience: Coffee,
+  lifestyle: Coffee,
   default: Sparkles
 };
 
 const Opportunities = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("tech");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get user's financial data from Home (localStorage with tc_ prefix)
+  // Get user's financial data
   const income = Number(localStorage.getItem("tc_income")) || 0;
   const expenses = Number(localStorage.getItem("tc_expenses")) || 0;
+  const netWorth = Number(localStorage.getItem("tc_networth")) || 0;
   
   const freeCash = income - expenses;
   const hasData = income > 0 && expenses > 0;
+  const hasNetWorth = netWorth > 0;
 
-  // CORE CALCULATION: Working days to earn back a purchase
+  // CORE CALCULATIONS
   const WORKING_DAYS_PER_MONTH = 22;
-  const dailyEarnings = freeCash > 0 ? freeCash / WORKING_DAYS_PER_MONTH : 1; // Fallback to 1 to avoid division by zero
+  const WORKING_DAYS_PER_YEAR = WORKING_DAYS_PER_MONTH * 12;
+  const dailyEarnings = freeCash > 0 ? freeCash / WORKING_DAYS_PER_MONTH : 45; // Default fallback
 
-  const calculateWorkingDays = (priceValue: number) => {
-    if (freeCash <= 0) {
-      return expenses > 0 ? (priceValue / expenses) * WORKING_DAYS_PER_MONTH : priceValue / 100;
-    }
-    return priceValue / dailyEarnings;
+  // Your "optional life" - yearly buffer capacity
+  const yearlyBufferDays = freeCash > 0 ? (freeCash * 12) / dailyEarnings : 264;
+  const yearlyBufferMonths = yearlyBufferDays / WORKING_DAYS_PER_MONTH;
+  const yearlyBufferYears = yearlyBufferDays / WORKING_DAYS_PER_YEAR;
+
+  // Current life buffer
+  const currentBufferMonths = expenses > 0 ? netWorth / expenses : 0;
+
+  const calculateTimeEquivalents = (priceValue: number) => {
+    const workingDays = priceValue / dailyEarnings;
+    const workingMonths = workingDays / WORKING_DAYS_PER_MONTH;
+    const workingYears = workingDays / WORKING_DAYS_PER_YEAR;
+    const percentOfYearlyBuffer = (workingDays / yearlyBufferDays) * 100;
+    
+    return {
+      workingDays,
+      workingMonths,
+      workingYears,
+      percentOfYearlyBuffer
+    };
   };
 
-  // How many "days of buffer" can you accumulate per year
-  const yearlyBufferDays = freeCash > 0 ? (freeCash * 12) / dailyEarnings : 264;
-
-  // Generate opportunities with memoization to prevent recalc on every render
-  const opportunities = useMemo<Opportunity[]>(() => [
-    {
-      id: "1",
-      category: "travel",
-      title: "Trip to Japan (2 weeks)",
-      price: 4500,
-      workingDays: calculateWorkingDays(4500),
-      description: "Flights, hotels, food, and experiences in Tokyo, Kyoto, Osaka",
-      icon: "travel",
-      roi: "High life satisfaction"
-    },
-    {
-      id: "2",
-      category: "tech",
-      title: "MacBook Pro M3",
-      price: 2499,
-      workingDays: calculateWorkingDays(2499),
-      description: "Productivity boost for work and creative projects",
-      icon: "tech",
-      roi: "Medium - if work-related"
-    },
-    {
-      id: "3",
-      category: "learning",
-      title: "Online Bootcamp",
-      price: 1500,
-      workingDays: calculateWorkingDays(1500),
-      description: "12-week coding or design intensive course",
-      icon: "learning",
-      roi: "High - career advancement"
-    },
-    {
-      id: "4",
-      category: "fitness",
-      title: "Year Gym + Trainer",
-      price: 1800,
-      workingDays: calculateWorkingDays(1800),
-      description: "Premium gym membership with personal training sessions",
-      icon: "fitness",
-      roi: "Very high - adds life years"
-    },
-    {
-      id: "5",
-      category: "experience",
-      title: "Concert VIP + Dinner",
-      price: 500,
-      workingDays: calculateWorkingDays(500),
-      description: "Premium experience with friends or partner",
-      icon: "experience",
-      roi: "Medium - memories & connection"
-    },
-    {
-      id: "6",
-      category: "tech",
-      title: "iPhone 16 Pro",
-      price: 1199,
-      workingDays: calculateWorkingDays(1199),
-      description: "Latest smartphone with pro camera system",
-      icon: "tech",
-      roi: "Low - unless needed for work"
-    },
-    {
-      id: "7",
-      category: "travel",
-      title: "Weekend City Break",
-      price: 800,
-      workingDays: calculateWorkingDays(800),
-      description: "2-night getaway to a nearby city",
-      icon: "travel",
-      roi: "Medium - recharge & explore"
-    },
-    {
-      id: "8",
-      category: "learning",
-      title: "Annual Learning Subscriptions",
-      price: 400,
-      workingDays: calculateWorkingDays(400),
-      description: "Masterclass, Skillshare, or professional courses",
-      icon: "learning",
-      roi: "High - continuous growth"
-    }
-  ], [freeCash, expenses, dailyEarnings]);
-
   const categories = [
-    { id: "all", label: "All" },
-    { id: "travel", label: "Travel" },
-    { id: "tech", label: "Tech" },
-    { id: "learning", label: "Learning" },
-    { id: "fitness", label: "Health" },
-    { id: "experience", label: "Experiences" }
+    { id: "tech", label: "Tech", icon: Laptop },
+    { id: "travel", label: "Travel", icon: Plane },
+    { id: "learning", label: "Learning", icon: BookOpen },
+    { id: "fitness", label: "Fitness", icon: Dumbbell },
+    { id: "lifestyle", label: "Lifestyle", icon: Coffee }
   ];
 
-  const filteredOpportunities = selectedCategory && selectedCategory !== "all"
-    ? opportunities.filter(o => o.category === selectedCategory)
-    : opportunities;
+  // Fetch products when category changes
+  const fetchProducts = async (category: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/affiliate-search`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ category }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to fetch products");
+      }
+
+      // Enrich products with time calculations
+      const enrichedProducts = (data.products || []).map((product: any) => {
+        const timeEquiv = calculateTimeEquivalents(product.price);
+        return {
+          ...product,
+          workingDays: timeEquiv.workingDays,
+          workingMonths: timeEquiv.workingMonths,
+          workingYears: timeEquiv.workingYears
+        };
+      });
+
+      setProducts(enrichedProducts);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(err instanceof Error ? err.message : "Failed to load products");
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProducts(selectedCategory);
+  }, [selectedCategory]);
+
+  // Format time display
+  const formatTime = (product: Product) => {
+    if (!product.workingDays) return "—";
+    
+    if (product.workingDays >= WORKING_DAYS_PER_YEAR) {
+      return `${product.workingYears?.toFixed(1)}y`;
+    } else if (product.workingDays >= WORKING_DAYS_PER_MONTH) {
+      return `${product.workingMonths?.toFixed(1)}mo`;
+    } else {
+      return `${product.workingDays?.toFixed(1)}d`;
+    }
+  };
+
+  const formatFullTime = (product: Product) => {
+    if (!product.workingDays) return "";
+    
+    const parts = [];
+    if (product.workingYears && product.workingYears >= 0.1) {
+      parts.push(`${product.workingYears.toFixed(2)} years`);
+    }
+    if (product.workingMonths && product.workingMonths >= 0.1) {
+      parts.push(`${product.workingMonths.toFixed(1)} months`);
+    }
+    parts.push(`${product.workingDays.toFixed(0)} days`);
+    
+    return parts.join(" • ");
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
       <div className="px-6 pt-12 pb-4">
-        <h1 className="text-2xl font-light tracking-tight">Ideas</h1>
+        <h1 className="text-2xl font-light tracking-tight">Optional Life</h1>
         <p className="text-muted-foreground text-sm font-light mt-1">See what your time could buy</p>
       </div>
 
@@ -164,57 +168,120 @@ const Opportunities = () => {
         </div>
       )}
 
-      {/* Your rate summary */}
-      {hasData && (
-        <div className="px-6 py-4">
-          <div className="bg-foreground text-background rounded-2xl p-5">
-            <p className="text-xs opacity-60 font-light">Your yearly buffer capacity</p>
-            <p className="text-4xl font-light mt-1">{Math.round(yearlyBufferDays)} days</p>
-            <p className="text-xs opacity-60 mt-2 font-light">
-              Earning ${dailyEarnings.toFixed(0)}/day toward your buffer
-            </p>
-            <p className="text-[10px] opacity-40 mt-1 font-light">
-              (${freeCash.toLocaleString()}/mo surplus ÷ {WORKING_DAYS_PER_MONTH} working days × 12 months)
-            </p>
+      {/* Your Optional Life Summary */}
+      <div className="px-6 py-4">
+        <div className="bg-foreground text-background rounded-2xl p-5">
+          <p className="text-xs opacity-60 font-light">Your yearly buffer capacity</p>
+          <div className="flex items-baseline gap-3 mt-1">
+            <p className="text-4xl font-light">{Math.round(yearlyBufferDays)}</p>
+            <p className="text-lg opacity-80">days</p>
           </div>
+          
+          {/* Time equivalents */}
+          <div className="flex gap-4 mt-3 text-sm opacity-80">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{yearlyBufferMonths.toFixed(1)} months</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              <span>{yearlyBufferYears.toFixed(2)} years</span>
+            </div>
+          </div>
+          
+          <p className="text-xs opacity-60 mt-3 font-light">
+            Earning ${dailyEarnings.toFixed(0)}/day toward your buffer
+          </p>
+          <p className="text-[10px] opacity-40 mt-1 font-light">
+            (${freeCash.toLocaleString()}/mo surplus ÷ {WORKING_DAYS_PER_MONTH} working days × 12 months)
+          </p>
+
+          {/* Current buffer status */}
+          {hasNetWorth && (
+            <div className="mt-4 pt-3 border-t border-background/20">
+              <div className="flex justify-between text-xs">
+                <span className="opacity-60">Current life buffer</span>
+                <span className="font-medium">{currentBufferMonths.toFixed(1)} months</span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Category filter */}
       <div className="px-6 py-2">
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id === "all" ? null : cat.id)}
-              className={`px-4 py-2 rounded-full text-xs font-light whitespace-nowrap transition-colors ${
-                (cat.id === "all" && !selectedCategory) || selectedCategory === cat.id
-                  ? "bg-foreground text-background"
-                  : "bg-card border border-border"
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {categories.map(cat => {
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-light whitespace-nowrap transition-colors ${
+                  selectedCategory === cat.id
+                    ? "bg-foreground text-background"
+                    : "bg-card border border-border"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Opportunities list */}
-      <div className="px-6 py-4">
-        <div className="space-y-3">
-          {filteredOpportunities.map((opp, index) => {
-            const Icon = iconMap[opp.icon] || iconMap.default;
-            const percentOfBudget = yearlyBufferDays > 0 
-              ? (opp.workingDays / yearlyBufferDays) * 100 
-              : 0;
-              
+      {/* Affiliate disclaimer */}
+      <div className="px-6 py-2">
+        <p className="text-[10px] text-muted-foreground font-light flex items-center gap-1">
+          <ExternalLink className="w-3 h-3" />
+          Links may include affiliate partnerships. Prices are estimates.
+        </p>
+      </div>
+
+      {/* Loading state */}
+      {isLoading && (
+        <div className="px-6 py-12 flex flex-col items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground font-light">Finding {selectedCategory} deals...</p>
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && !isLoading && (
+        <div className="px-6 py-4">
+          <div className="bg-destructive/10 border border-destructive/30 rounded-2xl p-4">
+            <p className="text-sm text-destructive font-light">{error}</p>
+            <button 
+              onClick={() => fetchProducts(selectedCategory)}
+              className="mt-3 flex items-center gap-2 text-xs text-destructive underline"
+            >
+              <RefreshCw className="w-3 h-3" /> Try again
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Products list */}
+      {!isLoading && !error && (
+        <div className="px-6 py-4">
+          <div className="space-y-3">
+            {products.map((product, index) => {
+              const Icon = iconMap[product.category || selectedCategory] || iconMap.default;
+              const percentOfBudget = yearlyBufferDays > 0 && product.workingDays
+                ? (product.workingDays / yearlyBufferDays) * 100 
+                : 0;
+                
               return (
-                <motion.div
-                  key={opp.id}
+                <motion.a
+                  key={index}
+                  href={product.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-card border border-border rounded-2xl p-4"
+                  className="block bg-card border border-border rounded-2xl p-4 hover:border-foreground/30 transition-colors"
                 >
                   <div className="flex gap-4">
                     <div className="w-11 h-11 bg-muted/50 rounded-xl flex items-center justify-center shrink-0">
@@ -222,13 +289,20 @@ const Opportunities = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-sm font-light">{opp.title}</p>
-                          <p className="text-xs text-muted-foreground font-light">{opp.description}</p>
-                          <p className="text-[10px] text-muted-foreground mt-1">${opp.price.toLocaleString()}</p>
+                        <div className="min-w-0">
+                          <p className="text-sm font-light truncate">{product.title}</p>
+                          {product.description && (
+                            <p className="text-xs text-muted-foreground font-light truncate">{product.description}</p>
+                          )}
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-[10px] text-muted-foreground">${product.price?.toLocaleString()}</p>
+                            {product.source && (
+                              <span className="text-[10px] text-primary">{product.source}</span>
+                            )}
+                          </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-lg font-light">{opp.workingDays.toFixed(1)}d</p>
+                          <p className="text-xl font-light">{formatTime(product)}</p>
                           {yearlyBufferDays > 0 && (
                             <p className="text-[10px] text-muted-foreground">
                               {percentOfBudget.toFixed(0)}% of year
@@ -236,32 +310,44 @@ const Opportunities = () => {
                           )}
                         </div>
                       </div>
-                      {opp.roi && (
-                        <div className="mt-2">
+                      
+                      {/* Full time breakdown */}
+                      <div className="mt-2 text-[10px] text-muted-foreground font-light">
+                        {formatFullTime(product)}
+                      </div>
+                      
+                      {/* ROI and affiliate link indicator */}
+                      <div className="mt-2 flex items-center justify-between">
+                        {product.roi && (
                           <span className="text-[10px] bg-foreground/10 px-2 py-0.5 rounded-full font-light">
-                            ROI: {opp.roi}
+                            ROI: {product.roi}
                           </span>
-                        </div>
-                      )}
+                        )}
+                        <span className="text-[10px] text-primary flex items-center gap-1">
+                          View deal <ExternalLink className="w-2.5 h-2.5" />
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </motion.div>
+                </motion.a>
               );
-          })}
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Summary */}
-      {hasData && (
+      {!isLoading && !error && products.length > 0 && (
         <div className="px-6 py-4">
           <div className="bg-card border border-border rounded-2xl p-4 text-center">
             <p className="text-xs text-muted-foreground font-light">
-              These {filteredOpportunities.length} options would cost{" "}
+              These {products.length} options would cost{" "}
               <span className="font-medium text-foreground">
-                {filteredOpportunities.reduce((sum, o) => sum + o.workingDays, 0).toFixed(0)} working days
+                {products.reduce((sum, p) => sum + (p.workingDays || 0), 0).toFixed(0)} working days
               </span>
+              {" "}({(products.reduce((sum, p) => sum + (p.workingMonths || 0), 0)).toFixed(1)} months)
             </p>
-            {filteredOpportunities.reduce((sum, o) => sum + o.workingDays, 0) > yearlyBufferDays && (
+            {products.reduce((sum, p) => sum + (p.workingDays || 0), 0) > yearlyBufferDays && (
               <p className="text-[10px] text-destructive mt-1 font-light">
                 That's more than your yearly capacity — choose wisely
               </p>
