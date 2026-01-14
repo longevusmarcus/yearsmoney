@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Smartphone } from "lucide-react";
-import haraQr from "@/assets/hara-qr.png";
+import yearsQr from "@/assets/years-qr.png";
 
 const MobileOnly = ({ children }: { children: React.ReactNode }) => {
   const [isMobile, setIsMobile] = useState(true);
@@ -57,7 +57,7 @@ const MobileOnly = ({ children }: { children: React.ReactNode }) => {
             
             <div className="flex justify-center">
               <img 
-                src={haraQr} 
+                src={yearsQr} 
                 alt="Scan to open Years on mobile" 
                 className="w-32 h-32 rounded-lg"
               />
