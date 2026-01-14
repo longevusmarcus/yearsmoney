@@ -533,7 +533,7 @@ const About = () => {
             transition={{ duration: 0.8 }}
           >
             <p className="text-muted-foreground mb-4 text-lg">
-              The consequence of not earning optional time is not death—
+              The consequence of not earning optional time is not death...
             </p>
             <h2 className="text-5xl md:text-7xl font-light text-foreground mb-4">it is the absence of</h2>
             <p className="text-5xl md:text-7xl font-cursive italic text-foreground">optionality</p>
