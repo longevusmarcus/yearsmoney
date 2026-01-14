@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2, Settings } from "lucide-react";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
 import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, Legend } from "recharts";
@@ -13,7 +12,6 @@ interface Message {
 }
 
 const Home = () => {
-  const navigate = useNavigate();
   // Auth state
   const [user, setUser] = useState<any>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -235,21 +233,12 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="p-6 flex justify-between items-center">
+      <PageHeader title="Years">
         <h1 className="text-2xl text-foreground tracking-tight">
           <span className="font-light">Welcome to </span>
           <span className="font-cursive italic">Years</span>
         </h1>
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <button
-            onClick={() => navigate("/settings")}
-            className="p-1 hover:opacity-70 transition-opacity"
-          >
-            <Settings className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
-      </div>
+      </PageHeader>
 
       {/* Input Fields */}
       <div className="px-6 mb-4 space-y-4">

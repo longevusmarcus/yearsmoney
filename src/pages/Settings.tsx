@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, LogOut, Trash2 } from "lucide-react";
+import { User, LogOut, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { PageHeader } from "@/components/PageHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Settings = () => {
@@ -57,12 +58,14 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="p-6 space-y-6">
-        <button onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-5 h-5 text-foreground" />
-        </button>
-
-        <h1 className="text-2xl font-cursive italic text-foreground tracking-tight">Settings</h1>
+      <PageHeader 
+        title="Settings" 
+        titleClassName="text-2xl font-cursive italic text-foreground tracking-tight"
+        showBackButton 
+        showActions={false} 
+      />
+      
+      <div className="px-6 space-y-6">
 
         {/* Account */}
         <div className="space-y-3">

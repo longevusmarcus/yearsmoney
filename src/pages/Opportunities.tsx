@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info, ExternalLink, RefreshCw, Calendar, Clock, Settings } from "lucide-react";
+import { Sparkles, Plane, Laptop, BookOpen, Dumbbell, Coffee, Info, ExternalLink, RefreshCw, Calendar, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import { ProductSkeletonList } from "@/components/ProductCardSkeleton";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Product {
   title: string;
@@ -29,7 +28,6 @@ const iconMap: Record<string, any> = {
 };
 
 const Opportunities = () => {
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>("tech");
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -155,21 +153,10 @@ const Opportunities = () => {
   return (
     <div className="min-h-screen bg-background text-foreground pb-28">
       {/* Header */}
-      <div className="px-6 pt-6 pb-4 flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-light tracking-tight">Optional Life</h1>
-          <p className="text-muted-foreground text-sm font-light mt-1">See what your time could buy</p>
-        </div>
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <button
-            onClick={() => navigate("/settings")}
-            className="p-1 hover:opacity-70 transition-opacity"
-          >
-            <Settings className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
-      </div>
+      <PageHeader 
+        title="Optional Life" 
+        subtitle="See what your time could buy" 
+      />
 
       {/* Warning if no data */}
       {!hasData && (
