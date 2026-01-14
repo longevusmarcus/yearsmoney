@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Clock,
-  DollarSign,
-  TrendingDown,
+  Shield,
+  TrendingUp,
   Sparkles,
-  Share2,
-  Calculator,
   Hourglass,
+  Layers,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
@@ -23,22 +23,22 @@ const ManifestoText = () => {
 
   const paragraphs = [
     {
-      text: "Every dollar you spend represents time you traded from your life. Hours at work, energy given, moments that will never return.",
-      highlights: ["time you traded", "never return"],
+      text: "Money is not wealth. Time is wealth. Every dollar you accumulate is simply stored time—hours you can choose not to work.",
+      highlights: ["Time is wealth", "stored time"],
     },
     {
-      text: "TimeCost makes this visible.",
-      highlights: ["TimeCost"],
+      text: "LifeBuffer makes this visible.",
+      highlights: ["LifeBuffer"],
       isAccent: true,
     },
     {
-      text: "By converting purchases into life-hours, you see what things truly cost. Not in abstract currency, but in the irreplaceable hours of your existence.",
-      highlights: ["life-hours", "truly cost"],
+      text: "Your buffer is not your net worth. It is how long you could exist without being forced into action. It is not philosophical. It is arithmetic.",
+      highlights: ["forced into action", "arithmetic"],
     },
     {
-      text: "Know exactly how much life you have left. Spend it wisely.",
-      highlights: ["wisely"],
-      hasCircle: "wisely",
+      text: "Once visible, time cannot be ignored for long.",
+      highlights: ["cannot be ignored"],
+      hasCircle: "ignored",
     },
   ];
 
@@ -162,35 +162,35 @@ const About = () => {
 
   const features = [
     {
-      icon: Calculator,
-      title: "Life Buffer",
-      subtitle: "Know your runway",
+      icon: Shield,
+      title: "Life Buffer Zero",
+      subtitle: "Survival time",
       description:
-        "See exactly how many months or years of optional life you have based on your net worth and expenses.",
+        "How long could you exist if all income stopped today? Net worth divided by monthly costs. This is your runway.",
       gradient: "from-primary/20 to-primary/10",
     },
     {
-      icon: Clock,
-      title: "Purchase Cost",
-      subtitle: "Hours, not dollars",
+      icon: TrendingUp,
+      title: "Life Buffer One",
+      subtitle: "Optional time",
       description:
-        "Convert any purchase into life-hours. See the true cost of that laptop, vacation, or daily coffee.",
+        "How much future life can you accumulate beyond survival? This buffer is not about enduring. It is about choice.",
       gradient: "from-secondary/20 to-secondary/10",
     },
     {
-      icon: TrendingDown,
-      title: "Find Alternatives",
-      subtitle: "Save your hours",
+      icon: Eye,
+      title: "Visibility",
+      subtitle: "See the invisible",
       description:
-        "Discover cheaper options and see exactly how many life-hours you'd save with each alternative.",
+        "People sense buffers as anxiety or confidence, but they are not named, not visible. We make inequality legible.",
       gradient: "from-accent/20 to-accent/10",
     },
     {
       icon: Sparkles,
-      title: "AI Advisor",
-      subtitle: "Time-smart decisions",
+      title: "Time Advisor",
+      subtitle: "Temporal decisions",
       description:
-        "Get personalized insights on when to buy, sell, or wait—all calculated in life-hours at risk or saved.",
+        "Every purchase delays or accelerates your optional life. See exactly how many hours each decision costs.",
       gradient: "from-success/20 to-success/10",
     },
   ];
@@ -198,30 +198,30 @@ const About = () => {
   const howItWorks = [
     {
       title: "Enter Your Numbers",
-      description: "Monthly income, expenses, and net worth—that's all we need",
+      description: "Monthly income, expenses, and net worth—the raw materials of time",
     },
     {
-      title: "See Your Life Buffer",
-      description: "Discover how many months of optional life you currently have",
+      title: "See Your Buffers",
+      description: "Discover how many months of optional life you currently possess",
+    },
+    {
+      title: "Project Forward",
+      description: "See where you'll be in 1, 5, or 20 years—with or without income",
     },
     {
       title: "Analyze Purchases",
-      description: "Convert any price into life-hours with one click",
+      description: "Convert any price into life-hours at your personal rate",
     },
     {
-      title: "Compare & Save",
-      description: "Find alternatives and see exactly how many hours you'd reclaim",
-    },
-    {
-      title: "Share Your Truth",
-      description: "Generate a powerful share card showing the real cost of things",
+      title: "Optimize Time",
+      description: "Stop optimizing for income. Start optimizing for life runway.",
     },
   ];
 
   const floatingCards = [
     {
       title: "Life Buffer",
-      text: "You have 6.2 years of optional life",
+      text: "6.2 years of optional life",
       delay: 0,
       position: "left-1 md:left-4 lg:left-12 top-24 md:top-32 lg:top-36",
       icon: Hourglass,
@@ -229,29 +229,29 @@ const About = () => {
       iconBg: "bg-accent/20",
     },
     {
-      title: "MacBook Pro",
-      text: "This costs 432 hours of your life",
+      title: "If You Stop",
+      text: "18 months runway remaining",
       delay: 0.2,
       position: "right-1 md:right-4 lg:right-12 top-40 md:top-48 lg:top-52",
-      icon: Clock,
+      icon: Shield,
       iconColor: "text-primary",
       iconBg: "bg-primary/20",
     },
     {
-      title: "Alternative Found",
-      text: "Refurbished: Save 218 hours of life",
+      title: "This Month",
+      text: "+720 hours of optional life",
       delay: 0.4,
       position: "left-1 md:left-4 lg:left-20 bottom-24 md:bottom-32 lg:bottom-36",
-      icon: TrendingDown,
+      icon: TrendingUp,
       iconColor: "text-success",
       iconBg: "bg-success/20",
     },
     {
-      title: "AI Insight",
-      text: "Wait 2 weeks: 15% price drop predicted",
+      title: "That Laptop",
+      text: "Costs 432 hours of future life",
       delay: 0.6,
       position: "right-1 md:right-4 lg:right-20 bottom-40 md:bottom-48 lg:bottom-52",
-      icon: Sparkles,
+      icon: Clock,
       iconColor: "text-secondary",
       iconBg: "bg-secondary/20",
     },
@@ -265,16 +265,16 @@ const About = () => {
           <div className="flex items-center gap-8">
             <Link
               to="/about"
-              className="text-xl font-light tracking-wide bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent"
+              className="text-xl font-cursive italic tracking-wide bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent"
             >
-              TimeCost
+              LifeBuffer
             </Link>
             <div className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#manifesto" className="hover:text-foreground transition-colors">
                 Philosophy
               </a>
               <a href="#features" className="hover:text-foreground transition-colors">
-                Features
+                Buffers
               </a>
               <a href="#how-it-works" className="hover:text-foreground transition-colors">
                 How It Works
@@ -283,8 +283,8 @@ const About = () => {
           </div>
           <div className="flex items-center gap-4">
             <Button asChild size="sm" className="rounded-full bg-primary hover:bg-primary/90">
-              <Link to="/calculator">
-                Calculate <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              <Link to="/home">
+                Enter <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
@@ -351,9 +351,9 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-1.5 md:gap-2 bg-card/60 backdrop-blur-sm border border-border/50 rounded-full px-3 md:px-5 py-1.5 md:py-2.5 mb-6 md:mb-10"
           >
-            <Clock className="h-3 w-3 md:h-4 md:w-4 text-foreground" />
+            <Hourglass className="h-3 w-3 md:h-4 md:w-4 text-foreground" />
             <span className="text-[10px] md:text-sm text-muted-foreground whitespace-nowrap">
-              See what things really cost
+              Wealth = Time = Optional Life
             </span>
           </motion.div>
 
@@ -363,10 +363,10 @@ const About = () => {
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl md:text-6xl lg:text-7xl text-foreground mb-6 md:mb-8 leading-tight"
           >
-            <span className="font-light block md:inline">See how much of your life</span>
+            <span className="font-light block md:inline">See your wealth</span>
             <br className="hidden md:block" />
             <span className="font-cormorant italic font-light text-3xl md:text-6xl lg:text-7xl block md:inline whitespace-nowrap">
-              you trade for the things you buy
+              in units of time
             </span>
           </motion.h1>
 
@@ -376,7 +376,7 @@ const About = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Convert purchases into life-hours. Know your buffer. Spend your time on what truly matters.
+            Not income. Not net worth. But buffers of time—how long you could exist without being forced into action.
           </motion.p>
 
           <motion.div
@@ -390,7 +390,7 @@ const About = () => {
               size="lg"
               className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90 shadow-[0_0_30px_hsl(var(--primary)/0.5),0_0_60px_hsl(var(--primary)/0.3)] hover:shadow-[0_0_40px_hsl(var(--primary)/0.6),0_0_80px_hsl(var(--primary)/0.4)] transition-all duration-300"
             >
-              <Link to="/calculator">
+              <Link to="/home">
                 Calculate Your Life Buffer <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -417,6 +417,29 @@ const About = () => {
         </div>
       </section>
 
+      {/* The Shift Section */}
+      <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-8 text-lg text-muted-foreground font-light leading-relaxed"
+          >
+            <p>
+              Under the current system, life buffers exist but they are hidden. People sense them vaguely as anxiety or confidence, but they are not named, not visible, and therefore not consciously managed.
+            </p>
+            <p className="text-foreground text-xl">
+              When survival is no longer conditional on work, money loses its most powerful function: coercion. What remains is a quieter, more precise role. Money becomes a mechanism for allocating something else. <span className="font-cursive italic text-2xl">Time.</span>
+            </p>
+            <p>
+              To understand this transition, we need a new unit of wealth. Not income. Not net worth. But buffers of time.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -428,13 +451,13 @@ const About = () => {
             className="text-center mb-16"
           >
             <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
-              Features
+              The Buffers
             </span>
             <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">
-              Time is your only true currency
+              Two measures of freedom
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Simple tools to understand the real cost of your financial decisions.
+              Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into it.
             </p>
           </motion.div>
 
@@ -479,7 +502,7 @@ const About = () => {
               How It Works
             </span>
             <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">
-              Five steps to clarity
+              From money to time
             </h2>
           </motion.div>
 
@@ -515,17 +538,32 @@ const About = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-muted-foreground mb-4 text-lg">That new iPhone?</p>
-            <h2 className="text-7xl md:text-9xl font-light text-foreground mb-4">
-              432
+            <p className="text-muted-foreground mb-4 text-lg">The consequence of not earning optional time is not death—</p>
+            <h2 className="text-5xl md:text-7xl font-light text-foreground mb-4">
+              it is the absence of
             </h2>
-            <p className="text-2xl md:text-3xl text-muted-foreground font-light">
-              hours of your life
+            <p className="text-5xl md:text-7xl font-cursive italic text-foreground">
+              optionality
             </p>
-            <p className="text-muted-foreground mt-8 max-w-md mx-auto">
-              That's 18 full days. Almost 3 weeks of your existence. Is it worth it?
+            <p className="text-muted-foreground mt-8 max-w-lg mx-auto">
+              People stop optimizing for income and start optimizing for life runway. Status signaling weakens when the cost is framed as personal life depletion.
             </p>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Quote Section */}
+      <section className="py-24 px-6 bg-muted/20">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.blockquote
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-2xl md:text-3xl font-cormorant italic font-light text-foreground leading-relaxed"
+          >
+            "Inequality does not vanish. But it becomes human-scaled. Instead of invisible capital structures, people see time differentials. Some individuals have months of buffer. Others have decades. The comparison becomes tangible, uncomfortable, but honest."
+          </motion.blockquote>
         </div>
       </section>
 
@@ -540,18 +578,18 @@ const About = () => {
             className="bg-gradient-to-br from-card via-card to-primary/5 border border-border/50 rounded-3xl p-12 text-center"
           >
             <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4">
-              Ready to see the truth?
+              Once life buffers are visible
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              No account needed. No data stored. Just one calculation that might change how you see everything.
+              People are no longer trapped by money. They are confronted by time. And time, unlike money, cannot be ignored for long.
             </p>
             <Button
               asChild
               size="lg"
               className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90"
             >
-              <Link to="/calculator">
-                Calculate Now <ArrowRight className="ml-2 h-5 w-5" />
+              <Link to="/home">
+                See Your Buffer <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </motion.div>
@@ -562,7 +600,7 @@ const About = () => {
       <footer className="py-12 px-6 border-t border-border/50">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-muted-foreground text-sm">
-            © 2025 TimeCost. Time is the only currency that matters.
+            © 2025 LifeBuffer. Time is the only currency that matters.
           </div>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link to="/privacy" className="hover:text-foreground transition-colors">
