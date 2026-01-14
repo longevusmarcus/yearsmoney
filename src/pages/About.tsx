@@ -1,15 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
-import {
-  ArrowRight,
-  Clock,
-  Shield,
-  TrendingUp,
-  Sparkles,
-  Hourglass,
-  Layers,
-  Eye,
-} from "lucide-react";
+import { ArrowRight, Clock, Shield, TrendingUp, Sparkles, Hourglass, Layers, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
@@ -376,7 +367,7 @@ const About = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Not income. Not net worth. But buffers of time—how long you could exist without being forced into action.
+            Measure your real freedom: how long can you live without being forced into action?
           </motion.p>
 
           <motion.div
@@ -428,13 +419,17 @@ const About = () => {
             className="space-y-8 text-lg text-muted-foreground font-light leading-relaxed"
           >
             <p>
-              Under the current system, life buffers exist but they are hidden. People sense them vaguely as anxiety or confidence, but they are not named, not visible, and therefore not consciously managed.
+              Under the current system, life buffers exist but they are hidden. People sense them vaguely as anxiety or
+              confidence, but they are not named, not visible, and therefore not consciously managed.
             </p>
             <p className="text-foreground text-xl">
-              When survival is no longer conditional on work, money loses its most powerful function: coercion. What remains is a quieter, more precise role. Money becomes a mechanism for allocating something else. <span className="font-cursive italic text-2xl">Time.</span>
+              When survival is no longer conditional on work, money loses its most powerful function: coercion. What
+              remains is a quieter, more precise role. Money becomes a mechanism for allocating something else.{" "}
+              <span className="font-cursive italic text-2xl">Time.</span>
             </p>
             <p>
-              To understand this transition, we need a new unit of wealth. Not income. Not net worth. But buffers of time.
+              To understand this transition, we need a new unit of wealth. Not income. Not net worth. But buffers of
+              time.
             </p>
           </motion.div>
         </div>
@@ -453,11 +448,10 @@ const About = () => {
             <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
               The Buffers
             </span>
-            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">
-              Two measures of freedom
-            </h2>
+            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">Two measures of freedom</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into it.
+              Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into
+              it.
             </p>
           </motion.div>
 
@@ -471,7 +465,9 @@ const About = () => {
                 transition={{ delay: index * 0.1, duration: 0.6 }}
                 className="relative group"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                />
                 <div className="relative bg-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 h-full">
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                     <feature.icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
@@ -501,9 +497,7 @@ const About = () => {
             <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
               How It Works
             </span>
-            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">
-              From money to time
-            </h2>
+            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">From money to time</h2>
           </motion.div>
 
           <div className="space-y-6">
@@ -538,15 +532,14 @@ const About = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-muted-foreground mb-4 text-lg">The consequence of not earning optional time is not death—</p>
-            <h2 className="text-5xl md:text-7xl font-light text-foreground mb-4">
-              it is the absence of
-            </h2>
-            <p className="text-5xl md:text-7xl font-cursive italic text-foreground">
-              optionality
+            <p className="text-muted-foreground mb-4 text-lg">
+              The consequence of not earning optional time is not death—
             </p>
+            <h2 className="text-5xl md:text-7xl font-light text-foreground mb-4">it is the absence of</h2>
+            <p className="text-5xl md:text-7xl font-cursive italic text-foreground">optionality</p>
             <p className="text-muted-foreground mt-8 max-w-lg mx-auto">
-              People stop optimizing for income and start optimizing for life runway. Status signaling weakens when the cost is framed as personal life depletion.
+              People stop optimizing for income and start optimizing for life runway. Status signaling weakens when the
+              cost is framed as personal life depletion.
             </p>
           </motion.div>
         </div>
@@ -562,7 +555,9 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="text-2xl md:text-3xl font-cormorant italic font-light text-foreground leading-relaxed"
           >
-            "Inequality does not vanish. But it becomes human-scaled. Instead of invisible capital structures, people see time differentials. Some individuals have months of buffer. Others have decades. The comparison becomes tangible, uncomfortable, but honest."
+            "Inequality does not vanish. But it becomes human-scaled. Instead of invisible capital structures, people
+            see time differentials. Some individuals have months of buffer. Others have decades. The comparison becomes
+            tangible, uncomfortable, but honest."
           </motion.blockquote>
         </div>
       </section>
@@ -577,17 +572,12 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="bg-gradient-to-br from-card via-card to-primary/5 border border-border/50 rounded-3xl p-12 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4">
-              Once life buffers are visible
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4">Once life buffers are visible</h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              People are no longer trapped by money. They are confronted by time. And time, unlike money, cannot be ignored for long.
+              People are no longer trapped by money. They are confronted by time. And time, unlike money, cannot be
+              ignored for long.
             </p>
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90"
-            >
+            <Button asChild size="lg" className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90">
               <Link to="/home">
                 See Your Buffer <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
