@@ -236,7 +236,10 @@ const Home = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="p-6 flex justify-between items-center">
-        <h1 className="text-2xl font-cursive italic text-foreground tracking-tight">Years</h1>
+        <h1 className="text-2xl text-foreground tracking-tight">
+          <span className="font-light">Welcome to </span>
+          <span className="font-cursive italic">Years</span>
+        </h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
