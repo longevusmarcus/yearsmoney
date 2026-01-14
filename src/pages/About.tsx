@@ -441,6 +441,117 @@ const About = () => {
         </div>
       </section>
 
+      {/* Your Life Buffer OS Section */}
+      <section className="py-32 px-6 bg-gradient-to-b from-background via-muted/10 to-background overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-20"
+          >
+            <h2 className="text-4xl md:text-6xl text-foreground mb-6">
+              <span className="font-cormorant italic">Your</span>{" "}
+              <span className="font-light">Life Buffer OS</span>
+            </h2>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
+              Redefining wealth with time-based visualization, personalized projections, 
+              and temporal decision-making—so you can optimize with clarity, purpose, and freedom.
+            </p>
+          </motion.div>
+
+          {/* App Screenshots Grid with Parallax */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+            {[
+              {
+                image: appHome,
+                title: "Buffer",
+                subtitle: "See your runway in time",
+                icon: Home,
+                parallaxOffset: 40,
+              },
+              {
+                image: appPurchase,
+                title: "Purchase",
+                subtitle: "Price things in life hours",
+                icon: Search,
+                parallaxOffset: -30,
+              },
+              {
+                image: appRisks,
+                title: "Risks",
+                subtitle: "Measure volatility temporally",
+                icon: AlertTriangle,
+                parallaxOffset: 50,
+              },
+              {
+                image: appOptional,
+                title: "Optional",
+                subtitle: "Explore what time could buy",
+                icon: Sparkles,
+                parallaxOffset: -20,
+              },
+            ].map((screen, index) => {
+              const ref = useRef<HTMLDivElement>(null);
+              const { scrollYProgress } = useScroll({
+                target: ref,
+                offset: ["start end", "end start"],
+              });
+              const y = useTransform(scrollYProgress, [0, 1], [screen.parallaxOffset, -screen.parallaxOffset]);
+
+              return (
+                <motion.div
+                  key={index}
+                  ref={ref}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
+                  className="group relative"
+                >
+                  {/* Phone Frame with Parallax */}
+                  <motion.div 
+                    style={{ y }}
+                    className="relative bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-background/50 transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-primary/10"
+                  >
+                    {/* Top Bar */}
+                    <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 border-b border-border/30">
+                      <span className="text-[10px] md:text-xs text-muted-foreground font-light tracking-wide">{screen.title.toLowerCase()}</span>
+                      <div className="flex items-center gap-1.5 md:gap-2">
+                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
+                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
+                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
+                      </div>
+                    </div>
+                    
+                    {/* Screenshot */}
+                    <div className="aspect-[9/16] overflow-hidden">
+                      <img 
+                        src={screen.image} 
+                        alt={`${screen.title} screen`}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Label */}
+                  <div className="mt-4 md:mt-6 flex items-center gap-2 md:gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-card border border-border/50 flex items-center justify-center">
+                      <screen.icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm md:text-base font-light text-foreground">{screen.title}</h3>
+                      <p className="text-[10px] md:text-xs text-muted-foreground font-light">{screen.subtitle}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
@@ -483,104 +594,6 @@ const About = () => {
                   </span>
                   <h3 className="text-2xl font-light text-foreground mb-3">{feature.title}</h3>
                   <p className="text-muted-foreground">{feature.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Your Life Buffer OS Section */}
-      <section className="py-32 px-6 bg-gradient-to-b from-background via-muted/10 to-background overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-20"
-          >
-            <h2 className="text-4xl md:text-6xl text-foreground mb-6">
-              <span className="font-cormorant italic">Your</span>{" "}
-              <span className="font-light">Life Buffer OS</span>
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
-              Redefining wealth with time-based visualization, personalized projections, 
-              and temporal decision-making—so you can optimize with clarity, purpose, and freedom.
-            </p>
-          </motion.div>
-
-          {/* App Screenshots Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-            {[
-              {
-                image: appHome,
-                title: "Buffer",
-                subtitle: "See your runway in time",
-                icon: Home,
-                delay: 0,
-              },
-              {
-                image: appPurchase,
-                title: "Purchase",
-                subtitle: "Price things in life hours",
-                icon: Search,
-                delay: 0.1,
-              },
-              {
-                image: appRisks,
-                title: "Risks",
-                subtitle: "Measure volatility temporally",
-                icon: AlertTriangle,
-                delay: 0.2,
-              },
-              {
-                image: appOptional,
-                title: "Optional",
-                subtitle: "Explore what time could buy",
-                icon: Sparkles,
-                delay: 0.3,
-              },
-            ].map((screen, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: screen.delay, duration: 0.6, ease: "easeOut" }}
-                className="group relative"
-              >
-                {/* Phone Frame */}
-                <div className="relative bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-background/50 transition-transform duration-500 group-hover:scale-[1.02] group-hover:shadow-primary/10">
-                  {/* Top Bar */}
-                  <div className="flex items-center justify-between px-3 md:px-4 py-2 md:py-3 border-b border-border/30">
-                    <span className="text-[10px] md:text-xs text-muted-foreground font-light tracking-wide">{screen.title.toLowerCase()}</span>
-                    <div className="flex items-center gap-1.5 md:gap-2">
-                      <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
-                      <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
-                      <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-muted-foreground/30" />
-                    </div>
-                  </div>
-                  
-                  {/* Screenshot */}
-                  <div className="aspect-[9/16] overflow-hidden">
-                    <img 
-                      src={screen.image} 
-                      alt={`${screen.title} screen`}
-                      className="w-full h-full object-cover object-top"
-                    />
-                  </div>
-                </div>
-
-                {/* Label */}
-                <div className="mt-4 md:mt-6 flex items-center gap-2 md:gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-card border border-border/50 flex items-center justify-center">
-                    <screen.icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-muted-foreground" strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm md:text-base font-light text-foreground">{screen.title}</h3>
-                    <p className="text-[10px] md:text-xs text-muted-foreground font-light">{screen.subtitle}</p>
-                  </div>
                 </div>
               </motion.div>
             ))}
