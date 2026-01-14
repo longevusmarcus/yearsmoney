@@ -234,7 +234,7 @@ const Home = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="p-6 flex justify-between items-center">
-        <h1 className="text-2xl font-cursive italic text-foreground tracking-tight">LifeBuffer</h1>
+        <h1 className="text-2xl font-cursive italic text-foreground tracking-tight">Years</h1>
         <ThemeToggle />
       </div>
 
