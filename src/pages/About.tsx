@@ -568,28 +568,22 @@ const About = () => {
             <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">From money to time</h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
+          <div className="space-y-6">
+            {howItWorks.map((step, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="relative group"
+                className="flex items-start gap-6 bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-6"
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                />
-                <div className="relative bg-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 h-full">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                    <feature.icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
-                  </div>
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
-                    {feature.subtitle}
-                  </span>
-                  <h3 className="text-2xl font-light text-foreground mb-3">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span className="text-primary font-light">{index + 1}</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-light text-foreground mb-1">{step.title}</h3>
+                  <p className="text-muted-foreground">{step.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -617,22 +611,28 @@ const About = () => {
             </p>
           </motion.div>
 
-          <div className="space-y-6">
-            {howItWorks.map((step, index) => (
+          <div className="grid md:grid-cols-2 gap-8">
+            {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="flex items-start gap-6 bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-6"
+                className="relative group"
               >
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="text-primary font-light">{index + 1}</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-light text-foreground mb-1">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                />
+                <div className="relative bg-card/60 backdrop-blur-sm border border-border/50 rounded-3xl p-8 h-full">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+                    <feature.icon className="h-7 w-7 text-primary" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                    {feature.subtitle}
+                  </span>
+                  <h3 className="text-2xl font-light text-foreground mb-3">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
                 </div>
               </motion.div>
             ))}
