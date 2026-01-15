@@ -9,7 +9,7 @@ const BottomNav = () => {
     { icon: Home, label: "Home", path: "/home" },
     { icon: Search, label: "Purchase", path: "/purchase" },
     { icon: AlertTriangle, label: "Risks", path: "/risks" },
-    { icon: Sparkles, label: "Optional", path: "/opportunities" },
+    { icon: Sparkles, label: "Ideas", path: "/opportunities" },
   ];
 
   return (
