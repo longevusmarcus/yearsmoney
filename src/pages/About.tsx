@@ -211,7 +211,7 @@ const About = () => {
     },
     {
       title: "See Your Buffers",
-      description: "Discover how many months of optional life you currently possess",
+      description: "Discover how many years of optional life you currently possess",
     },
     {
       title: "Project Forward",
@@ -602,14 +602,18 @@ const About = () => {
                 transition={{ delay: index * 0.08, duration: 0.5 }}
                 className="group"
               >
-                <div className={`flex items-start gap-6 md:gap-10 py-8 ${index !== howItWorks.length - 1 ? 'border-b border-border/30' : ''}`}>
+                <div
+                  className={`flex items-start gap-6 md:gap-10 py-8 ${index !== howItWorks.length - 1 ? "border-b border-border/30" : ""}`}
+                >
                   <div className="w-8 md:w-10 shrink-0 pt-1">
                     <span className="text-sm md:text-base text-muted-foreground/50 font-light">{index + 1}</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl md:text-2xl font-light text-foreground mb-2 group-hover:text-primary/90 transition-colors duration-300">{step.title}</h3>
+                    <h3 className="text-xl md:text-2xl font-light text-foreground mb-2 group-hover:text-primary/90 transition-colors duration-300">
+                      {step.title}
+                    </h3>
                     <p className="text-muted-foreground/80 font-light leading-relaxed">{step.description}</p>
-                    
+
                     {/* Expanded sub-points for Optional Life allocation */}
                     {step.isExpanded && step.subPoints && (
                       <motion.div
