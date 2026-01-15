@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { X, ArrowRight } from "lucide-react";
+import { X } from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           password,
         });
         if (error) throw error;
-        toast({ title: "Welcome back!" });
+        toast({ title: "Welcome back" });
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -39,7 +39,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           },
         });
         if (error) throw error;
-        toast({ title: "Account created!" });
+        toast({ title: "Account created" });
       }
       onSuccess();
     } catch (error: any) {
@@ -54,32 +54,27 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
       
-      {/* Modal */}
-      <div className="relative w-full max-w-sm bg-card border border-border rounded-2xl p-6 shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+      {/* Modal - slides up from bottom on mobile */}
+      <div className="relative w-full sm:max-w-xs bg-card border-t sm:border border-border/50 sm:rounded-2xl p-6 pb-8 sm:pb-6 animate-in slide-in-from-bottom-4 sm:zoom-in-95 sm:fade-in duration-300">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute top-4 right-4 text-muted-foreground/60 hover:text-foreground transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
 
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-light text-foreground mb-1">
-            {isLogin ? "Welcome back" : "Get started"}
-          </h2>
-          <p className="text-sm text-muted-foreground font-light">
-            Save your financial data securely
-          </p>
-        </div>
+        {/* Minimal header */}
+        <p className="text-sm text-muted-foreground font-light mb-5">
+          {isLogin ? "Sign in" : "Create account"}
+        </p>
 
         {/* Form */}
         <form onSubmit={handleAuth} className="space-y-3">
@@ -89,7 +84,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20 placeholder:text-muted-foreground"
+            className="w-full bg-transparent border-b border-border/50 px-0 py-2.5 text-sm font-light focus:outline-none focus:border-foreground/40 placeholder:text-muted-foreground/50 transition-colors"
           />
           <input
             type="password"
@@ -98,24 +93,23 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20 placeholder:text-muted-foreground"
+            className="w-full bg-transparent border-b border-border/50 px-0 py-2.5 text-sm font-light focus:outline-none focus:border-foreground/40 placeholder:text-muted-foreground/50 transition-colors"
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-foreground text-background rounded-xl py-3 text-sm font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-light mt-4 hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {loading ? "..." : isLogin ? "Sign in" : "Create account"}
-            <ArrowRight className="w-4 h-4" />
+            {loading ? "..." : isLogin ? "Continue" : "Create"}
           </button>
         </form>
 
         {/* Toggle */}
-        <p className="text-center text-sm text-muted-foreground font-light mt-4">
-          {isLogin ? "No account? " : "Have an account? "}
+        <p className="text-center text-xs text-muted-foreground/60 font-light mt-4">
+          {isLogin ? "New here? " : "Have an account? "}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-foreground hover:underline"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             {isLogin ? "Sign up" : "Sign in"}
           </button>
