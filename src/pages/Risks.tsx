@@ -58,24 +58,23 @@ const Risks = () => {
 
   // Check auth and load investments
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        loadInvestments();
+    // Set up auth listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      if (session?.user) {
+        setTimeout(() => loadInvestments(), 0);
       } else {
+        setInvestments([]);
         setIsLoadingInvestments(false);
       }
-    };
+    });
     
-    checkUser();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user || null);
       if (session?.user) {
         loadInvestments();
       } else {
-        setInvestments([]);
         setIsLoadingInvestments(false);
       }
     });
@@ -317,22 +316,18 @@ const Risks = () => {
       <div className="min-h-screen bg-background text-foreground pb-28">
         <PageHeader title="Risks" subtitle="See investments in hours at stake" />
 
-        {/* Not logged in */}
+        {/* Not logged in - minimal prompt */}
         {!user && !isLoadingInvestments && (
-          <div className="px-6">
-            <div className="bg-muted/30 border border-border rounded-2xl p-6 text-center">
-              <Wallet className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-              <p className="text-lg font-medium mb-2">Track Your Investments</p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Sign in to save your portfolio and see live price updates with time-based insights.
-              </p>
-              <button
-                onClick={() => window.location.href = "/auth"}
-                className="w-full bg-foreground text-background py-3 rounded-xl font-medium"
-              >
-                Sign in to continue
-              </button>
-            </div>
+          <div className="px-6 py-8">
+            <p className="text-sm text-muted-foreground text-center mb-4">
+              Sign in to track your investments
+            </p>
+            <button
+              onClick={() => window.location.href = "/auth"}
+              className="w-full py-3 border border-border rounded-xl text-sm font-light hover:bg-muted/20 transition-colors"
+            >
+              Sign in
+            </button>
           </div>
         )}
 
