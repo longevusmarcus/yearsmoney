@@ -43,12 +43,12 @@ const Risks = () => {
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
+
   // Form state
   const [asset, setAsset] = useState("");
   const [amount, setAmount] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-  
+
   // Analysis state
   const [selectedInvestment, setSelectedInvestment] = useState<Investment | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -59,18 +59,20 @@ const Risks = () => {
   const expenses = parseFloat(localStorage.getItem("tc_expenses") || "3000");
   const netWorth = parseFloat(localStorage.getItem("tc_networth") || "0");
   const freeCash = income - expenses;
-  
+
   // Hours calculation based on expenses (what 1 hour of life costs)
   const hourlyLifeCost = expenses / (30 * 24); // Monthly expenses / hours in month
   const hasFinancialData = income > 0 && expenses > 0;
-  
+
   // Life buffer in months
   const lifeBufferMonths = expenses > 0 ? netWorth / expenses : 0;
 
   // Check auth and load investments
   useEffect(() => {
     // Set up auth listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
       if (session?.user) {
         setTimeout(() => loadInvestments(), 0);
@@ -79,7 +81,7 @@ const Risks = () => {
         setIsLoadingInvestments(false);
       }
     });
-    
+
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user || null);
@@ -89,24 +91,21 @@ const Risks = () => {
         setIsLoadingInvestments(false);
       }
     });
-    
+
     return () => subscription.unsubscribe();
   }, []);
 
   const loadInvestments = async () => {
     setIsLoadingInvestments(true);
-    const { data, error } = await supabase
-      .from("investments")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
+    const { data, error } = await supabase.from("investments").select("*").order("created_at", { ascending: false });
+
     if (error) {
       console.error("Error loading investments:", error);
       toast({ title: "Error loading investments", variant: "destructive" });
     } else {
       setInvestments(data || []);
       if (data && data.length > 0) {
-        fetchPrices(data.map(inv => inv.asset_name));
+        fetchPrices(data.map((inv) => inv.asset_name));
       }
     }
     setIsLoadingInvestments(false);
@@ -114,18 +113,18 @@ const Risks = () => {
 
   const fetchPrices = async (assetNames: string[]) => {
     if (assetNames.length === 0) return;
-    
+
     setIsLoadingPrices(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ assets: assetNames }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         const priceMap: Record<string, PriceData> = {};
@@ -143,14 +142,14 @@ const Risks = () => {
 
   const addInvestment = async () => {
     if (!asset || !amount || !user) return;
-    
+
     setIsAdding(true);
     const { error } = await supabase.from("investments").insert({
       user_id: user.id,
       asset_name: asset,
       amount_invested: parseFloat(amount),
     });
-    
+
     if (error) {
       toast({ title: "Error adding investment", description: error.message, variant: "destructive" });
     } else {
@@ -168,7 +167,7 @@ const Risks = () => {
     if (error) {
       toast({ title: "Error deleting investment", variant: "destructive" });
     } else {
-      setInvestments(investments.filter(inv => inv.id !== id));
+      setInvestments(investments.filter((inv) => inv.id !== id));
     }
   };
 
@@ -181,54 +180,54 @@ const Risks = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
           type: "risk",
           asset: investment.asset_name,
           amount: investment.amount_invested,
-          hourlyLifeCost
+          hourlyLifeCost,
         }),
       });
 
       if (!response.ok) throw new Error("Failed to analyze");
 
       const data = await response.json();
-      
+
       setResult({
         asset: data.asset || investment.asset_name,
         currentValue: investment.amount_invested,
         potentialGain: {
           percentage: data.potentialGainPercent || 10,
-          hours: (investment.amount_invested * (data.potentialGainPercent || 10) / 100) / hourlyLifeCost
+          hours: (investment.amount_invested * (data.potentialGainPercent || 10)) / 100 / hourlyLifeCost,
         },
         potentialLoss: {
           percentage: data.potentialLossPercent || 10,
-          hours: (investment.amount_invested * (data.potentialLossPercent || 10) / 100) / hourlyLifeCost
+          hours: (investment.amount_invested * (data.potentialLossPercent || 10)) / 100 / hourlyLifeCost,
         },
         volatilityLevel: data.volatilityLevel || "medium",
-        recommendation: data.recommendation || "Consider your risk tolerance before investing."
+        recommendation: data.recommendation || "Consider your risk tolerance before investing.",
       });
     } catch (error) {
       const gainPercent = 15;
       const lossPercent = 20;
-      
+
       setResult({
         asset: investment.asset_name,
         currentValue: investment.amount_invested,
         potentialGain: {
           percentage: gainPercent,
-          hours: (investment.amount_invested * gainPercent / 100) / hourlyLifeCost
+          hours: (investment.amount_invested * gainPercent) / 100 / hourlyLifeCost,
         },
         potentialLoss: {
           percentage: lossPercent,
-          hours: (investment.amount_invested * lossPercent / 100) / hourlyLifeCost
+          hours: (investment.amount_invested * lossPercent) / 100 / hourlyLifeCost,
         },
         volatilityLevel: "medium",
-        recommendation: "This investment carries moderate risk. Make sure you can afford to lose this time."
+        recommendation: "This investment carries moderate risk. Make sure you can afford to lose this time.",
       });
     }
-    
+
     setIsAnalyzing(false);
   };
 
@@ -242,12 +241,12 @@ const Risks = () => {
   };
 
   const getTotalInvested = () => investments.reduce((sum, inv) => sum + inv.amount_invested, 0);
-  const getTotalHoursAtRisk = () => getTotalInvested() * 0.2 / hourlyLifeCost; // Assume 20% risk
+  const getTotalHoursAtRisk = () => (getTotalInvested() * 0.2) / hourlyLifeCost; // Assume 20% risk
 
   const volatilityColors = {
     low: "text-green-500",
     medium: "text-yellow-500",
-    high: "text-red-500"
+    high: "text-red-500",
   };
 
   // Calculate life scenarios based on hours lost
@@ -256,9 +255,9 @@ const Risks = () => {
     const weeksLost = daysLost / 7;
     const monthsLost = daysLost / 30;
     const yearsLost = monthsLost / 12;
-    
+
     const scenarios = [];
-    
+
     if (yearsLost >= 1) {
       scenarios.push({ label: "Years of freedom", value: yearsLost.toFixed(1), unit: "years" });
     }
@@ -271,7 +270,7 @@ const Risks = () => {
     if (daysLost >= 30) {
       scenarios.push({ label: "Family vacation days", value: Math.floor(daysLost / 7), unit: "trips" });
     }
-    
+
     return scenarios.slice(0, 3);
   };
 
@@ -281,21 +280,19 @@ const Risks = () => {
     const hoursGained = result.potentialGain.hours;
     const yearsLost = hoursLost / (24 * 365);
     const scenarios = getLifeScenarios(hoursLost);
-    
+
     return (
       <MobileOnly>
         <div className="min-h-screen bg-background text-foreground pb-28">
           <PageHeader title="Risks" subtitle="See investments in hours at stake" />
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="px-6"
-          >
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="px-6">
             {/* Asset header - minimal */}
             <div className="py-6">
               <p className="text-xl font-light">{result.asset}</p>
-              <p className="text-sm text-muted-foreground font-light">${result.currentValue.toLocaleString()} invested</p>
+              <p className="text-sm text-muted-foreground font-light">
+                ${result.currentValue.toLocaleString()} invested
+              </p>
             </div>
 
             {/* Gain/Loss cards - refined */}
@@ -355,7 +352,8 @@ const Risks = () => {
             {/* Question - refined */}
             <div className="mt-8 py-4 border-t border-border/30">
               <p className="text-sm font-light text-center leading-relaxed">
-                Trading <span className="text-red-500">{hoursLost.toFixed(0)}h</span> of life for a chance at <span className="text-green-500">+{hoursGained.toFixed(0)}h</span>
+                Trading <span className="text-red-500">{hoursLost.toFixed(0)}h</span> of life for a chance at{" "}
+                <span className="text-green-500">+{hoursGained.toFixed(0)}h</span>
               </p>
             </div>
 
@@ -376,14 +374,12 @@ const Risks = () => {
   return (
     <MobileOnly>
       <div className="min-h-screen bg-background text-foreground pb-28">
-        <PageHeader title="Risks" subtitle="See investments in hours at stake" />
+        <PageHeader title="Risks" subtitle="See investments in years at stake" />
 
         {/* Not logged in - minimal prompt */}
         {!user && !isLoadingInvestments && (
           <div className="px-6 py-8">
-            <p className="text-sm text-muted-foreground text-center mb-4">
-              Sign in to track your investments
-            </p>
+            <p className="text-sm text-muted-foreground text-center mb-4">Sign in to track your investments</p>
             <button
               onClick={() => setShowAuthModal(true)}
               className="w-full py-3 border border-border rounded-xl text-sm font-light hover:bg-muted/20 transition-colors"
@@ -419,15 +415,13 @@ const Risks = () => {
                   <p className="text-xs text-muted-foreground mb-1">Total Portfolio</p>
                   <p className="text-3xl font-light">${getTotalInvested().toLocaleString()}</p>
                   <div className="flex items-center gap-4 mt-2">
-                    <p className="text-xs text-muted-foreground">
-                      ~{getTotalHoursAtRisk().toFixed(0)}h at risk
-                    </p>
+                    <p className="text-xs text-muted-foreground">~{getTotalHoursAtRisk().toFixed(0)}h at risk</p>
                     <p className="text-xs text-muted-foreground">
                       {(getTotalHoursAtRisk() / (24 * 365)).toFixed(2)} years
                     </p>
                   </div>
                   <button
-                    onClick={() => fetchPrices(investments.map(inv => inv.asset_name))}
+                    onClick={() => fetchPrices(investments.map((inv) => inv.asset_name))}
                     className="mt-3 text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors"
                   >
                     <RefreshCw className="w-3 h-3" /> {isLoadingPrices ? "Loading..." : "Refresh"}
@@ -442,8 +436,8 @@ const Risks = () => {
                 {investments.map((investment) => {
                   const priceData = getPriceForAsset(investment.asset_name);
                   const dailyChange = priceData?.changePercent24h || 0;
-                  const dailyHoursChange = (investment.amount_invested * Math.abs(dailyChange) / 100) / hourlyLifeCost;
-                  
+                  const dailyHoursChange = (investment.amount_invested * Math.abs(dailyChange)) / 100 / hourlyLifeCost;
+
                   return (
                     <motion.div
                       key={investment.id}
@@ -459,19 +453,23 @@ const Risks = () => {
                             ${investment.amount_invested.toLocaleString()}
                           </p>
                         </div>
-                        
+
                         <div className="flex items-center gap-3">
                           {priceData && (
                             <div className="text-right">
-                              <p className={`text-sm font-medium ${dailyChange >= 0 ? "text-green-500" : "text-red-500"}`}>
-                                {dailyChange >= 0 ? "+" : ""}{dailyChange.toFixed(2)}%
+                              <p
+                                className={`text-sm font-medium ${dailyChange >= 0 ? "text-green-500" : "text-red-500"}`}
+                              >
+                                {dailyChange >= 0 ? "+" : ""}
+                                {dailyChange.toFixed(2)}%
                               </p>
                               <p className="text-[10px] text-muted-foreground">
-                                {dailyChange >= 0 ? "+" : "-"}{dailyHoursChange.toFixed(1)}h today
+                                {dailyChange >= 0 ? "+" : "-"}
+                                {dailyHoursChange.toFixed(1)}h today
                               </p>
                             </div>
                           )}
-                          
+
                           <button
                             onClick={() => deleteInvestment(investment.id)}
                             className="p-2 text-muted-foreground hover:text-destructive"
@@ -480,14 +478,16 @@ const Risks = () => {
                           </button>
                         </div>
                       </div>
-                      
+
                       <button
                         onClick={() => analyzeInvestment(investment)}
                         disabled={isAnalyzing}
                         className="w-full mt-3 py-2 bg-muted/30 rounded-xl text-xs font-medium flex items-center justify-center gap-2"
                       >
                         {isAnalyzing && selectedInvestment?.id === investment.id ? (
-                          <><Loader2 className="w-3 h-3 animate-spin" /> Analyzing...</>
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...
+                          </>
                         ) : (
                           "Analyze risk in hours"
                         )}
@@ -516,7 +516,7 @@ const Risks = () => {
                       className="w-full bg-muted/30 rounded-xl px-4 py-3 mt-2"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="text-sm text-muted-foreground">Amount invested ($)</label>
                     <input
@@ -548,7 +548,7 @@ const Risks = () => {
 
                 {/* Quick select */}
                 <div className="flex flex-wrap gap-2">
-                  {["Bitcoin", "Ethereum", "S&P 500", "Tesla", "Apple"].map(item => (
+                  {["Bitcoin", "Ethereum", "S&P 500", "Tesla", "Apple"].map((item) => (
                     <button
                       key={item}
                       onClick={() => setAsset(item)}
@@ -585,10 +585,10 @@ const Risks = () => {
         )}
 
         <BottomNav />
-        
+
         {/* Auth Modal */}
-        <AuthModal 
-          isOpen={showAuthModal} 
+        <AuthModal
+          isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           onSuccess={() => setShowAuthModal(false)}
         />
