@@ -360,6 +360,11 @@ const Opportunities = () => {
                 text: "That would exceed your entire life buffer — be very careful",
                 type: "destructive"
               };
+            } else if (totalWorkingDays > yearlyBufferDays && totalWorkingDays <= currentBufferDays && hasNetWorth) {
+              return {
+                text: "That's more than your yearly growth but in line with overall life buffer — choose wisely",
+                type: "warning"
+              };
             } else if (totalWorkingDays > yearlyBufferDays) {
               return {
                 text: "That's more than your yearly growth — choose wisely",
