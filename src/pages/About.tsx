@@ -426,7 +426,7 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground">
+            <span className="text-xs md:text-sm tracking-[0.2em] uppercase text-muted-foreground/60 font-light">
               Philosophy
             </span>
           </motion.div>
@@ -655,7 +655,7 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
+            <span className="text-xs md:text-sm tracking-[0.2em] uppercase text-muted-foreground/60 font-light mb-6 block">
               The Buffers
             </span>
             <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">Two measures of freedom</h2>
