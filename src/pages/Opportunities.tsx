@@ -348,24 +348,62 @@ const Opportunities = () => {
         )}
 
         {/* Summary */}
-        {!isLoading && !error && products.length > 0 && (
-          <div className="px-6 py-4">
-            <div className="bg-card border border-border rounded-2xl p-4 text-center">
-              <p className="text-xs text-muted-foreground font-light">
-                These {products.length} options would cost{" "}
-                <span className="font-medium text-foreground">
-                  {products.reduce((sum, p) => sum + (p.workingDays || 0), 0).toFixed(0)} working days
-                </span>{" "}
-                ({products.reduce((sum, p) => sum + (p.workingMonths || 0), 0).toFixed(1)} months)
-              </p>
-              {products.reduce((sum, p) => sum + (p.workingDays || 0), 0) > yearlyBufferDays && (
-                <p className="text-[10px] text-destructive mt-1 font-light">
-                  That's more than your yearly capacity — choose wisely
+        {!isLoading && !error && products.length > 0 && (() => {
+          const totalWorkingDays = products.reduce((sum, p) => sum + (p.workingDays || 0), 0);
+          const totalWorkingMonths = products.reduce((sum, p) => sum + (p.workingMonths || 0), 0);
+          const currentBufferDays = currentBufferMonths * 30;
+          
+          // Determine the warning/status message
+          const getStatusMessage = () => {
+            if (totalWorkingDays > currentBufferDays && hasNetWorth) {
+              return {
+                text: "That would exceed your entire life buffer — be very careful",
+                type: "destructive"
+              };
+            } else if (totalWorkingDays > yearlyBufferDays) {
+              return {
+                text: "That's more than your yearly growth — choose wisely",
+                type: "warning"
+              };
+            } else if (totalWorkingMonths <= currentBufferMonths * 0.1 && hasNetWorth) {
+              return {
+                text: "Well within your runway — comfortable choices",
+                type: "success"
+              };
+            } else if (totalWorkingDays <= yearlyBufferDays * 0.5) {
+              return {
+                text: "Within half your yearly growth — reasonable",
+                type: "success"
+              };
+            }
+            return null;
+          };
+          
+          const status = getStatusMessage();
+          
+          return (
+            <div className="px-6 py-4">
+              <div className="bg-card border border-border rounded-2xl p-4 text-center">
+                <p className="text-xs text-muted-foreground font-light">
+                  These {products.length} options would cost{" "}
+                  <span className="font-medium text-foreground">
+                    {totalWorkingDays.toFixed(0)} working days
+                  </span>{" "}
+                  ({totalWorkingMonths.toFixed(1)} months)
                 </p>
-              )}
+                {status && (
+                  <p className={`text-[10px] mt-1 font-light ${
+                    status.type === "destructive" ? "text-destructive" :
+                    status.type === "warning" ? "text-orange-500" :
+                    "text-green-500"
+                  }`}>
+                    {status.text}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         <BottomNav />
       </div>
