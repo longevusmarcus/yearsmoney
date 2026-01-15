@@ -223,7 +223,7 @@ const About = () => {
     },
     {
       title: "Allocate Your Optional Life",
-      description: "Transform surplus hours into meaningful experiences and growth",
+      description: "Transform surplus hours, days...years into meaningful experiences and growth",
       isExpanded: true,
       subPoints: [
         { hours: "400", label: "A trip to Japan" },
