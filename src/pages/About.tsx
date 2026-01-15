@@ -499,7 +499,7 @@ const About = () => {
               },
               {
                 image: appOptional,
-                title: "Optional",
+                title: "Ideas",
                 subtitle: "Explore what time could buy",
                 icon: Sparkles,
                 parallaxOffset: -20,
