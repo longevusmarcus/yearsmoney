@@ -187,7 +187,7 @@ const Opportunities = () => {
         {/* Your Optional Life Summary */}
         <div className="px-6 py-4">
           <div className="bg-foreground text-background rounded-2xl p-5">
-            <p className="text-xs opacity-60 font-light">Your yearly buffer capacity</p>
+            <p className="text-xs opacity-60 font-light">Your yearly buffer growth</p>
             <div className="flex items-baseline gap-3 mt-1">
               <p className="text-4xl font-light">{Math.round(yearlyBufferDays)}</p>
               <p className="text-lg opacity-80">days</p>
