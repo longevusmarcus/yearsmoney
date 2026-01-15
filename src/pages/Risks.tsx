@@ -489,7 +489,7 @@ const Risks = () => {
                             <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...
                           </>
                         ) : (
-                          "Analyze risk in hours"
+                          "Analyze risk in hours & years"
                         )}
                       </button>
                     </motion.div>
