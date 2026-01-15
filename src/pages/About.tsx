@@ -222,8 +222,17 @@ const About = () => {
       description: "Convert any price into life-hours at your personal rate",
     },
     {
-      title: "Optimize Time",
-      description: "Stop optimizing for income. Start optimizing for life runway.",
+      title: "Allocate Your Optional Life",
+      description: "Transform surplus hours into meaningful experiences and growth",
+      isExpanded: true,
+      subPoints: [
+        { hours: "400", label: "A trip to Japan" },
+        { hours: "50", label: "A new gadget" },
+        { hours: "1,000", label: "Online learning & upskilling" },
+        { hours: "200", label: "Weekend adventures" },
+        { hours: "150", label: "Quality time with loved ones" },
+        { hours: "300", label: "Building a side project" },
+      ],
     },
   ];
 
@@ -565,38 +574,70 @@ const About = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
+      {/* How It Works Section */}
+      <section id="features" className="py-32 px-6">
+        <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <span className="inline-block bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-5 py-2.5 text-sm text-muted-foreground mb-6">
+            <span className="text-xs md:text-sm tracking-[0.2em] uppercase text-muted-foreground/60 font-light mb-6 block">
               How It Works
             </span>
-            <h2 className="text-3xl md:text-5xl font-light text-foreground mb-4">From money to time</h2>
+            <h2 className="text-4xl md:text-6xl font-light text-foreground">
+              From money to <span className="font-cormorant italic">time</span>
+            </h2>
           </motion.div>
 
-          <div className="space-y-6">
+          <div className="space-y-0">
             {howItWorks.map((step, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="flex items-start gap-6 bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-6"
+                transition={{ delay: index * 0.08, duration: 0.5 }}
+                className="group"
               >
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="text-primary font-light">{index + 1}</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-light text-foreground mb-1">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
+                <div className={`flex items-start gap-6 md:gap-10 py-8 ${index !== howItWorks.length - 1 ? 'border-b border-border/30' : ''}`}>
+                  <div className="w-8 md:w-10 shrink-0 pt-1">
+                    <span className="text-sm md:text-base text-muted-foreground/50 font-light">{index + 1}</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl md:text-2xl font-light text-foreground mb-2 group-hover:text-primary/90 transition-colors duration-300">{step.title}</h3>
+                    <p className="text-muted-foreground/80 font-light leading-relaxed">{step.description}</p>
+                    
+                    {/* Expanded sub-points for Optional Life allocation */}
+                    {step.isExpanded && step.subPoints && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                        className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4"
+                      >
+                        {step.subPoints.map((point, pointIndex) => (
+                          <motion.div
+                            key={pointIndex}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 + pointIndex * 0.05, duration: 0.4 }}
+                            className="group/item"
+                          >
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-2xl md:text-3xl font-light text-foreground/90">{point.hours}</span>
+                              <span className="text-xs text-muted-foreground/50 uppercase tracking-wide">hrs</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground/70 font-light mt-1">{point.label}</p>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}
