@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.affiliate-search]
 verify_jwt = false
+
+[functions.investment-prices]
+verify_jwt = false
