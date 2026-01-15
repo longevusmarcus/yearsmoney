@@ -359,7 +359,7 @@ const Home = () => {
             : 'bg-card border-border'
         }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-light">this month</span>
+            <span className="text-xs text-muted-foreground font-light">this month you gained</span>
             <span className={`text-xl font-light ${isNegative ? 'text-destructive' : 'text-foreground'}`}>
               {isNegative ? '' : '+'}{hoursGainedOrLost.toLocaleString()} hours
             </span>
