@@ -563,9 +563,8 @@ const Risks = () => {
               <div className="px-6 mt-4">
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="w-full py-4 border border-dashed border-border rounded-2xl font-medium flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+                  className="w-full py-4 bg-foreground text-background rounded-2xl font-light flex items-center justify-center gap-2"
                 >
-                  <Plus className="w-5 h-5" />
                   Add investment
                 </button>
               </div>
