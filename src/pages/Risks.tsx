@@ -54,9 +54,18 @@ const Risks = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<RiskAnalysis | null>(null);
 
-  // Get expenses from localStorage for calculations
-  const expenses = parseFloat(localStorage.getItem("tc_expenses") || localStorage.getItem("timecost_expenses") || "3000");
-  const hourlyLifeCost = expenses / (30 * 24);
+  // Get financial data from Home page
+  const income = parseFloat(localStorage.getItem("tc_income") || "0");
+  const expenses = parseFloat(localStorage.getItem("tc_expenses") || "3000");
+  const netWorth = parseFloat(localStorage.getItem("tc_networth") || "0");
+  const freeCash = income - expenses;
+  
+  // Hours calculation based on expenses (what 1 hour of life costs)
+  const hourlyLifeCost = expenses / (30 * 24); // Monthly expenses / hours in month
+  const hasFinancialData = income > 0 && expenses > 0;
+  
+  // Life buffer in months
+  const lifeBufferMonths = expenses > 0 ? netWorth / expenses : 0;
 
   // Check auth and load investments
   useEffect(() => {
@@ -241,8 +250,38 @@ const Risks = () => {
     high: "text-red-500"
   };
 
+  // Calculate life scenarios based on hours lost
+  const getLifeScenarios = (hoursLost: number) => {
+    const daysLost = hoursLost / 24;
+    const weeksLost = daysLost / 7;
+    const monthsLost = daysLost / 30;
+    const yearsLost = monthsLost / 12;
+    
+    const scenarios = [];
+    
+    if (yearsLost >= 1) {
+      scenarios.push({ label: "Years of freedom", value: yearsLost.toFixed(1), unit: "years" });
+    }
+    if (monthsLost >= 1) {
+      scenarios.push({ label: "Months to help parents", value: monthsLost.toFixed(1), unit: "months" });
+    }
+    if (weeksLost >= 2) {
+      scenarios.push({ label: "Weeks to build something", value: weeksLost.toFixed(0), unit: "weeks" });
+    }
+    if (daysLost >= 30) {
+      scenarios.push({ label: "Family vacation days", value: Math.floor(daysLost / 7), unit: "trips" });
+    }
+    
+    return scenarios.slice(0, 3);
+  };
+
   // If showing analysis result
   if (result && selectedInvestment) {
+    const hoursLost = result.potentialLoss.hours;
+    const hoursGained = result.potentialGain.hours;
+    const yearsLost = hoursLost / (24 * 365);
+    const scenarios = getLifeScenarios(hoursLost);
+    
     return (
       <MobileOnly>
         <div className="min-h-screen bg-background text-foreground pb-28">
@@ -253,57 +292,78 @@ const Risks = () => {
             animate={{ opacity: 1, y: 0 }}
             className="px-6"
           >
-            <div className="text-center py-4">
-              <p className="text-2xl font-bold">{result.asset}</p>
-              <p className="text-muted-foreground">${result.currentValue.toLocaleString()} invested</p>
+            {/* Asset header - minimal */}
+            <div className="py-6">
+              <p className="text-xl font-light">{result.asset}</p>
+              <p className="text-sm text-muted-foreground font-light">${result.currentValue.toLocaleString()} invested</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-4 h-4 text-green-500" />
-                  <span className="text-xs text-green-500">If +{result.potentialGain.percentage}%</span>
+            {/* Gain/Loss cards - refined */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="border border-green-500/20 rounded-xl p-4">
+                <p className="text-[10px] text-muted-foreground mb-1">If +{result.potentialGain.percentage}%</p>
+                <p className="text-2xl font-light text-green-500">+{hoursGained.toFixed(0)}</p>
+                <p className="text-[10px] text-muted-foreground">hours gained</p>
+              </div>
+
+              <div className="border border-red-500/20 rounded-xl p-4">
+                <p className="text-[10px] text-muted-foreground mb-1">If -{result.potentialLoss.percentage}%</p>
+                <p className="text-2xl font-light text-red-500">-{hoursLost.toFixed(0)}</p>
+                <p className="text-[10px] text-muted-foreground">hours lost</p>
+              </div>
+            </div>
+
+            {/* Life scenarios - what you could lose */}
+            {scenarios.length > 0 && (
+              <div className="mt-6">
+                <p className="text-xs text-muted-foreground mb-3">If this investment fails, you lose:</p>
+                <div className="space-y-2">
+                  {scenarios.map((scenario, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 border-b border-border/30">
+                      <span className="text-sm font-light text-muted-foreground">{scenario.label}</span>
+                      <span className="text-sm font-light">
+                        {scenario.value} <span className="text-muted-foreground">{scenario.unit}</span>
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div className="text-3xl font-black text-green-500">+{result.potentialGain.hours.toFixed(0)}</div>
-                <div className="text-xs text-muted-foreground mt-1">hours gained</div>
               </div>
+            )}
 
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingDown className="w-4 h-4 text-red-500" />
-                  <span className="text-xs text-red-500">If -{result.potentialLoss.percentage}%</span>
-                </div>
-                <div className="text-3xl font-black text-red-500">-{result.potentialLoss.hours.toFixed(0)}</div>
-                <div className="text-xs text-muted-foreground mt-1">hours lost</div>
+            {/* Years of life at risk - prominent */}
+            {yearsLost >= 0.1 && (
+              <div className="mt-6 py-4 text-center">
+                <p className="text-4xl font-light text-red-500">{yearsLost.toFixed(2)}</p>
+                <p className="text-xs text-muted-foreground mt-1">years of life at risk</p>
               </div>
+            )}
+
+            {/* Volatility */}
+            <div className="mt-4 flex items-center justify-between py-3 border-b border-border/30">
+              <span className="text-sm text-muted-foreground font-light">Volatility</span>
+              <span className={`text-sm font-light capitalize ${volatilityColors[result.volatilityLevel]}`}>
+                {result.volatilityLevel}
+              </span>
             </div>
 
-            <div className="mt-6 bg-muted/30 rounded-2xl p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Volatility Level</span>
-                <span className={`font-semibold capitalize ${volatilityColors[result.volatilityLevel]}`}>
-                  {result.volatilityLevel}
-                </span>
-              </div>
+            {/* AI Recommendation - minimal */}
+            <div className="mt-6">
+              <p className="text-xs text-muted-foreground mb-2">AI insight</p>
+              <p className="text-sm font-light leading-relaxed">{result.recommendation}</p>
             </div>
 
-            <div className="mt-4 bg-foreground text-background rounded-2xl p-5">
-              <p className="text-sm font-medium mb-2">AI Recommendation</p>
-              <p className="text-sm opacity-80">{result.recommendation}</p>
-            </div>
-
-            <div className="mt-6 text-center">
-              <p className="text-lg font-medium">
-                Are you comfortable trading <span className="text-red-500">{result.potentialLoss.hours.toFixed(0)} hours</span> of your life for a chance to gain <span className="text-green-500">{result.potentialGain.hours.toFixed(0)} hours</span>?
+            {/* Question - refined */}
+            <div className="mt-8 py-4 border-t border-border/30">
+              <p className="text-sm font-light text-center leading-relaxed">
+                Trading <span className="text-red-500">{hoursLost.toFixed(0)}h</span> of life for a chance at <span className="text-green-500">+{hoursGained.toFixed(0)}h</span>
               </p>
             </div>
 
             <button
               onClick={resetAnalysis}
-              className="w-full mt-8 py-4 border border-border rounded-2xl font-medium flex items-center justify-center gap-2"
+              className="w-full mt-4 py-3 border border-border rounded-xl text-sm font-light"
             >
-              <RefreshCw className="w-4 h-4" />
-              Back to portfolio
+              Back
             </button>
           </motion.div>
 
@@ -343,23 +403,34 @@ const Risks = () => {
         {/* Logged in - Portfolio */}
         {user && !isLoadingInvestments && (
           <>
+            {/* No financial data warning */}
+            {!hasFinancialData && (
+              <div className="px-6 mb-4">
+                <p className="text-xs text-muted-foreground text-center py-3">
+                  Add income & expenses on Home for personalized time calculations
+                </p>
+              </div>
+            )}
+
             {/* Portfolio Summary */}
             {investments.length > 0 && (
               <div className="px-6 mb-4">
-                <div className="bg-foreground text-background rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs opacity-60 font-light">Total Portfolio</p>
-                    {isLoadingPrices && <Loader2 className="w-4 h-4 animate-spin opacity-60" />}
-                  </div>
+                <div className="py-4">
+                  <p className="text-xs text-muted-foreground mb-1">Total Portfolio</p>
                   <p className="text-3xl font-light">${getTotalInvested().toLocaleString()}</p>
-                  <p className="text-xs opacity-60 mt-2">
-                    ~{getTotalHoursAtRisk().toFixed(0)} hours at risk (20% volatility)
-                  </p>
+                  <div className="flex items-center gap-4 mt-2">
+                    <p className="text-xs text-muted-foreground">
+                      ~{getTotalHoursAtRisk().toFixed(0)}h at risk
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {(getTotalHoursAtRisk() / (24 * 365)).toFixed(2)} years
+                    </p>
+                  </div>
                   <button
                     onClick={() => fetchPrices(investments.map(inv => inv.asset_name))}
-                    className="mt-3 text-xs opacity-60 flex items-center gap-1 hover:opacity-100"
+                    className="mt-3 text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors"
                   >
-                    <RefreshCw className="w-3 h-3" /> Refresh prices
+                    <RefreshCw className="w-3 h-3" /> {isLoadingPrices ? "Loading..." : "Refresh"}
                   </button>
                 </div>
               </div>
