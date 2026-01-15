@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import UBI from "./pages/UBI";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,9 @@ const App = () => {
             <Route path="/risks" element={<Risks />} />
             <Route path="/opportunities" element={<Opportunities />} />
             <Route path="/settings" element={<Settings />} />
+            
+            {/* Auth */}
+            <Route path="/auth" element={<Auth />} />
             
             {/* Legal/Info pages */}
             <Route path="/ubi" element={<UBI />} />
