@@ -358,10 +358,9 @@ const About = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-1.5 md:gap-2 bg-card/60 backdrop-blur-sm border border-border/50 rounded-full px-3 md:px-5 py-1.5 md:py-2.5 mb-6 md:mb-10"
+            className="inline-block mb-6 md:mb-10"
           >
-            <Hourglass className="h-3 w-3 md:h-4 md:w-4 text-foreground" />
-            <span className="text-[10px] md:text-sm text-muted-foreground whitespace-nowrap">
+            <span className="text-xs md:text-sm tracking-[0.2em] uppercase text-muted-foreground/80 font-light">
               A financial app with a twist
             </span>
           </motion.div>
