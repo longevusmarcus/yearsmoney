@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      investments: {
+        Row: {
+          amount_invested: number
+          asset_name: string
+          asset_symbol: string | null
+          created_at: string
+          id: string
+          purchase_price: number | null
+          quantity: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_invested: number
+          asset_name: string
+          asset_symbol?: string | null
+          created_at?: string
+          id?: string
+          purchase_price?: number | null
+          quantity?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_invested?: number
+          asset_name?: string
+          asset_symbol?: string | null
+          created_at?: string
+          id?: string
+          purchase_price?: number | null
+          quantity?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
