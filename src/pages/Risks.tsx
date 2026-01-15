@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, AlertTriangle, Loader2, RefreshCw, Plus, Trash2, Wallet } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, Loader2, RefreshCw, Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import AuthModal from "@/components/AuthModal";
 
 interface Investment {
   id: string;
@@ -41,6 +42,7 @@ const Risks = () => {
   const [isLoadingInvestments, setIsLoadingInvestments] = useState(true);
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   // Form state
   const [asset, setAsset] = useState("");
@@ -323,7 +325,7 @@ const Risks = () => {
               Sign in to track your investments
             </p>
             <button
-              onClick={() => window.location.href = "/auth"}
+              onClick={() => setShowAuthModal(true)}
               className="w-full py-3 border border-border rounded-xl text-sm font-light hover:bg-muted/20 transition-colors"
             >
               Sign in
@@ -513,6 +515,13 @@ const Risks = () => {
         )}
 
         <BottomNav />
+        
+        {/* Auth Modal */}
+        <AuthModal 
+          isOpen={showAuthModal} 
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={() => setShowAuthModal(false)}
+        />
       </div>
     </MobileOnly>
   );
