@@ -61,9 +61,12 @@ const Opportunities = () => {
   const dailyEarnings = freeCash > 0 ? freeCash / WORKING_DAYS_PER_MONTH : 45; // Default fallback
 
   // Your "optional life" - yearly buffer capacity
-  const yearlyBufferDays = freeCash > 0 ? (freeCash * 12) / dailyEarnings : 264;
-  const yearlyBufferMonths = yearlyBufferDays / WORKING_DAYS_PER_MONTH;
-  const yearlyBufferYears = yearlyBufferDays / WORKING_DAYS_PER_YEAR;
+  // This is how many days of expenses you can accumulate per year from your surplus
+  const yearlySurplus = freeCash * 12; // Total yearly surplus
+  const dailyExpenses = expenses / 30; // Average daily living cost
+  const yearlyBufferDays = dailyExpenses > 0 ? yearlySurplus / dailyExpenses : (freeCash > 0 ? WORKING_DAYS_PER_YEAR : 0);
+  const yearlyBufferMonths = expenses > 0 ? yearlySurplus / expenses : 0;
+  const yearlyBufferYears = yearlyBufferMonths / 12;
 
   // Current life buffer
   const currentBufferMonths = expenses > 0 ? netWorth / expenses : 0;
