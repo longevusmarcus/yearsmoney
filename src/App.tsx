@@ -8,7 +8,7 @@ import About from "./pages/About";
 import Home from "./pages/Home";
 import Purchase from "./pages/Purchase";
 import Risks from "./pages/Risks";
-import Opportunities from "./pages/Opportunities";
+import Leaderboard from "./pages/Leaderboard";
 import Settings from "./pages/Settings";
 import UBI from "./pages/UBI";
 import Terms from "./pages/Terms";
@@ -35,7 +35,7 @@ const App = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/purchase" element={<Purchase />} />
             <Route path="/risks" element={<Risks />} />
-            <Route path="/opportunities" element={<Opportunities />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/settings" element={<Settings />} />
             
             {/* Auth */}

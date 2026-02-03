@@ -1,4 +1,4 @@
-import { Home, Search, AlertTriangle, Sparkles } from "lucide-react";
+import { Home, Search, AlertTriangle, Trophy } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const BottomNav = () => {
@@ -9,7 +9,7 @@ const BottomNav = () => {
     { icon: Home, label: "Home", path: "/home" },
     { icon: Search, label: "Purchase", path: "/purchase" },
     { icon: AlertTriangle, label: "Risks", path: "/risks" },
-    { icon: Sparkles, label: "Ideas", path: "/opportunities" },
+    { icon: Trophy, label: "Rank", path: "/leaderboard" },
   ];
 
   return (
