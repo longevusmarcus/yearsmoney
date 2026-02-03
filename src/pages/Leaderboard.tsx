@@ -1,23 +1,47 @@
 import { ArrowLeft, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 import BottomNav from "@/components/BottomNav";
 
 const Leaderboard = () => {
   const navigate = useNavigate();
 
-  // Mock leaderboard data - in production this would come from the database
-  const leaderboardData = [
-    { rank: 1, name: "Anonymous", buffer0: 847, buffer1: 12 },
-    { rank: 2, name: "Anonymous", buffer0: 623, buffer1: 8 },
-    { rank: 3, name: "Anonymous", buffer0: 512, buffer1: 15 },
-    { rank: 4, name: "Anonymous", buffer0: 489, buffer1: 6 },
-    { rank: 5, name: "Anonymous", buffer0: 401, buffer1: 9 },
-    { rank: 6, name: "Anonymous", buffer0: 356, buffer1: 11 },
-    { rank: 7, name: "Anonymous", buffer0: 298, buffer1: 7 },
-    { rank: 8, name: "Anonymous", buffer0: 245, buffer1: 4 },
-    { rank: 9, name: "Anonymous", buffer0: 189, buffer1: 13 },
-    { rank: 10, name: "Anonymous", buffer0: 156, buffer1: 5 },
-  ];
+  // Generate 50 users, each 3% less than previous
+  // Starting: 1M net worth, 20k/month income, 10k/month expenses
+  const leaderboardData = useMemo(() => {
+    const users = [];
+    let netWorth = 1_000_000;
+    let monthlyIncome = 20_000;
+    let monthlyExpenses = 10_000;
+
+    for (let i = 0; i < 50; i++) {
+      // Buffer 0 = Net Worth / Annual Expenses (survival years)
+      const buffer0 = netWorth / (monthlyExpenses * 12);
+      // Buffer 1 = Net Worth / Annual Income (lifestyle years)
+      const buffer1 = netWorth / (monthlyIncome * 12);
+
+      users.push({
+        rank: i + 1,
+        name: "Anonymous",
+        buffer0Years: buffer0,
+        buffer1Years: buffer1,
+      });
+
+      // Reduce all values by 3% for next user
+      netWorth *= 0.97;
+      monthlyIncome *= 0.97;
+      monthlyExpenses *= 0.97;
+    }
+
+    return users;
+  }, []);
+
+  const formatYears = (years: number) => {
+    if (years >= 1) {
+      return years.toFixed(1);
+    }
+    return years.toFixed(2);
+  };
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -53,7 +77,7 @@ const Leaderboard = () => {
             >
               {/* Rank & Name */}
               <div className="flex items-center gap-5">
-                <span className={`text-sm font-light w-6 ${
+                <span className={`text-sm font-light w-6 tabular-nums ${
                   user.rank <= 3 ? "text-foreground" : "text-muted-foreground/50"
                 }`}>
                   {user.rank}
@@ -77,13 +101,16 @@ const Leaderboard = () => {
                 </div>
               </div>
 
-              {/* Buffers */}
+              {/* Buffers in Years */}
               <div className="flex items-baseline gap-1">
                 <span className="text-lg font-light text-foreground tabular-nums">
-                  {user.buffer0}
+                  {formatYears(user.buffer0Years)}
                 </span>
                 <span className="text-[10px] text-muted-foreground/50 font-light">
-                  /{user.buffer1}
+                  y
+                </span>
+                <span className="text-[10px] text-muted-foreground/30 font-light ml-1">
+                  /{formatYears(user.buffer1Years)}y
                 </span>
               </div>
             </div>
