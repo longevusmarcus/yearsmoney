@@ -1,5 +1,6 @@
 import { Home, Search, AlertTriangle, Trophy } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const BottomNav = () => {
   const location = useLocation();
@@ -13,31 +14,45 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-6 left-0 right-0 z-50 px-4 safe-area-bottom">
-      <div className="max-w-lg mx-auto">
-        <div className="backdrop-blur-2xl bg-background/80 border border-border/30 rounded-full shadow-2xl px-2 py-2">
-          <div className="flex justify-between items-center">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+    <motion.nav 
+      className="fixed bottom-8 left-0 right-0 z-50 px-6 safe-area-bottom"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      <div className="max-w-xs mx-auto">
+        <div className="flex justify-between items-center px-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
 
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={`flex flex-col items-center justify-center gap-1 px-5 py-2 rounded-full transition-all duration-300 ${
-                    isActive ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="text-[10px] font-medium">{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className="relative flex flex-col items-center justify-center p-3 transition-all duration-300"
+              >
+                <Icon 
+                  className={`w-5 h-5 transition-all duration-300 ${
+                    isActive 
+                      ? "text-foreground" 
+                      : "text-muted-foreground/40 hover:text-muted-foreground"
+                  }`} 
+                  strokeWidth={isActive ? 1.5 : 1}
+                />
+                {isActive && (
+                  <motion.div 
+                    className="absolute -bottom-1 w-1 h-1 rounded-full bg-foreground"
+                    layoutId="nav-indicator"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
