@@ -1,11 +1,9 @@
-import { ArrowLeft, Trophy } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Trophy } from "lucide-react";
 import { useMemo } from "react";
 import BottomNav from "@/components/BottomNav";
+import PageHeader from "@/components/PageHeader";
 
 const Leaderboard = () => {
-  const navigate = useNavigate();
-
   // Realistic human names
   const names = [
     "Marcus Chen", "Sofia Rodriguez", "James O'Brien", "Aisha Patel", "Lucas Andersen",
@@ -19,6 +17,17 @@ const Leaderboard = () => {
     "Jackson Turner", "Penelope Sharma", "Aiden Cooper", "Layla Fischer", "Samuel Reed",
     "Riley Yamamoto", "Joseph Bell", "Nora Eriksen", "Luke Foster", "Hannah Moreau"
   ];
+
+  // Abbreviate name to 3-4 chars each (e.g., "Marc. Chen")
+  const abbreviateName = (fullName: string) => {
+    const parts = fullName.split(" ");
+    if (parts.length >= 2) {
+      const first = parts[0].slice(0, 4);
+      const last = parts[parts.length - 1].slice(0, 4);
+      return `${first}. ${last}.`;
+    }
+    return fullName.slice(0, 4) + ".";
+  };
 
   // Generate 50 users with varied financials
   const leaderboardData = useMemo(() => {
@@ -40,14 +49,14 @@ const Leaderboard = () => {
       const monthlyIncome = baseIncome * incomeDecay;
       const monthlyExpenses = monthlyIncome * expenseVariation;
 
-      // Buffer 0 = Net Worth / Annual Expenses (survival years)
-      const buffer0 = netWorth / (monthlyExpenses * 12);
-      // Buffer 1 = Net Worth / Annual Income (lifestyle years)  
-      const buffer1 = netWorth / (monthlyIncome * 12);
+      // Buffer 0 = Net Worth / Annual Income (lower - based on maintaining lifestyle)
+      const buffer0 = netWorth / (monthlyIncome * 12);
+      // Buffer 1 = Net Worth / Annual Expenses (higher - survival mode)  
+      const buffer1 = netWorth / (monthlyExpenses * 12);
 
       users.push({
         rank: i + 1,
-        name: names[i],
+        name: abbreviateName(names[i]),
         buffer0Years: buffer0,
         buffer1Years: buffer1,
       });
@@ -69,29 +78,14 @@ const Leaderboard = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <div className="p-6 space-y-8">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="text-foreground">
-            <ArrowLeft className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-        </div>
+      <PageHeader 
+        title="Leaderboard" 
+        subtitle="Ranked by life buffers, not money"
+      />
 
-        {/* Title */}
-        <div className="space-y-3">
-          <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60 font-light">
-            Global Ranking
-          </span>
-          <h1 className="text-3xl font-light text-foreground tracking-tight">
-            Leaderboard
-          </h1>
-          <p className="text-sm text-muted-foreground/70 font-light leading-relaxed max-w-sm">
-            Ranked by life buffers, not money
-          </p>
-        </div>
-
+      <div className="px-6 space-y-0">
         {/* Leaderboard List */}
-        <div className="space-y-0">
+        <div>
           {leaderboardData.map((user, index) => (
             <div
               key={user.rank}
@@ -141,8 +135,8 @@ const Leaderboard = () => {
           ))}
         </div>
 
-        {/* Footer Note */}
-        <div className="pt-4">
+        {/* Footer Note */}  
+        <div className="pt-8 pb-4">
           <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40 font-light text-center">
             Buffer 0 · Buffer 1
           </p>
