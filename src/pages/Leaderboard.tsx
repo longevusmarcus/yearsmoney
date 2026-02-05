@@ -20,13 +20,7 @@ const Leaderboard = () => {
 
   // Abbreviate name to 3-4 chars each (e.g., "Marc. Chen")
   const abbreviateName = (fullName: string) => {
-    const parts = fullName.split(" ");
-    if (parts.length >= 2) {
-      const first = parts[0].slice(0, 4);
-      const last = parts[parts.length - 1].slice(0, 4);
-      return `${first}. ${last}.`;
-    }
-    return fullName.slice(0, 4) + ".";
+    return fullName.slice(0, 3) + "...";
   };
 
   // Generate 50 users with varied financials
