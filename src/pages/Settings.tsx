@@ -1,29 +1,81 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, Trash2 } from "lucide-react";
+import { User, LogOut, Trash2, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/PageHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [leaderboardPublic, setLeaderboardPublic] = useState(false);
+  const [loadingPreference, setLoadingPreference] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchLeaderboardPreference(session.user.id);
+      } else {
+        setLoadingPreference(false);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchLeaderboardPreference(session.user.id);
+      } else {
+        setLoadingPreference(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const fetchLeaderboardPreference = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("leaderboard_display")
+      .eq("id", userId)
+      .single();
+    
+    if (!error && data) {
+      setLeaderboardPublic(data.leaderboard_display === "public");
+    }
+    setLoadingPreference(false);
+  };
+
+  const handleLeaderboardToggle = async (checked: boolean) => {
+    if (!user) return;
+    
+    setLeaderboardPublic(checked);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ leaderboard_display: checked ? "public" : "anonymous" })
+      .eq("id", user.id);
+    
+    if (error) {
+      setLeaderboardPublic(!checked);
+      toast({
+        title: "Error",
+        description: "Failed to update preference",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: checked ? "Public name" : "Anonymous",
+        description: checked 
+          ? "Your full name will show on leaderboard" 
+          : "Only 3 letters will show on leaderboard",
+      });
+    }
+  };
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -114,6 +166,36 @@ const Settings = () => {
             <ThemeToggle />
           </Card>
         </div>
+
+        {/* Leaderboard */}
+        {user && (
+          <div className="space-y-3">
+            <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground font-light">
+              leaderboard
+            </h2>
+            
+            <Card className="bg-card border-border p-4 rounded-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                    <Trophy className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-light text-foreground">Show full name</p>
+                    <p className="text-xs text-muted-foreground font-light">
+                      {leaderboardPublic ? "Public" : "Anonymous (3 letters)"}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={leaderboardPublic}
+                  onCheckedChange={handleLeaderboardToggle}
+                  disabled={loadingPreference}
+                />
+              </div>
+            </Card>
+          </div>
+        )}
 
         {/* Data */}
         <div className="space-y-3">
