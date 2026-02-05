@@ -57,6 +57,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          leaderboard_display: string
           nickname: string | null
           updated_at: string
         }
@@ -66,6 +67,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          leaderboard_display?: string
           nickname?: string | null
           updated_at?: string
         }
@@ -75,6 +77,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          leaderboard_display?: string
           nickname?: string | null
           updated_at?: string
         }
