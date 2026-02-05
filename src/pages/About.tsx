@@ -14,13 +14,15 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 // App screenshots
-import appHome from "@/assets/app-home.png";
-import appPurchase from "@/assets/app-purchase.png";
-import appRisks from "@/assets/app-risks.png";
-import appOptional from "@/assets/app-optional.png";
+import showcaseHome from "@/assets/showcase-home.png";
+import showcasePurchase1 from "@/assets/showcase-purchase-1.png";
+import showcasePurchase2 from "@/assets/showcase-purchase-2.png";
+import showcaseRisks from "@/assets/showcase-risks.png";
+import showcaseLeaderboard from "@/assets/showcase-leaderboard.png";
+import { Trophy } from "lucide-react";
 
 // Component for manifesto text that highlights as one whole unit on scroll
 const ManifestoText = () => {
@@ -485,31 +487,32 @@ const About = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
             {[
               {
-                image: appHome,
+                image: showcaseHome,
                 title: "Buffer",
                 subtitle: "See your runway in time",
                 icon: Home,
                 parallaxOffset: 40,
               },
               {
-                image: appPurchase,
+                image: showcasePurchase1,
+                secondImage: showcasePurchase2,
                 title: "Purchase",
                 subtitle: "Price things in life hours",
                 icon: Search,
                 parallaxOffset: -30,
               },
               {
-                image: appRisks,
+                image: showcaseRisks,
                 title: "Risks",
                 subtitle: "Measure volatility temporally",
                 icon: AlertTriangle,
                 parallaxOffset: 50,
               },
               {
-                image: appOptional,
-                title: "Ideas",
-                subtitle: "Explore what time could buy",
-                icon: Sparkles,
+                image: showcaseLeaderboard,
+                title: "Leaderboard",
+                subtitle: "Compare buffers globally",
+                icon: Trophy,
                 parallaxOffset: -20,
               },
             ].map((screen, index) => {
@@ -519,6 +522,17 @@ const About = () => {
                 offset: ["start end", "end start"],
               });
               const y = useTransform(scrollYProgress, [0, 1], [screen.parallaxOffset, -screen.parallaxOffset]);
+              
+              const [showSecondImage, setShowSecondImage] = useState(false);
+              
+              useEffect(() => {
+                if (screen.secondImage) {
+                  const timer = setTimeout(() => {
+                    setShowSecondImage(true);
+                  }, 2500);
+                  return () => clearTimeout(timer);
+                }
+              }, [screen.secondImage]);
 
               return (
                 <motion.div
@@ -548,12 +562,22 @@ const About = () => {
                     </div>
 
                     {/* Screenshot */}
-                    <div className="aspect-[9/16] overflow-hidden">
+                    <div className="aspect-[9/16] overflow-hidden relative">
                       <img
                         src={screen.image}
                         alt={`${screen.title} screen`}
                         className="w-full h-full object-cover object-top"
                       />
+                      {screen.secondImage && (
+                        <motion.img
+                          src={screen.secondImage}
+                          alt={`${screen.title} results screen`}
+                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          animate={showSecondImage ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.95 }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          className="absolute inset-0 w-full h-full object-cover object-top"
+                        />
+                      )}
                     </div>
                   </motion.div>
 
