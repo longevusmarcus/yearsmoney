@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2, Share2, Cloud, CloudOff } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
 import MobileOnly from "@/components/MobileOnly";
-import { supabase } from "@/integrations/supabase/client";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, LineChart, Line, Legend } from "recharts";
+import ShareableWidget from "@/components/ShareableWidget";
+import { useUserFinances } from "@/hooks/useUserFinances";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Message {
   role: "user" | "assistant";
@@ -13,20 +14,10 @@ interface Message {
 }
 
 const Home = () => {
-  // Auth state
-  const [user, setUser] = useState<any>(null);
+  // Use the synced finances hook
+  const { finances, updateFinances, isLoading: financesLoading, isSyncing, user } = useUserFinances();
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Financial inputs
-  const [monthlyIncome, setMonthlyIncome] = useState(() => 
-    Number(localStorage.getItem("tc_income")) || 0
-  );
-  const [monthlyExpenses, setMonthlyExpenses] = useState(() => 
-    Number(localStorage.getItem("tc_expenses")) || 0
-  );
-  const [netWorth, setNetWorth] = useState(() => 
-    Number(localStorage.getItem("tc_networth")) || 0
-  );
+  const [showWidget, setShowWidget] = useState(false);
 
   // UI state
   const [showChat, setShowChat] = useState(false);
@@ -36,26 +27,6 @@ const Home = () => {
   const [displayMode, setDisplayMode] = useState<'years' | 'months' | 'days'>('years');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Check auth state
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Save to localStorage
-  useEffect(() => {
-    localStorage.setItem("tc_income", String(monthlyIncome));
-    localStorage.setItem("tc_expenses", String(monthlyExpenses));
-    localStorage.setItem("tc_networth", String(netWorth));
-  }, [monthlyIncome, monthlyExpenses, netWorth]);
-
   // Handle input focus - show auth modal if not logged in
   const handleInputFocus = () => {
     if (!user) {
@@ -64,6 +35,7 @@ const Home = () => {
   };
 
   // Calculations
+  const { monthlyIncome, monthlyExpenses, netWorth } = finances;
   const freeCash = monthlyIncome - monthlyExpenses;
   const isNegative = freeCash < 0;
 
@@ -76,19 +48,14 @@ const Home = () => {
     : 0;
 
   // Calculate projections for both scenarios
-  // Without income: just current net worth depleting over time (stays same - no growth)
-  // With income: net worth grows with savings
   const calculateProjectionWithIncome = (years: number) => {
     if (monthlyExpenses <= 0) return 0;
     const futureNetWorth = netWorth + (monthlySavings * years * 12);
     return futureNetWorth / monthlyExpenses;
   };
 
-  // Life buffer WITH income at current moment
-  // This shows total runway if you keep earning at current rate
-  const lifeBufferWithIncome = monthlyExpenses > 0 
-    ? lifeBufferWithoutIncome + (monthlySavings > 0 ? (monthlySavings * 12 / monthlyExpenses) : 0)
-    : 0;
+  // Monthly buffer gain in months
+  const monthlyBufferGain = monthlyExpenses > 0 ? monthlySavings / monthlyExpenses : 0;
 
   const projectionData = [
     { 
@@ -99,7 +66,7 @@ const Home = () => {
     { 
       label: "1 yr", 
       withIncome: Math.round(calculateProjectionWithIncome(1)),
-      withoutIncome: Math.round(lifeBufferWithoutIncome), // stays same - no earning
+      withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
     { 
       label: "5 yrs", 
@@ -236,10 +203,30 @@ const Home = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <PageHeader title="Years">
-        <h1 className="text-2xl text-foreground tracking-tight">
-          <span className="font-light">Welcome to </span>
-          <span className="font-cursive italic">Years</span>
-        </h1>
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-2xl text-foreground tracking-tight">
+            <span className="font-light">Welcome to </span>
+            <span className="font-cursive italic">Years</span>
+          </h1>
+          {user && (
+            <div className="flex items-center gap-1">
+              {isSyncing ? (
+                <Cloud className="w-3.5 h-3.5 text-muted-foreground animate-pulse" />
+              ) : (
+                <Cloud className="w-3.5 h-3.5 text-primary" />
+              )}
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wider">
+                {isSyncing ? "syncing" : "synced"}
+              </span>
+            </div>
+          )}
+          {!user && (
+            <div className="flex items-center gap-1">
+              <CloudOff className="w-3.5 h-3.5 text-muted-foreground/50" />
+              <span className="text-[9px] text-muted-foreground/50 uppercase tracking-wider">local</span>
+            </div>
+          )}
+        </div>
       </PageHeader>
 
       {/* Input Fields */}
@@ -250,7 +237,7 @@ const Home = () => {
             <input
               type="number"
               value={monthlyIncome || ""}
-              onChange={(e) => setMonthlyIncome(Number(e.target.value))}
+              onChange={(e) => updateFinances({ monthlyIncome: Number(e.target.value) })}
               onFocus={handleInputFocus}
               placeholder="0"
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
@@ -261,7 +248,7 @@ const Home = () => {
             <input
               type="number"
               value={monthlyExpenses || ""}
-              onChange={(e) => setMonthlyExpenses(Number(e.target.value))}
+              onChange={(e) => updateFinances({ monthlyExpenses: Number(e.target.value) })}
               onFocus={handleInputFocus}
               placeholder="0"
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
@@ -272,7 +259,7 @@ const Home = () => {
             <input
               type="number"
               value={netWorth || ""}
-              onChange={(e) => setNetWorth(Number(e.target.value))}
+              onChange={(e) => updateFinances({ netWorth: Number(e.target.value) })}
               onFocus={handleInputFocus}
               placeholder="0"
               className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
@@ -464,6 +451,19 @@ const Home = () => {
         </div>
       )}
 
+      {/* Share Widget Button */}
+      {lifeBufferWithoutIncome > 0 && (
+        <div className="px-6 mb-6">
+          <button
+            onClick={() => setShowWidget(true)}
+            className="w-full py-3.5 border border-border rounded-2xl text-sm font-light text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors flex items-center justify-center gap-2"
+          >
+            <Share2 className="w-4 h-4" />
+            Share your time wealth
+          </button>
+        </div>
+      )}
+
       {/* Chat Button */}
       <button
         onClick={() => setShowChat(true)}
@@ -529,6 +529,16 @@ const Home = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Shareable Widget */}
+      {showWidget && (
+        <ShareableWidget
+          lifeBuffer={lifeBufferWithoutIncome}
+          monthlyGain={monthlyBufferGain}
+          displayMode={displayMode}
+          onClose={() => setShowWidget(false)}
+        />
       )}
 
       <BottomNav />
