@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car, Plane, ShoppingBag, ImageOff } from "lucide-react";
-import { motion } from "framer-motion";
+import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car, Plane, ShoppingBag, ImageOff, Clock, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
+import { useSearchHistory } from "@/hooks/useSearchHistory";
 
 interface Listing {
   title: string;
@@ -42,6 +43,9 @@ const Purchase = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  
+  const { history, addSearchToHistory, deleteFromHistory, isLoggedIn } = useSearchHistory();
 
   // Get financial data from Home (localStorage)
   const income = Number(localStorage.getItem("tc_income")) || 0;
@@ -139,6 +143,16 @@ const Purchase = () => {
       };
       
       setResult(analysisResult);
+      
+      // Save to search history if logged in
+      if (isLoggedIn) {
+        await addSearchToHistory(query, "purchase", {
+          productName: analysisResult.productName,
+          price: analysisResult.price,
+          workingDays: analysisResult.workingDays,
+          category: data.category,
+        });
+      }
     } catch (err) {
       console.error("Search error:", err);
       setError(err instanceof Error ? err.message : "Failed to find price. Try a more specific search.");
@@ -274,6 +288,61 @@ const Purchase = () => {
               ))}
             </div>
           </div>
+
+          {/* Search History */}
+          {isLoggedIn && history.length > 0 && (
+            <div className="pt-6">
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider mb-3 hover:text-foreground transition-colors"
+              >
+                <Clock className="w-3 h-3" />
+                Your searches ({history.length})
+              </button>
+              
+              <AnimatePresence>
+                {showHistory && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="space-y-2">
+                      {history.slice(0, 10).map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between bg-card border border-border rounded-xl p-3"
+                        >
+                          <button
+                            onClick={() => {
+                              setQuery(item.search_query);
+                              setError(null);
+                              setShowHistory(false);
+                            }}
+                            className="flex-1 text-left"
+                          >
+                            <p className="text-sm font-light text-foreground">{item.search_query}</p>
+                            {item.result_data && (
+                              <p className="text-[10px] text-muted-foreground mt-0.5">
+                                ${item.result_data.price?.toLocaleString()} • {item.result_data.workingDays?.toFixed(1)} days
+                              </p>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => deleteFromHistory(item.id)}
+                            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       ) : (
         /* Results */

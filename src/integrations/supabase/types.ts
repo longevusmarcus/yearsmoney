@@ -83,6 +83,63 @@ export type Database = {
         }
         Relationships: []
       }
+      search_history: {
+        Row: {
+          created_at: string
+          id: string
+          result_data: Json | null
+          search_query: string
+          search_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          result_data?: Json | null
+          search_query: string
+          search_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          result_data?: Json | null
+          search_query?: string
+          search_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_finances: {
+        Row: {
+          created_at: string
+          id: string
+          monthly_expenses: number
+          monthly_income: number
+          net_worth: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          monthly_expenses?: number
+          monthly_income?: number
+          net_worth?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          monthly_expenses?: number
+          monthly_income?: number
+          net_worth?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
