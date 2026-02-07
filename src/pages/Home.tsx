@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2, Share2 } from "lucide-react";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
+import bearMascot from "@/assets/bear-mascot.png";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
@@ -208,10 +209,10 @@ const Home = () => {
           lifeBufferWithoutIncome > 0 ? (
             <button
               onClick={() => setShowWidget(true)}
-              className="p-1 hover:opacity-70 transition-opacity"
+              className="p-0.5 hover:opacity-70 transition-opacity"
               aria-label="Share time wealth"
             >
-              <Share2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+              <img src={bearMascot} alt="Share" className="w-6 h-6 object-contain" />
             </button>
           ) : undefined
         }
