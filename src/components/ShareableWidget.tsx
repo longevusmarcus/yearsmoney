@@ -1,5 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Download, X } from "lucide-react";
+import html2canvas from "html2canvas";
 
 interface ShareableWidgetProps {
   lifeBuffer: number;
@@ -10,6 +12,7 @@ interface ShareableWidgetProps {
 
 const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: ShareableWidgetProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const formatLifeBuffer = (months: number) => {
     if (displayMode === 'days') {
@@ -26,6 +29,31 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
     }
   };
 
+  const handleDownload = async () => {
+    if (!widgetRef.current) return;
+    
+    setIsDownloading(true);
+    
+    // Small delay to ensure buttons are hidden
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    try {
+      const canvas = await html2canvas(widgetRef.current, {
+        backgroundColor: null,
+        scale: 2,
+      });
+      
+      const link = document.createElement('a');
+      link.download = 'time-wealth.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Download failed:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const formatted = formatLifeBuffer(lifeBuffer);
   const monthlyFormatted = formatLifeBuffer(monthlyGain);
 
@@ -35,18 +63,18 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[100] flex items-center justify-center p-6"
-      onClick={onClose}
     >
       <motion.div
-        ref={widgetRef}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, type: "spring", damping: 20 }}
-        onClick={(e) => e.stopPropagation()}
         className="w-full max-w-sm"
       >
         {/* The shareable widget card */}
-        <div className="bg-gradient-to-br from-card via-card to-muted/30 rounded-3xl p-8 border border-border/50 shadow-2xl">
+        <div 
+          ref={widgetRef}
+          className="bg-gradient-to-br from-card via-card to-muted/30 rounded-3xl p-8 border border-border/50 shadow-2xl"
+        >
           {/* Top accent line */}
           <div className="w-16 h-0.5 bg-gradient-to-r from-foreground/20 to-transparent mb-8" />
           
@@ -84,18 +112,25 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
           </div>
         </div>
 
-        {/* Instructions */}
-        <p className="text-center text-xs text-muted-foreground/60 mt-6 font-light">
-          Screenshot to share your time wealth
-        </p>
-        
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="w-full mt-4 py-3 text-sm text-muted-foreground font-light hover:text-foreground transition-colors"
-        >
-          Tap anywhere to close
-        </button>
+        {/* Action buttons */}
+        {!isDownloading && (
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              onClick={handleDownload}
+              className="p-2 text-muted-foreground/60 hover:text-foreground transition-colors"
+              aria-label="Download"
+            >
+              <Download className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 text-muted-foreground/60 hover:text-foreground transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
