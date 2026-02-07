@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2, Share2, Cloud, CloudOff } from "lucide-react";
+import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2, Share2 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
@@ -202,31 +202,24 @@ const Home = () => {
     <MobileOnly>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <PageHeader title="Years">
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-2xl text-foreground tracking-tight">
-            <span className="font-light">Welcome to </span>
-            <span className="font-cursive italic">Years</span>
-          </h1>
-          {user && (
-            <div className="flex items-center gap-1">
-              {isSyncing ? (
-                <Cloud className="w-3.5 h-3.5 text-muted-foreground animate-pulse" />
-              ) : (
-                <Cloud className="w-3.5 h-3.5 text-primary" />
-              )}
-              <span className="text-[9px] text-muted-foreground uppercase tracking-wider">
-                {isSyncing ? "syncing" : "synced"}
-              </span>
-            </div>
-          )}
-          {!user && (
-            <div className="flex items-center gap-1">
-              <CloudOff className="w-3.5 h-3.5 text-muted-foreground/50" />
-              <span className="text-[9px] text-muted-foreground/50 uppercase tracking-wider">local</span>
-            </div>
-          )}
-        </div>
+      <PageHeader 
+        title="Years"
+        rightAction={
+          lifeBufferWithoutIncome > 0 ? (
+            <button
+              onClick={() => setShowWidget(true)}
+              className="p-1 hover:opacity-70 transition-opacity"
+              aria-label="Share time wealth"
+            >
+              <Share2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            </button>
+          ) : undefined
+        }
+      >
+        <h1 className="text-2xl text-foreground tracking-tight">
+          <span className="font-light">Welcome to </span>
+          <span className="font-cursive italic">Years</span>
+        </h1>
       </PageHeader>
 
       {/* Input Fields */}
@@ -451,18 +444,6 @@ const Home = () => {
         </div>
       )}
 
-      {/* Share Widget Button */}
-      {lifeBufferWithoutIncome > 0 && (
-        <div className="px-6 mb-6">
-          <button
-            onClick={() => setShowWidget(true)}
-            className="w-full py-3.5 border border-border rounded-2xl text-sm font-light text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors flex items-center justify-center gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-            Share your time wealth
-          </button>
-        </div>
-      )}
 
       {/* Chat Button */}
       <button

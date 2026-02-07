@@ -10,6 +10,7 @@ interface PageHeaderProps {
   showActions?: boolean;
   titleClassName?: string;
   children?: React.ReactNode;
+  rightAction?: React.ReactNode;
 }
 
 export const PageHeader = ({
@@ -19,6 +20,7 @@ export const PageHeader = ({
   showActions = true,
   titleClassName = "text-2xl font-light tracking-tight",
   children,
+  rightAction,
 }: PageHeaderProps) => {
   const navigate = useNavigate();
 
@@ -65,6 +67,7 @@ export const PageHeader = ({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
+            {rightAction}
             <ThemeToggle />
             <button
               onClick={() => navigate("/settings")}
