@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, Send, X, TrendingUp, TrendingDown, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
-import bearMascot from "@/assets/bear-mascot.png";
 import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
 import MobileOnly from "@/components/MobileOnly";
-import ShareableWidget from "@/components/ShareableWidget";
+
 import { useUserFinances } from "@/hooks/useUserFinances";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
@@ -18,7 +17,6 @@ const Home = () => {
   // Use the synced finances hook
   const { finances, updateFinances, isLoading: financesLoading, isSyncing, user } = useUserFinances();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showWidget, setShowWidget] = useState(false);
 
   // UI state
   const [showChat, setShowChat] = useState(false);
@@ -203,20 +201,7 @@ const Home = () => {
     <MobileOnly>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <PageHeader 
-        title="Years"
-        rightAction={
-          lifeBufferWithoutIncome > 0 ? (
-            <button
-              onClick={() => setShowWidget(true)}
-              className="p-0.5 hover:opacity-70 transition-opacity"
-              aria-label="Share time wealth"
-            >
-              <img src={bearMascot} alt="Share" className="w-6 h-6 object-contain" />
-            </button>
-          ) : undefined
-        }
-      >
+      <PageHeader title="Years">
         <h1 className="text-2xl text-foreground tracking-tight">
           <span className="font-light">Welcome to </span>
           <span className="font-cursive italic">Years</span>
@@ -513,15 +498,6 @@ const Home = () => {
         </div>
       )}
 
-      {/* Shareable Widget */}
-      {showWidget && (
-        <ShareableWidget
-          lifeBuffer={lifeBufferWithoutIncome}
-          monthlyGain={monthlyBufferGain}
-          displayMode={displayMode}
-          onClose={() => setShowWidget(false)}
-        />
-      )}
 
       <BottomNav />
 
