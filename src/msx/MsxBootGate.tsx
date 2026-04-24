@@ -54,14 +54,29 @@ function readLaunchParams(): { token?: string; slug?: string } {
   return { token: tokenStored, slug: slugStored ?? "years-time-wealth" };
 }
 
-function looksEmbedded(): boolean {
-  try {
-    if (window.self !== window.top) return true;
-  } catch {
+function looksLikeMsxShell(): boolean {
+  // Only treat the app as launched-by-MSX when we have a strong MSX signal.
+  // Being inside *any* iframe (e.g. the Lovable editor preview) is NOT enough,
+  // otherwise the editor preview gets stuck on the MSX splash/error screen.
+  const ref = document.referrer || "";
+  if (/msx\.gg|lsoxtrynzaxohvlqxpqe\.supabase\.co/i.test(ref)) return true;
+
+  const url = new URL(window.location.href);
+  if (
+    url.searchParams.has("msx") ||
+    url.searchParams.has("msx_shell") ||
+    url.searchParams.get("source") === "msx"
+  ) {
     return true;
   }
-  const ref = document.referrer || "";
-  return /msx\.gg|lsoxtrynzaxohvlqxpqe\.supabase\.co/i.test(ref);
+
+  // UA / window-name hints some shells set
+  if (/MSX/i.test(navigator.userAgent)) return true;
+  if (typeof window.name === "string" && /^msx[:_-]/i.test(window.name)) {
+    return true;
+  }
+
+  return false;
 }
 
 export const MsxBootGate = ({ children }: { children: ReactNode }) => {
@@ -76,16 +91,16 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
     (async () => {
       const { token, slug } = readLaunchParams();
-      const embedded = looksEmbedded();
+      const msxShell = looksLikeMsxShell();
 
-      // No launch token AND not embedded → not an MSX context, render normally.
-      if (!token && !embedded) {
+      // No launch token AND not in an MSX shell → not an MSX context, render normally.
+      if (!token && !msxShell) {
         setStatus("not-msx");
         return;
       }
 
-      // Embedded but no launch token → explicit launch error, do NOT show login.
-      if (!token && embedded) {
+      // In an MSX shell but no launch token → explicit launch error, do NOT show login.
+      if (!token && msxShell) {
         setIsMsx(true);
         setError("Missing MSX launch token");
         setStatus("failed");
@@ -163,10 +178,10 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // While MSX is booting, render only the splash. Never render auth/landing.
-  if (status === "booting" || status === "idle") {
-    if (isMsx || looksEmbedded()) {
-      return <MsxSplash />;
-    }
+  // Only show the splash when we already know this is an MSX launch — otherwise
+  // we'd block the normal app (including the Lovable editor preview).
+  if ((status === "booting" || status === "idle") && isMsx) {
+    return <MsxSplash />;
   }
 
   if (status === "failed" && isMsx) {
