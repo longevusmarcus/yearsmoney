@@ -7,6 +7,7 @@ import MobileOnly from "@/components/MobileOnly";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AuthModal from "@/components/AuthModal";
+import { useMsx } from "@/msx/MsxBootGate";
 
 interface Investment {
   id: string;
@@ -36,6 +37,8 @@ interface RiskAnalysis {
 
 const Risks = () => {
   const { toast } = useToast();
+  const { isMsx, entitled: msxEntitled } = useMsx();
+  const suppressAuth = isMsx || msxEntitled;
   const [user, setUser] = useState<any>(null);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
@@ -377,7 +380,7 @@ const Risks = () => {
         <PageHeader title="Risks" subtitle="See investments in years at stake" />
 
         {/* Not logged in - minimal prompt */}
-        {!user && !isLoadingInvestments && (
+        {!user && !isLoadingInvestments && !suppressAuth && (
           <div className="px-6 py-8">
             <p className="text-sm text-muted-foreground text-center mb-4">Sign in to track your investments</p>
             <button
