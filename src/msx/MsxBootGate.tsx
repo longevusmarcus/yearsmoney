@@ -4,6 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 type BootStatus = "idle" | "booting" | "ready" | "failed" | "not-msx";
 
+type LaunchPayload = {
+  token?: string;
+  slug?: string;
+  error?: string;
+};
+
 interface MsxContextValue {
   status: BootStatus;
   isMsx: boolean;
@@ -72,7 +78,7 @@ function scrubUrl(url: URL) {
   }
 }
 
-function readWindowNamePayload(): { token?: string; slug?: string } {
+function readWindowNamePayload(): LaunchPayload {
   if (typeof window.name !== "string" || !window.name.trim()) return {};
   const raw = window.name.trim();
   try {
@@ -87,7 +93,20 @@ function readWindowNamePayload(): { token?: string; slug?: string } {
   }
 }
 
-function extractLaunchPayload(payload: unknown): { token?: string; slug?: string } {
+function readLaunchFromUrl(value: unknown): LaunchPayload {
+  if (typeof value !== "string" || !value) return {};
+  try {
+    const parsed = new URL(value);
+    return {
+      token: readFirst(parsed.searchParams, TOKEN_PARAM_KEYS),
+      slug: readFirst(parsed.searchParams, SLUG_PARAM_KEYS),
+    };
+  } catch {
+    return {};
+  }
+}
+
+function extractLaunchPayload(payload: unknown): LaunchPayload {
   if (typeof payload === "string") {
     try {
       return extractLaunchPayload(JSON.parse(payload));
@@ -101,6 +120,10 @@ function extractLaunchPayload(payload: unknown): { token?: string; slug?: string
   }
   if (!payload || typeof payload !== "object") return {};
   const record = payload as Record<string, unknown>;
+  const shellPayload =
+    record.channel === "msx-shell" && typeof record.payload === "object" && record.payload
+      ? (record.payload as Record<string, unknown>)
+      : undefined;
   const credential =
     typeof record.credential === "object" && record.credential
       ? (record.credential as Record<string, unknown>)
@@ -111,7 +134,21 @@ function extractLaunchPayload(payload: unknown): { token?: string; slug?: string
     (record.msx as Record<string, unknown> | undefined) ??
     (record.launch as Record<string, unknown> | undefined) ??
     (record.session as Record<string, unknown> | undefined) ??
-    (record.auth as Record<string, unknown> | undefined);
+    (record.auth as Record<string, unknown> | undefined) ??
+    shellPayload;
+
+  const launchUrlPayload =
+    readLaunchFromUrl(record.launchUrl) ||
+    readLaunchFromUrl(shellPayload?.launchUrl) ||
+    readLaunchFromUrl(shellPayload?.sourceUrl);
+
+  const shellAccess = shellPayload?.access as
+    | { allowed?: boolean; reason?: string; mode?: string }
+    | undefined;
+  const shellError =
+    record.channel === "msx-shell" && record.type === "msx:session" && shellAccess?.allowed === false
+      ? `MSX access blocked${shellAccess.reason ? `: ${shellAccess.reason}` : ""}`
+      : undefined;
 
   const token =
     [
@@ -120,6 +157,7 @@ function extractLaunchPayload(payload: unknown): { token?: string; slug?: string
       record.launchToken,
       record.credential,
       record.token,
+      launchUrlPayload.token,
       credential?.msx_launch_token,
       credential?.launch_token,
       credential?.launchToken,
@@ -139,6 +177,7 @@ function extractLaunchPayload(payload: unknown): { token?: string; slug?: string
       record.app_slug,
       record.slug,
       record.appId,
+      launchUrlPayload.slug,
       nested?.msx_app_slug,
       nested?.app_slug,
       nested?.slug,
@@ -146,7 +185,7 @@ function extractLaunchPayload(payload: unknown): { token?: string; slug?: string
     ].find((value): value is string => typeof value === "string" && value.length > 0) ??
     undefined;
 
-  return { token, slug };
+  return { token, slug, error: shellError };
 }
 
 function readLaunchParams(): { token?: string; slug?: string } {
