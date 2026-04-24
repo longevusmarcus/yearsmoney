@@ -52,7 +52,7 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json().catch(() => ({}));
     const launchToken: string | undefined = body.launchToken ?? body.msx_launch_token;
-    const slug: string | undefined = body.slug ?? body.msx_app_slug ?? "years-money";
+    const slug: string | undefined = body.slug ?? body.msx_app_slug ?? "years-time-wealth";
     if (!launchToken) {
       return json({ error: "Missing launchToken" }, 400);
     }

@@ -45,13 +45,13 @@ function readLaunchParams(): { token?: string; slug?: string } {
     url.searchParams.delete("msx_app_slug");
     url.searchParams.delete("app_slug");
     window.history.replaceState({}, "", url.toString());
-    return { token: tokenFromUrl, slug: slugFromUrl ?? "years-money" };
+    return { token: tokenFromUrl, slug: slugFromUrl ?? "years-time-wealth" };
   }
 
   // 2. sessionStorage (subsequent SPA navigations within the shell)
   const tokenStored = sessionStorage.getItem(STORAGE_TOKEN) ?? undefined;
   const slugStored = sessionStorage.getItem(STORAGE_SLUG) ?? undefined;
-  return { token: tokenStored, slug: slugStored ?? "years-money" };
+  return { token: tokenStored, slug: slugStored ?? "years-time-wealth" };
 }
 
 function looksEmbedded(): boolean {
@@ -121,7 +121,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
           },
           body: JSON.stringify({
             launchToken: token,
-            slug: slug ?? "years-money",
+            slug: slug ?? "years-time-wealth",
           }),
         });
 
