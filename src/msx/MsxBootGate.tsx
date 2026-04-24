@@ -183,6 +183,25 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
   );
 };
 
+const MsxReadyRedirect = ({
+  status,
+  isMsx,
+}: {
+  status: BootStatus;
+  isMsx: boolean;
+}) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (!isMsx || status !== "ready") return;
+    const path = location.pathname;
+    if (path === "/" || path === "/about" || path === "/auth") {
+      navigate("/home", { replace: true });
+    }
+  }, [status, isMsx, location.pathname, navigate]);
+  return null;
+};
+
 const MsxSplash = () => (
   <div
     style={{
