@@ -242,23 +242,23 @@ function readLaunchParams(): { token?: string; slug?: string } {
 }
 
 function looksLikeMsxShell(): boolean {
-  // Only treat the app as launched-by-MSX when we have a strong MSX signal.
-  // Being inside *any* iframe (e.g. the Lovable editor preview) is NOT enough,
-  // otherwise the editor preview gets stuck on the MSX splash/error screen.
-  const ref = document.referrer || "";
-  if (/msx\.gg|lsoxtrynzaxohvlqxpqe\.supabase\.co/i.test(ref)) return true;
-
+  // STRICT detection: only treat the app as launched-by-MSX when there is an
+  // explicit, unambiguous MSX signal. A bare referrer or generic iframe is
+  // NOT enough — we'd otherwise lock real visitors out of the public app
+  // forever waiting for a token MSX never sends (e.g. visitors who don't have
+  // MSX premium see the listing's paywall and never receive a launch token).
   const url = new URL(window.location.href);
+
+  // Explicit shell flag in URL.
   if (
-    url.searchParams.has("msx") ||
     url.searchParams.has("msx_shell") ||
-    url.searchParams.get("source") === "msx"
+    url.searchParams.get("source") === "msx" ||
+    url.searchParams.get("msx") === "1"
   ) {
     return true;
   }
 
-  // UA / window-name hints some shells set
-  if (/MSX/i.test(navigator.userAgent)) return true;
+  // window.name set by an MSX-launched session.
   if (typeof window.name === "string" && /^msx[:_-]/i.test(window.name)) {
     return true;
   }
@@ -384,9 +384,12 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
           return;
         }
         if (!token) {
+          // No launch token arrived from the shell bridge. Don't trap the
+          // user on an error screen — fall back to the normal public app
+          // so they can still use Years (and sign in normally if they want).
           clearPersistedLaunch();
-          setError("Missing MSX launch token from MSX launch session");
-          setStatus("failed");
+          setIsMsx(false);
+          setStatus("not-msx");
           return;
         }
       }
@@ -426,20 +429,26 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data?.ok) {
-          if (
-            isMsx &&
-            (data?.details?.error as string | undefined)?.match(/invalid|expired launch token/i)
-          ) {
+          const errText = (data?.details?.error as string | undefined) ?? "";
+          const isInvalidToken = /invalid|expired/i.test(errText);
+
+          if (isInvalidToken) {
+            clearPersistedLaunch();
+            // If we already have a local session, just proceed.
             const { data: existingSession } = await supabase.auth.getSession();
             if (existingSession.session) {
               setEntitled(true);
               setStatus("ready");
               return;
             }
+            // Otherwise: don't strand the user on a failure screen — open
+            // the public app so they can sign in / use the free tier.
+            if (cancelled) return;
+            setIsMsx(false);
+            setStatus("not-msx");
+            return;
           }
-          if ((data?.details?.error as string | undefined)?.match(/invalid|expired/i)) {
-            clearPersistedLaunch();
-          }
+
           throw new Error(data?.error || `Bootstrap failed (${res.status})`);
         }
         if (!data.access_token || !data.refresh_token) {
@@ -471,6 +480,10 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         const message = e instanceof Error ? e.message : "Unknown MSX boot error";
         if (/invalid|expired launch token/i.test(message)) {
           clearPersistedLaunch();
+          // Same graceful fallback for unexpected errors with bad tokens.
+          setIsMsx(false);
+          setStatus("not-msx");
+          return;
         }
         setError(message);
         setStatus("failed");
