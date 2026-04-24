@@ -429,20 +429,26 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data?.ok) {
-          if (
-            isMsx &&
-            (data?.details?.error as string | undefined)?.match(/invalid|expired launch token/i)
-          ) {
+          const errText = (data?.details?.error as string | undefined) ?? "";
+          const isInvalidToken = /invalid|expired/i.test(errText);
+
+          if (isInvalidToken) {
+            clearPersistedLaunch();
+            // If we already have a local session, just proceed.
             const { data: existingSession } = await supabase.auth.getSession();
             if (existingSession.session) {
               setEntitled(true);
               setStatus("ready");
               return;
             }
+            // Otherwise: don't strand the user on a failure screen — open
+            // the public app so they can sign in / use the free tier.
+            if (cancelled) return;
+            setIsMsx(false);
+            setStatus("not-msx");
+            return;
           }
-          if ((data?.details?.error as string | undefined)?.match(/invalid|expired/i)) {
-            clearPersistedLaunch();
-          }
+
           throw new Error(data?.error || `Bootstrap failed (${res.status})`);
         }
         if (!data.access_token || !data.refresh_token) {
@@ -474,6 +480,10 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         const message = e instanceof Error ? e.message : "Unknown MSX boot error";
         if (/invalid|expired launch token/i.test(message)) {
           clearPersistedLaunch();
+          // Same graceful fallback for unexpected errors with bad tokens.
+          setIsMsx(false);
+          setStatus("not-msx");
+          return;
         }
         setError(message);
         setStatus("failed");
