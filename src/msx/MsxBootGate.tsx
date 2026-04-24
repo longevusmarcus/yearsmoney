@@ -88,12 +88,30 @@ function readWindowNamePayload(): { token?: string; slug?: string } {
 }
 
 function extractLaunchPayload(payload: unknown): { token?: string; slug?: string } {
+  if (typeof payload === "string") {
+    try {
+      return extractLaunchPayload(JSON.parse(payload));
+    } catch {
+      const params = new URLSearchParams(payload.replace(/^msx[:_-]?/i, ""));
+      return {
+        token: readFirst(params, TOKEN_PARAM_KEYS),
+        slug: readFirst(params, SLUG_PARAM_KEYS),
+      };
+    }
+  }
   if (!payload || typeof payload !== "object") return {};
   const record = payload as Record<string, unknown>;
+  const credential =
+    typeof record.credential === "object" && record.credential
+      ? (record.credential as Record<string, unknown>)
+      : undefined;
   const nested =
     (record.data as Record<string, unknown> | undefined) ??
     (record.payload as Record<string, unknown> | undefined) ??
-    (record.msx as Record<string, unknown> | undefined);
+    (record.msx as Record<string, unknown> | undefined) ??
+    (record.launch as Record<string, unknown> | undefined) ??
+    (record.session as Record<string, unknown> | undefined) ??
+    (record.auth as Record<string, unknown> | undefined);
 
   const token =
     [
@@ -102,6 +120,11 @@ function extractLaunchPayload(payload: unknown): { token?: string; slug?: string
       record.launchToken,
       record.credential,
       record.token,
+      credential?.msx_launch_token,
+      credential?.launch_token,
+      credential?.launchToken,
+      credential?.token,
+      credential?.value,
       nested?.msx_launch_token,
       nested?.launch_token,
       nested?.launchToken,
@@ -187,8 +210,29 @@ function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<{ token?: string; sl
       return;
     }
 
+    const requestBridge = () => {
+      const requests = [
+        { type: "msx:getLaunchContext", source: "years-app" },
+        { type: "msx:requestLaunchContext", source: "years-app" },
+        { type: "msx:getLaunchToken", source: "years-app" },
+        { type: "msx:requestCredential", source: "years-app" },
+        { type: "MSX_GET_LAUNCH_CONTEXT", source: "years-app" },
+        { type: "MSX_REQUEST_LAUNCH_TOKEN", source: "years-app" },
+        { type: "MSX_REQUEST_CREDENTIAL", source: "years-app" },
+      ];
+
+      for (const message of requests) {
+        try {
+          window.parent?.postMessage(message, "*");
+        } catch {
+          // Ignore cross-origin postMessage failures.
+        }
+      }
+    };
+
     const timer = window.setTimeout(() => {
       window.removeEventListener("message", onMessage);
+      window.removeEventListener("msx-launch-context", onCustomEvent as EventListener);
       resolve({});
     }, timeoutMs);
 
@@ -201,7 +245,21 @@ function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<{ token?: string; sl
       resolve(incoming);
     };
 
+    const onCustomEvent = (event: Event) => {
+      const custom = event as CustomEvent;
+      const incoming = extractLaunchPayload(custom.detail);
+      if (!incoming.token) return;
+      window.clearTimeout(timer);
+      window.removeEventListener("message", onMessage);
+      window.removeEventListener("msx-launch-context", onCustomEvent as EventListener);
+      persistLaunch(incoming.token, incoming.slug);
+      resolve(incoming);
+    };
+
     window.addEventListener("message", onMessage);
+    window.addEventListener("msx-launch-context", onCustomEvent as EventListener);
+    requestBridge();
+    window.setTimeout(requestBridge, 250);
   });
 }
 
