@@ -384,9 +384,12 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
           return;
         }
         if (!token) {
+          // No launch token arrived from the shell bridge. Don't trap the
+          // user on an error screen — fall back to the normal public app
+          // so they can still use Years (and sign in normally if they want).
           clearPersistedLaunch();
-          setError("Missing MSX launch token from MSX launch session");
-          setStatus("failed");
+          setIsMsx(false);
+          setStatus("not-msx");
           return;
         }
       }
