@@ -240,7 +240,7 @@ function looksLikeMsxShell(): boolean {
   return false;
 }
 
-function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<{ token?: string; slug?: string }> {
+function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<LaunchPayload> {
   return new Promise((resolve) => {
     const immediate = readWindowNamePayload();
     if (immediate.token) {
@@ -277,6 +277,13 @@ function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<{ token?: string; sl
 
     const onMessage = (event: MessageEvent) => {
       const incoming = extractLaunchPayload(event.data);
+      if (incoming.error) {
+        window.clearTimeout(timer);
+        window.removeEventListener("message", onMessage);
+        window.removeEventListener("msx-launch-context", onCustomEvent as EventListener);
+        resolve(incoming);
+        return;
+      }
       if (!incoming.token) return;
       window.clearTimeout(timer);
       window.removeEventListener("message", onMessage);
@@ -287,6 +294,13 @@ function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<{ token?: string; sl
     const onCustomEvent = (event: Event) => {
       const custom = event as CustomEvent;
       const incoming = extractLaunchPayload(custom.detail);
+      if (incoming.error) {
+        window.clearTimeout(timer);
+        window.removeEventListener("message", onMessage);
+        window.removeEventListener("msx-launch-context", onCustomEvent as EventListener);
+        resolve(incoming);
+        return;
+      }
       if (!incoming.token) return;
       window.clearTimeout(timer);
       window.removeEventListener("message", onMessage);
@@ -329,8 +343,13 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         const awaited = await waitForMsxLaunchPayload();
         token = awaited.token;
         slug = awaited.slug ?? slug;
+        if (awaited.error) {
+          setError(awaited.error);
+          setStatus("failed");
+          return;
+        }
         if (!token) {
-          setError("Missing MSX launch token");
+          setError("Missing MSX launch token from MSX launch session");
           setStatus("failed");
           return;
         }
