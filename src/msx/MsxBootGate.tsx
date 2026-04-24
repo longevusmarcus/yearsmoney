@@ -366,6 +366,14 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
       if (!token && msxShell) {
         setIsMsx(true);
         setStatus("booting");
+
+        const { data: existingSession } = await supabase.auth.getSession();
+        if (existingSession.session) {
+          setEntitled(true);
+          setStatus("ready");
+          return;
+        }
+
         const awaited = await waitForMsxLaunchPayload();
         token = awaited.token;
         slug = awaited.slug ?? slug;
@@ -418,6 +426,17 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data?.ok) {
+          if (
+            isMsx &&
+            (data?.details?.error as string | undefined)?.match(/invalid|expired launch token/i)
+          ) {
+            const { data: existingSession } = await supabase.auth.getSession();
+            if (existingSession.session) {
+              setEntitled(true);
+              setStatus("ready");
+              return;
+            }
+          }
           if ((data?.details?.error as string | undefined)?.match(/invalid|expired/i)) {
             clearPersistedLaunch();
           }
