@@ -37,6 +37,97 @@ function pickMsxUserId(v: VerifyResponse): string | undefined {
     | undefined;
 }
 
+async function verifyLaunchToken(args: {
+  launchToken: string;
+  slug: string;
+  msxToken: string;
+}): Promise<{ res: Response; data: VerifyResponse; payload: Record<string, string> }> {
+  const { launchToken, slug, msxToken } = args;
+
+  const payloads: Record<string, string>[] = [
+    {
+      msx_launch_token: launchToken,
+      msx_app_slug: slug,
+      token: msxToken,
+    },
+    {
+      launch_token: launchToken,
+      app_slug: slug,
+      token: msxToken,
+    },
+    {
+      launchToken,
+      appSlug: slug,
+      token: msxToken,
+    },
+    {
+      launchToken,
+      slug,
+      token: msxToken,
+    },
+    {
+      msx_launch_token: launchToken,
+      msx_app_slug: slug,
+      credential: msxToken,
+    },
+    {
+      launch_token: launchToken,
+      app_slug: slug,
+      credential: msxToken,
+    },
+  ];
+
+  let lastRes: Response | undefined;
+  let lastData: VerifyResponse = {};
+  let lastPayload = payloads[payloads.length - 1];
+
+  for (const payload of payloads) {
+    const res = await fetch(`${MSX_API_BASE_URL}/v1/launch/verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${msxToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const text = await res.text();
+    let data: VerifyResponse = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = { raw: text } as VerifyResponse;
+    }
+
+    console.log("msx verify attempt", {
+      status: res.status,
+      payloadKeys: Object.keys(payload),
+      ok: res.ok,
+      valid: data.valid,
+      accessMode: pickAccessMode(data),
+    });
+
+    lastRes = res;
+    lastData = data;
+    lastPayload = payload;
+
+    if (res.ok) {
+      return { res, data, payload };
+    }
+
+    const errorText = typeof data.error === "string" ? data.error : "";
+    if (!/invalid launch verify payload/i.test(errorText)) {
+      return { res, data, payload };
+    }
+  }
+
+  return {
+    res: lastRes!,
+    data: lastData,
+    payload: lastPayload,
+  };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -58,32 +149,19 @@ Deno.serve(async (req: Request) => {
     }
 
     // 1. Verify the launch token server-side against MSX
-    const verifyRes = await fetch(`${MSX_API_BASE_URL}/v1/launch/verify`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${MSX_TOKEN}`,
-      },
-      body: JSON.stringify({
+    const { res: verifyRes, data: verifyData, payload: verifyPayload } =
+      await verifyLaunchToken({
         launchToken,
         slug,
-        credential: MSX_TOKEN,
-      }),
-    });
-
-    const verifyText = await verifyRes.text();
-    let verifyData: VerifyResponse = {};
-    try {
-      verifyData = verifyText ? JSON.parse(verifyText) : {};
-    } catch {
-      verifyData = { raw: verifyText } as VerifyResponse;
-    }
+        msxToken: MSX_TOKEN,
+      });
 
     if (!verifyRes.ok) {
       return json(
         {
           error: "MSX launch verification failed",
           status: verifyRes.status,
+          attemptedPayloadKeys: Object.keys(verifyPayload),
           details: verifyData,
         },
         401,
