@@ -144,13 +144,16 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         if (!res.ok || !data?.ok) {
           throw new Error(data?.error || `Bootstrap failed (${res.status})`);
         }
+        if (!data.access_token || !data.refresh_token) {
+          throw new Error("Bootstrap response missing session tokens");
+        }
 
-        // 2. Convert the magic-link token_hash into a real local session.
-        const { error: otpErr } = await supabase.auth.verifyOtp({
-          type: "magiclink",
-          token_hash: data.tokenHash,
+        // 2. Install the real local session.
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
         });
-        if (otpErr) throw otpErr;
+        if (setErr) throw setErr;
 
         // 3. Confirm the session is live before unlocking the app.
         const { data: sessionData, error: sessErr } =
@@ -188,15 +191,44 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
     return <MsxFailure message={error} />;
   }
 
+  // MSX ready but we haven't yet jumped to /home → still show splash to
+  // prevent a flash of the public landing/auth UI.
+  if (
+    isMsx &&
+    status === "ready" &&
+    typeof window !== "undefined" &&
+    window.location.pathname !== "/home" &&
+    !window.location.pathname.startsWith("/home")
+  ) {
+    // The redirect below will fire on next tick; cover the gap with the splash.
+  }
+
   return (
     <MsxContext.Provider
       value={{ status, isMsx, entitled, error, msxUserId }}
     >
       <MsxReadyRedirect status={status} isMsx={isMsx} />
-      {children}
+      {isMsx && status === "ready" && !isAtAuthedRoute() ? <MsxSplash /> : children}
     </MsxContext.Provider>
   );
 };
+
+function isAtAuthedRoute(): boolean {
+  if (typeof window === "undefined") return true;
+  const p = window.location.pathname;
+  // Anything under the real app shell counts as authed.
+  return (
+    p === "/home" ||
+    p.startsWith("/home") ||
+    p.startsWith("/purchase") ||
+    p.startsWith("/risks") ||
+    p.startsWith("/leaderboard") ||
+    p.startsWith("/settings") ||
+    p.startsWith("/ubi") ||
+    p.startsWith("/terms") ||
+    p.startsWith("/privacy")
+  );
+}
 
 const MsxReadyRedirect = ({
   status,
@@ -209,8 +241,7 @@ const MsxReadyRedirect = ({
   const location = useLocation();
   useEffect(() => {
     if (!isMsx || status !== "ready") return;
-    const path = location.pathname;
-    if (path === "/" || path === "/about" || path === "/auth") {
+    if (!isAtAuthedRoute()) {
       navigate("/home", { replace: true });
     }
   }, [status, isMsx, location.pathname, navigate]);

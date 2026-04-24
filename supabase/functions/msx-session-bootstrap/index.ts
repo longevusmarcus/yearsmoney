@@ -157,7 +157,10 @@ Deno.serve(async (req: Request) => {
       return json({ error: "No local user id resolved" }, 500);
     }
 
-    // 3. Generate a magiclink we can convert to a session client-side.
+    // 3. Generate a one-time link, then immediately exchange it server-side
+    //    so we can hand the SPA real access + refresh tokens. This avoids
+    //    the deprecated `magiclink` verifyOtp type and removes any client-side
+    //    token verification round-trip.
     const { data: linkData, error: linkErr } =
       await admin.auth.admin.generateLink({
         type: "magiclink",
@@ -171,10 +174,9 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // The properties contain hashed_token + action_link. We use verifyOtp
-    // client-side with token_hash + type=magiclink to materialize a session.
-    const tokenHash =
-      // @ts-ignore — properties is loosely typed
+    // @ts-ignore — properties is loosely typed
+    const tokenHash: string | undefined =
+      // @ts-ignore
       linkData.properties?.hashed_token ?? linkData.properties?.token_hash;
 
     if (!tokenHash) {
@@ -184,10 +186,30 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // Use an anon client to exchange the token_hash → real session.
+    const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const anon = createClient(SUPABASE_URL, ANON_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const { data: otp, error: otpErr } = await anon.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "email",
+    });
+    if (otpErr || !otp?.session) {
+      return json(
+        {
+          error: "Failed to materialize session from token_hash",
+          details: otpErr?.message,
+        },
+        500,
+      );
+    }
+
     return json({
       ok: true,
-      tokenHash,
-      type: "magiclink",
+      access_token: otp.session.access_token,
+      refresh_token: otp.session.refresh_token,
+      expires_at: otp.session.expires_at,
       email: syntheticEmail,
       msxUserId,
       accessMode,
