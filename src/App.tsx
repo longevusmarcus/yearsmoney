@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { MsxBootGate } from "./msx/MsxBootGate";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Purchase from "./pages/Purchase";
@@ -26,6 +27,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <MsxBootGate>
           <Routes>
             {/* Landing page */}
             <Route path="/" element={<Navigate to="/about" replace />} />
@@ -49,6 +51,7 @@ const App = () => {
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </MsxBootGate>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
