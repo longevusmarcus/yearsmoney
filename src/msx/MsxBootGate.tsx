@@ -54,14 +54,29 @@ function readLaunchParams(): { token?: string; slug?: string } {
   return { token: tokenStored, slug: slugStored ?? "years-time-wealth" };
 }
 
-function looksEmbedded(): boolean {
-  try {
-    if (window.self !== window.top) return true;
-  } catch {
+function looksLikeMsxShell(): boolean {
+  // Only treat the app as launched-by-MSX when we have a strong MSX signal.
+  // Being inside *any* iframe (e.g. the Lovable editor preview) is NOT enough,
+  // otherwise the editor preview gets stuck on the MSX splash/error screen.
+  const ref = document.referrer || "";
+  if (/msx\.gg|lsoxtrynzaxohvlqxpqe\.supabase\.co/i.test(ref)) return true;
+
+  const url = new URL(window.location.href);
+  if (
+    url.searchParams.has("msx") ||
+    url.searchParams.has("msx_shell") ||
+    url.searchParams.get("source") === "msx"
+  ) {
     return true;
   }
-  const ref = document.referrer || "";
-  return /msx\.gg|lsoxtrynzaxohvlqxpqe\.supabase\.co/i.test(ref);
+
+  // UA / window-name hints some shells set
+  if (/MSX/i.test(navigator.userAgent)) return true;
+  if (typeof window.name === "string" && /^msx[:_-]/i.test(window.name)) {
+    return true;
+  }
+
+  return false;
 }
 
 export const MsxBootGate = ({ children }: { children: ReactNode }) => {
