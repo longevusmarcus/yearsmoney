@@ -91,16 +91,16 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
     (async () => {
       const { token, slug } = readLaunchParams();
-      const embedded = looksEmbedded();
+      const msxShell = looksLikeMsxShell();
 
-      // No launch token AND not embedded → not an MSX context, render normally.
-      if (!token && !embedded) {
+      // No launch token AND not in an MSX shell → not an MSX context, render normally.
+      if (!token && !msxShell) {
         setStatus("not-msx");
         return;
       }
 
-      // Embedded but no launch token → explicit launch error, do NOT show login.
-      if (!token && embedded) {
+      // In an MSX shell but no launch token → explicit launch error, do NOT show login.
+      if (!token && msxShell) {
         setIsMsx(true);
         setError("Missing MSX launch token");
         setStatus("failed");
