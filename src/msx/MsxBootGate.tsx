@@ -24,33 +24,132 @@ const STORAGE_TOKEN = "msx_launch_token";
 const STORAGE_SLUG = "msx_app_slug";
 const STORAGE_ENTITLED = "msx_entitled";
 
-function readLaunchParams(): { token?: string; slug?: string } {
-  // 1. URL params (first load from the MSX shell)
-  const url = new URL(window.location.href);
-  const tokenFromUrl =
-    url.searchParams.get("msx_launch_token") ??
-    url.searchParams.get("launch_token") ??
-    undefined;
-  const slugFromUrl =
-    url.searchParams.get("msx_app_slug") ??
-    url.searchParams.get("app_slug") ??
+const TOKEN_PARAM_KEYS = [
+  "msx_launch_token",
+  "launch_token",
+  "credential",
+  "token",
+  "msx_token",
+] as const;
+
+const SLUG_PARAM_KEYS = ["msx_app_slug", "app_slug", "slug", "appId"] as const;
+
+function readFirst(search: URLSearchParams, keys: readonly string[]): string | undefined {
+  for (const key of keys) {
+    const value = search.get(key);
+    if (value) return value;
+  }
+  return undefined;
+}
+
+function persistLaunch(token?: string, slug?: string) {
+  if (token) sessionStorage.setItem(STORAGE_TOKEN, token);
+  if (slug) sessionStorage.setItem(STORAGE_SLUG, slug);
+}
+
+function scrubUrl(url: URL) {
+  for (const key of TOKEN_PARAM_KEYS) url.searchParams.delete(key);
+  for (const key of SLUG_PARAM_KEYS) url.searchParams.delete(key);
+  if (url.hash.startsWith("#")) {
+    const hashParams = new URLSearchParams(url.hash.slice(1));
+    let touched = false;
+    for (const key of TOKEN_PARAM_KEYS) {
+      if (hashParams.has(key)) {
+        hashParams.delete(key);
+        touched = true;
+      }
+    }
+    for (const key of SLUG_PARAM_KEYS) {
+      if (hashParams.has(key)) {
+        hashParams.delete(key);
+        touched = true;
+      }
+    }
+    if (touched) {
+      const nextHash = hashParams.toString();
+      url.hash = nextHash ? `#${nextHash}` : "";
+    }
+  }
+}
+
+function readWindowNamePayload(): { token?: string; slug?: string } {
+  if (typeof window.name !== "string" || !window.name.trim()) return {};
+  const raw = window.name.trim();
+  try {
+    const parsed = JSON.parse(raw);
+    return extractLaunchPayload(parsed);
+  } catch {
+    const nameParams = new URLSearchParams(raw.replace(/^msx[:_-]?/i, ""));
+    return {
+      token: readFirst(nameParams, TOKEN_PARAM_KEYS),
+      slug: readFirst(nameParams, SLUG_PARAM_KEYS),
+    };
+  }
+}
+
+function extractLaunchPayload(payload: unknown): { token?: string; slug?: string } {
+  if (!payload || typeof payload !== "object") return {};
+  const record = payload as Record<string, unknown>;
+  const nested =
+    (record.data as Record<string, unknown> | undefined) ??
+    (record.payload as Record<string, unknown> | undefined) ??
+    (record.msx as Record<string, unknown> | undefined);
+
+  const token =
+    [
+      record.msx_launch_token,
+      record.launch_token,
+      record.launchToken,
+      record.credential,
+      record.token,
+      nested?.msx_launch_token,
+      nested?.launch_token,
+      nested?.launchToken,
+      nested?.credential,
+      nested?.token,
+    ].find((value): value is string => typeof value === "string" && value.length > 0) ??
     undefined;
 
-  if (tokenFromUrl) {
-    sessionStorage.setItem(STORAGE_TOKEN, tokenFromUrl);
-    if (slugFromUrl) sessionStorage.setItem(STORAGE_SLUG, slugFromUrl);
-    // Strip the token from the URL so it doesn't linger.
-    url.searchParams.delete("msx_launch_token");
-    url.searchParams.delete("launch_token");
-    url.searchParams.delete("msx_app_slug");
-    url.searchParams.delete("app_slug");
+  const slug =
+    [
+      record.msx_app_slug,
+      record.app_slug,
+      record.slug,
+      record.appId,
+      nested?.msx_app_slug,
+      nested?.app_slug,
+      nested?.slug,
+      nested?.appId,
+    ].find((value): value is string => typeof value === "string" && value.length > 0) ??
+    undefined;
+
+  return { token, slug };
+}
+
+function readLaunchParams(): { token?: string; slug?: string } {
+  const url = new URL(window.location.href);
+  const tokenFromUrl = readFirst(url.searchParams, TOKEN_PARAM_KEYS);
+  const slugFromUrl = readFirst(url.searchParams, SLUG_PARAM_KEYS);
+
+  const hashParams = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
+  const tokenFromHash = readFirst(hashParams, TOKEN_PARAM_KEYS);
+  const slugFromHash = readFirst(hashParams, SLUG_PARAM_KEYS);
+
+  const windowName = readWindowNamePayload();
+  const token = tokenFromUrl ?? tokenFromHash ?? windowName.token;
+  const slug = slugFromUrl ?? slugFromHash ?? windowName.slug;
+
+  if (token) {
+    persistLaunch(token, slug);
+    scrubUrl(url);
     window.history.replaceState({}, "", url.toString());
-    return { token: tokenFromUrl, slug: slugFromUrl ?? "years-time-wealth" };
+    return { token, slug: slug ?? "years-time-wealth" };
   }
 
-  // 2. sessionStorage (subsequent SPA navigations within the shell)
-  const tokenStored = sessionStorage.getItem(STORAGE_TOKEN) ?? undefined;
-  const slugStored = sessionStorage.getItem(STORAGE_SLUG) ?? undefined;
+  const tokenStored =
+    sessionStorage.getItem(STORAGE_TOKEN) ?? localStorage.getItem(STORAGE_TOKEN) ?? undefined;
+  const slugStored =
+    sessionStorage.getItem(STORAGE_SLUG) ?? localStorage.getItem(STORAGE_SLUG) ?? undefined;
   return { token: tokenStored, slug: slugStored ?? "years-time-wealth" };
 }
 
@@ -79,6 +178,33 @@ function looksLikeMsxShell(): boolean {
   return false;
 }
 
+function waitForMsxLaunchPayload(timeoutMs = 1500): Promise<{ token?: string; slug?: string }> {
+  return new Promise((resolve) => {
+    const immediate = readWindowNamePayload();
+    if (immediate.token) {
+      persistLaunch(immediate.token, immediate.slug);
+      resolve({ token: immediate.token, slug: immediate.slug });
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      window.removeEventListener("message", onMessage);
+      resolve({});
+    }, timeoutMs);
+
+    const onMessage = (event: MessageEvent) => {
+      const incoming = extractLaunchPayload(event.data);
+      if (!incoming.token) return;
+      window.clearTimeout(timer);
+      window.removeEventListener("message", onMessage);
+      persistLaunch(incoming.token, incoming.slug);
+      resolve(incoming);
+    };
+
+    window.addEventListener("message", onMessage);
+  });
+}
+
 export const MsxBootGate = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<BootStatus>("idle");
   const [error, setError] = useState<string | undefined>();
@@ -90,7 +216,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
     let cancelled = false;
 
     (async () => {
-      const { token, slug } = readLaunchParams();
+      let { token, slug } = readLaunchParams();
       const msxShell = looksLikeMsxShell();
 
       // No launch token AND not in an MSX shell → not an MSX context, render normally.
@@ -99,12 +225,18 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // In an MSX shell but no launch token → explicit launch error, do NOT show login.
+      // In an MSX shell but no launch token yet → wait briefly for the shell auth bridge.
       if (!token && msxShell) {
         setIsMsx(true);
-        setError("Missing MSX launch token");
-        setStatus("failed");
-        return;
+        setStatus("booting");
+        const awaited = await waitForMsxLaunchPayload();
+        token = awaited.token;
+        slug = awaited.slug ?? slug;
+        if (!token) {
+          setError("Missing MSX launch token");
+          setStatus("failed");
+          return;
+        }
       }
 
       setIsMsx(true);
