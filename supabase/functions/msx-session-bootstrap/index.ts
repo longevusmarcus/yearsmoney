@@ -48,21 +48,31 @@ async function verifyLaunchToken(args: {
     {
       msx_launch_token: launchToken,
       msx_app_slug: slug,
+      token: msxToken,
+    },
+    {
+      launch_token: launchToken,
+      app_slug: slug,
+      token: msxToken,
+    },
+    {
+      launchToken,
+      appSlug: slug,
+      token: msxToken,
+    },
+    {
+      launchToken,
+      slug,
+      token: msxToken,
+    },
+    {
+      msx_launch_token: launchToken,
+      msx_app_slug: slug,
       credential: msxToken,
     },
     {
       launch_token: launchToken,
       app_slug: slug,
-      credential: msxToken,
-    },
-    {
-      launchToken,
-      appSlug: slug,
-      credential: msxToken,
-    },
-    {
-      launchToken,
-      slug,
       credential: msxToken,
     },
   ];
