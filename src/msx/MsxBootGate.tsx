@@ -29,6 +29,8 @@ export const useMsx = () => useContext(MsxContext);
 const STORAGE_TOKEN = "msx_launch_token";
 const STORAGE_SLUG = "msx_app_slug";
 const STORAGE_ENTITLED = "msx_entitled";
+const STORAGE_TOKEN_TS = "msx_launch_token_ts";
+const TOKEN_TTL_MS = 2 * 60 * 1000;
 
 const TOKEN_PARAM_KEYS = [
   "msx_launch_token",
@@ -49,8 +51,34 @@ function readFirst(search: URLSearchParams, keys: readonly string[]): string | u
 }
 
 function persistLaunch(token?: string, slug?: string) {
-  if (token) sessionStorage.setItem(STORAGE_TOKEN, token);
+  if (token) {
+    sessionStorage.setItem(STORAGE_TOKEN, token);
+    sessionStorage.setItem(STORAGE_TOKEN_TS, String(Date.now()));
+  }
   if (slug) sessionStorage.setItem(STORAGE_SLUG, slug);
+  localStorage.removeItem(STORAGE_TOKEN);
+  localStorage.removeItem(STORAGE_SLUG);
+}
+
+function clearPersistedLaunch() {
+  sessionStorage.removeItem(STORAGE_TOKEN);
+  sessionStorage.removeItem(STORAGE_SLUG);
+  sessionStorage.removeItem(STORAGE_TOKEN_TS);
+  localStorage.removeItem(STORAGE_TOKEN);
+  localStorage.removeItem(STORAGE_SLUG);
+}
+
+function readStoredLaunch(): LaunchPayload {
+  const token = sessionStorage.getItem(STORAGE_TOKEN) ?? undefined;
+  const slug = sessionStorage.getItem(STORAGE_SLUG) ?? undefined;
+  const storedAt = Number(sessionStorage.getItem(STORAGE_TOKEN_TS) ?? 0);
+
+  if (!token || !storedAt || Date.now() - storedAt > TOKEN_TTL_MS) {
+    clearPersistedLaunch();
+    return {};
+  }
+
+  return { token, slug: slug ?? "years-time-wealth" };
 }
 
 function scrubUrl(url: URL) {
@@ -208,11 +236,7 @@ function readLaunchParams(): { token?: string; slug?: string } {
     return { token, slug: slug ?? "years-time-wealth" };
   }
 
-  const tokenStored =
-    sessionStorage.getItem(STORAGE_TOKEN) ?? localStorage.getItem(STORAGE_TOKEN) ?? undefined;
-  const slugStored =
-    sessionStorage.getItem(STORAGE_SLUG) ?? localStorage.getItem(STORAGE_SLUG) ?? undefined;
-  return { token: tokenStored, slug: slugStored ?? "years-time-wealth" };
+  return readStoredLaunch();
 }
 
 function looksLikeMsxShell(): boolean {
@@ -344,11 +368,13 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         token = awaited.token;
         slug = awaited.slug ?? slug;
         if (awaited.error) {
+          clearPersistedLaunch();
           setError(awaited.error);
           setStatus("failed");
           return;
         }
         if (!token) {
+          clearPersistedLaunch();
           setError("Missing MSX launch token from MSX launch session");
           setStatus("failed");
           return;
@@ -390,6 +416,9 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data?.ok) {
+          if ((data?.details?.error as string | undefined)?.match(/invalid|expired/i)) {
+            clearPersistedLaunch();
+          }
           throw new Error(data?.error || `Bootstrap failed (${res.status})`);
         }
         if (!data.access_token || !data.refresh_token) {
@@ -418,7 +447,11 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         setStatus("ready");
       } catch (e) {
         if (cancelled) return;
-        setError(e instanceof Error ? e.message : "Unknown MSX boot error");
+        const message = e instanceof Error ? e.message : "Unknown MSX boot error";
+        if (/invalid|expired launch token/i.test(message)) {
+          clearPersistedLaunch();
+        }
+        setError(message);
         setStatus("failed");
       }
     })();
