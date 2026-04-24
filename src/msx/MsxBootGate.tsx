@@ -144,13 +144,16 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         if (!res.ok || !data?.ok) {
           throw new Error(data?.error || `Bootstrap failed (${res.status})`);
         }
+        if (!data.access_token || !data.refresh_token) {
+          throw new Error("Bootstrap response missing session tokens");
+        }
 
-        // 2. Convert the magic-link token_hash into a real local session.
-        const { error: otpErr } = await supabase.auth.verifyOtp({
-          type: "magiclink",
-          token_hash: data.tokenHash,
+        // 2. Install the real local session.
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
         });
-        if (otpErr) throw otpErr;
+        if (setErr) throw setErr;
 
         // 3. Confirm the session is live before unlocking the app.
         const { data: sessionData, error: sessErr } =
