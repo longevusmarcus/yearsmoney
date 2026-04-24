@@ -4,6 +4,7 @@ import BottomNav from "@/components/BottomNav";
 import { PageHeader } from "@/components/PageHeader";
 import AuthModal from "@/components/AuthModal";
 import MobileOnly from "@/components/MobileOnly";
+import { useMsx } from "@/msx/MsxBootGate";
 
 import { useUserFinances } from "@/hooks/useUserFinances";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
@@ -17,6 +18,10 @@ const Home = () => {
   // Use the synced finances hook
   const { finances, updateFinances, isLoading: financesLoading, isSyncing, user } = useUserFinances();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { isMsx, entitled: msxEntitled } = useMsx();
+  // Inside MSX the user is already authenticated via the launch bootstrap.
+  // Never show the in-app sign-in modal in that context.
+  const suppressAuth = isMsx || msxEntitled;
 
   // UI state
   const [showChat, setShowChat] = useState(false);
@@ -26,9 +31,9 @@ const Home = () => {
   const [displayMode, setDisplayMode] = useState<'years' | 'months' | 'days'>('years');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Handle input focus - show auth modal if not logged in
+  // Handle input focus - show auth modal if not logged in (skip in MSX shell)
   const handleInputFocus = () => {
-    if (!user) {
+    if (!user && !suppressAuth) {
       setShowAuthModal(true);
     }
   };
