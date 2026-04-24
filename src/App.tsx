@@ -19,6 +19,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const RootRedirect = () => {
+  const search = typeof window !== "undefined" ? window.location.search : "";
+  const hash = typeof window !== "undefined" ? window.location.hash : "";
+  return <Navigate to={`/about${search}${hash}`} replace />;
+};
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -30,7 +36,7 @@ const App = () => {
           <MsxBootGate>
           <Routes>
             {/* Landing page */}
-            <Route path="/" element={<Navigate to="/about" replace />} />
+            <Route path="/" element={<RootRedirect />} />
             <Route path="/about" element={<About />} />
             
             {/* App screens */}
