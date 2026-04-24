@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 type BootStatus = "idle" | "booting" | "ready" | "failed" | "not-msx";
@@ -176,6 +177,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
     <MsxContext.Provider
       value={{ status, isMsx, entitled, error, msxUserId }}
     >
+      <MsxReadyRedirect status={status} isMsx={isMsx} />
       {children}
     </MsxContext.Provider>
   );
