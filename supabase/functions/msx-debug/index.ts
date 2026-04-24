@@ -45,13 +45,12 @@ Deno.serve(async (req) => {
 
   // Try every documented variant of /v1/launch/verify with the bearer.
   const variants: Array<{ name: string; body: Record<string, unknown>; bearer: boolean }> = [
-    { name: "snake-token-bearer",  body: { msx_launch_token: launchToken, msx_app_slug: slug }, bearer: true },
-    { name: "snake-token-bodycred",body: { msx_launch_token: launchToken, msx_app_slug: slug, credential: MSX_TOKEN }, bearer: false },
-    { name: "camel-token-bearer",  body: { launchToken, appSlug: slug }, bearer: true },
-    { name: "camel-token-bodycred",body: { launchToken, appSlug: slug, credential: MSX_TOKEN }, bearer: false },
-    { name: "slug-token-bearer",   body: { launchToken, slug }, bearer: true },
-    { name: "token-only-bearer",   body: { launch_token: launchToken, app_slug: slug }, bearer: true },
-    { name: "token-only-bodycred", body: { launch_token: launchToken, app_slug: slug, credential: MSX_TOKEN }, bearer: false },
+    { name: "snake+token-in-body+bearer",  body: { msx_launch_token: launchToken, msx_app_slug: slug, token: MSX_TOKEN }, bearer: true },
+    { name: "snake+token-in-body",         body: { msx_launch_token: launchToken, msx_app_slug: slug, token: MSX_TOKEN }, bearer: false },
+    { name: "snake+credential",            body: { msx_launch_token: launchToken, msx_app_slug: slug, credential: MSX_TOKEN }, bearer: false },
+    { name: "camel+token+bearer",          body: { launchToken, appSlug: slug, token: MSX_TOKEN }, bearer: true },
+    { name: "trustnaru-shape",             body: { launchToken, slug, credential: MSX_TOKEN }, bearer: false },
+    { name: "verify-token-key",            body: { msx_launch_token: launchToken, msx_app_slug: slug, msx_token: MSX_TOKEN }, bearer: false },
   ];
 
   const verifyResults: Record<string, unknown> = {};
