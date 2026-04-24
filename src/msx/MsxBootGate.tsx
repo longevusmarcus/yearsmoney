@@ -40,6 +40,8 @@ const TOKEN_PARAM_KEYS = [
   "msx_token",
 ] as const;
 
+const STRICT_TOKEN_PARAM_KEYS = ["msx_launch_token", "launch_token"] as const;
+
 const SLUG_PARAM_KEYS = ["msx_app_slug", "app_slug", "slug", "appId"] as const;
 
 function readFirst(search: URLSearchParams, keys: readonly string[]): string | undefined {
@@ -218,11 +220,11 @@ function extractLaunchPayload(payload: unknown): LaunchPayload {
 
 function readLaunchParams(): { token?: string; slug?: string } {
   const url = new URL(window.location.href);
-  const tokenFromUrl = readFirst(url.searchParams, TOKEN_PARAM_KEYS);
+  const tokenFromUrl = readFirst(url.searchParams, STRICT_TOKEN_PARAM_KEYS);
   const slugFromUrl = readFirst(url.searchParams, SLUG_PARAM_KEYS);
 
   const hashParams = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
-  const tokenFromHash = readFirst(hashParams, TOKEN_PARAM_KEYS);
+  const tokenFromHash = readFirst(hashParams, STRICT_TOKEN_PARAM_KEYS);
   const slugFromHash = readFirst(hashParams, SLUG_PARAM_KEYS);
 
   const windowName = readWindowNamePayload();
