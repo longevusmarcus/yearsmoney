@@ -368,11 +368,13 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         token = awaited.token;
         slug = awaited.slug ?? slug;
         if (awaited.error) {
+          clearPersistedLaunch();
           setError(awaited.error);
           setStatus("failed");
           return;
         }
         if (!token) {
+          clearPersistedLaunch();
           setError("Missing MSX launch token from MSX launch session");
           setStatus("failed");
           return;
@@ -414,6 +416,9 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data?.ok) {
+          if ((data?.details?.error as string | undefined)?.match(/invalid|expired/i)) {
+            clearPersistedLaunch();
+          }
           throw new Error(data?.error || `Bootstrap failed (${res.status})`);
         }
         if (!data.access_token || !data.refresh_token) {
@@ -442,7 +447,11 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         setStatus("ready");
       } catch (e) {
         if (cancelled) return;
-        setError(e instanceof Error ? e.message : "Unknown MSX boot error");
+        const message = e instanceof Error ? e.message : "Unknown MSX boot error";
+        if (/invalid|expired launch token/i.test(message)) {
+          clearPersistedLaunch();
+        }
+        setError(message);
         setStatus("failed");
       }
     })();
