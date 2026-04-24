@@ -178,10 +178,10 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // While MSX is booting, render only the splash. Never render auth/landing.
-  if (status === "booting" || status === "idle") {
-    if (isMsx || looksEmbedded()) {
-      return <MsxSplash />;
-    }
+  // Only show the splash when we already know this is an MSX launch — otherwise
+  // we'd block the normal app (including the Lovable editor preview).
+  if ((status === "booting" || status === "idle") && isMsx) {
+    return <MsxSplash />;
   }
 
   if (status === "failed" && isMsx) {
