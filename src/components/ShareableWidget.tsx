@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Download, X } from "lucide-react";
 import html2canvas from "html2canvas";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface ShareableWidgetProps {
   lifeBuffer: number;
@@ -11,21 +12,22 @@ interface ShareableWidgetProps {
 }
 
 const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: ShareableWidgetProps) => {
+  const { t } = useI18n();
   const widgetRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const formatLifeBuffer = (months: number) => {
     if (displayMode === 'days') {
       const days = Math.round(months * 30);
-      return { value: days.toLocaleString(), unit: 'days' };
+      return { value: days.toLocaleString(), unit: t("app.share.unitDays") };
     } else if (displayMode === 'months') {
-      return { value: Math.round(months).toString(), unit: 'months' };
+      return { value: Math.round(months).toString(), unit: t("app.share.unitMonths") };
     } else {
       const years = months / 12;
       if (years >= 1) {
-        return { value: years.toFixed(1), unit: 'years' };
+        return { value: years.toFixed(1), unit: t("app.share.unitYears") };
       }
-      return { value: Math.round(months).toString(), unit: 'months' };
+      return { value: Math.round(months).toString(), unit: t("app.share.unitMonths") };
     }
   };
 
@@ -113,7 +115,7 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
                 className="mt-3 text-lg font-light tracking-wide"
                 style={{ color: "#fbdd67", lineHeight: 1.4 }}
               >
-                {formatted.unit} of freedom
+                {formatted.unit} {t("app.share.ofFreedom")}
               </p>
             </div>
 
@@ -126,7 +128,7 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
                 +{monthlyFormatted.value}
               </span>
               <span className="text-sm font-light" style={{ color: "rgba(255,255,255,0.45)" }}>
-                {monthlyFormatted.unit}/month
+                {monthlyFormatted.unit}{t("app.share.perMonth")}
               </span>
             </div>
 
@@ -136,7 +138,7 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
                 className="text-[10px] uppercase tracking-[0.2em]"
                 style={{ color: "rgba(255,255,255,0.40)" }}
               >
-                Time Wealth
+                {t("app.share.timeWealth")}
               </p>
               <p
                 className="font-cormorant text-base italic"
@@ -154,14 +156,14 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
             <button
               onClick={handleDownload}
               className="p-2 text-muted-foreground/60 hover:text-foreground transition-colors"
-              aria-label="Download"
+              aria-label={t("app.share.download")}
             >
               <Download className="w-4 h-4" strokeWidth={1.5} />
             </button>
             <button
               onClick={onClose}
               className="p-2 text-muted-foreground/60 hover:text-foreground transition-colors"
-              aria-label="Close"
+              aria-label={t("app.share.close")}
             >
               <X className="w-4 h-4" strokeWidth={1.5} />
             </button>

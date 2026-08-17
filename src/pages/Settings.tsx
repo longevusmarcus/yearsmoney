@@ -7,9 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/PageHeader";
 import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [leaderboardPublic, setLeaderboardPublic] = useState(false);
@@ -123,7 +125,7 @@ const Settings = () => {
         {/* Account */}
         <div className="space-y-3">
           <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground font-light">
-            account
+            {t("app.settings.account")}
           </h2>
           
           {user ? (
@@ -134,7 +136,7 @@ const Settings = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-light text-foreground truncate">{user.email}</p>
-                  <p className="text-xs text-muted-foreground font-light">Signed in</p>
+                  <p className="text-xs text-muted-foreground font-light">{t("app.settings.signedIn")}</p>
                 </div>
               </div>
               <button
@@ -142,20 +144,20 @@ const Settings = () => {
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-sm font-light text-foreground hover:bg-muted/50 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                Sign out
+                {t("app.settings.signOut")}
               </button>
             </Card>
           ) : (
             <Card className="bg-card border-border p-4 rounded-2xl">
               <p className="mb-4 text-center text-sm font-light text-muted-foreground">
-                Sign in to sync your numbers across devices
+                {t("app.settings.signInPrompt")}
               </p>
               <button
                 onClick={() => navigate("/auth")}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-white to-white/80 py-2.5 text-sm font-medium text-black transition-transform hover:-translate-y-0.5"
               >
                 <LogIn className="h-4 w-4" />
-                Sign in
+                {t("app.settings.signIn")}
               </button>
             </Card>
           )}
@@ -165,7 +167,7 @@ const Settings = () => {
         {user && (
           <div className="space-y-3">
             <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground font-light">
-              leaderboard
+              {t("app.settings.leaderboard")}
             </h2>
             
             <Card className="bg-card border-border p-4 rounded-2xl">
@@ -194,7 +196,7 @@ const Settings = () => {
         {/* Data */}
         <div className="space-y-3">
           <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground font-light">
-            data
+            {t("app.settings.data")}
           </h2>
 
           <Card
@@ -205,15 +207,15 @@ const Settings = () => {
               <Trash2 className="w-4 h-4 text-destructive" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-light text-destructive">Clear all data</p>
-              <p className="text-xs text-muted-foreground font-light">Remove saved financial data</p>
+              <p className="text-sm font-light text-destructive">{t("app.settings.clearAll")}</p>
+              <p className="text-xs text-muted-foreground font-light">{t("app.settings.clearAllSub")}</p>
             </div>
           </Card>
         </div>
 
         {/* App Info */}
         <div className="pt-6 text-center">
-          <p className="text-xs text-muted-foreground font-light">Years v1.0</p>
+          <p className="text-xs text-muted-foreground font-light">{t("app.settings.version")}</p>
           <p className="text-[10px] text-muted-foreground/50 mt-1">years.money</p>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n } from "@/i18n/I18nProvider";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 
@@ -11,6 +12,7 @@ interface AuthModalProps {
 
 const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           password,
         });
         if (error) throw error;
-        toast({ title: "Welcome back" });
+        toast({ title: t("app.auth.welcomeBack") });
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -39,12 +41,12 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           },
         });
         if (error) throw error;
-        toast({ title: "Account created" });
+        toast({ title: t("app.auth.accountCreated") });
       }
       onSuccess();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("app.auth.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -73,14 +75,14 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
 
         {/* Minimal header */}
         <p className="text-sm text-muted-foreground font-light mb-5">
-          {isLogin ? "Sign in" : "Create account"}
+          {isLogin ? t("app.auth.signIn") : t("app.auth.createAccount")}
         </p>
 
         {/* Form */}
         <form onSubmit={handleAuth} className="space-y-3">
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("app.auth.email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -88,7 +90,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t("app.auth.password")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -100,18 +102,18 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
             disabled={loading}
             className="w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-light mt-4 hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {loading ? "..." : isLogin ? "Continue" : "Create"}
+            {loading ? "…" : isLogin ? t("app.auth.continue") : t("app.auth.create")}
           </button>
         </form>
 
         {/* Toggle */}
         <p className="text-center text-xs text-muted-foreground/60 font-light mt-4">
-          {isLogin ? "New here? " : "Have an account? "}
+          {isLogin ? t("app.auth.newHere") : t("app.auth.haveAccount")}
           <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            {isLogin ? "Sign up" : "Sign in"}
+            {isLogin ? t("app.auth.signUp") : t("app.auth.signIn")}
           </button>
         </p>
       </div>

@@ -7,6 +7,7 @@ import MobileOnly from "@/components/MobileOnly";
 import { useMsx } from "@/msx/MsxBootGate";
 
 import { useUserFinances } from "@/hooks/useUserFinances";
+import { useI18n } from "@/i18n/I18nProvider";
 import { ComposedChart, Area, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
 }
 
 const Home = () => {
+  const { t } = useI18n();
   // Use the synced finances hook
   const { finances, updateFinances, isLoading: financesLoading, isSyncing, user } = useUserFinances();
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -63,22 +65,22 @@ const Home = () => {
 
   const projectionData = [
     { 
-      label: "Now", 
+      label: t("app.home.axisNow"), 
       withIncome: Math.round(lifeBufferWithoutIncome),
       withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
     { 
-      label: "1 yr", 
+      label: t("app.home.axis1y"), 
       withIncome: Math.round(calculateProjectionWithIncome(1)),
       withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
     { 
-      label: "5 yrs", 
+      label: t("app.home.axis5y"), 
       withIncome: Math.round(calculateProjectionWithIncome(5)),
       withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
     { 
-      label: "20 yrs", 
+      label: t("app.home.axis20y"), 
       withIncome: Math.round(calculateProjectionWithIncome(20)),
       withoutIncome: Math.round(lifeBufferWithoutIncome),
     },
@@ -88,18 +90,18 @@ const Home = () => {
   const formatLifeBuffer = (months: number) => {
     if (displayMode === 'days') {
       const days = Math.round(months * 30);
-      return `${days.toLocaleString()}d`;
+      return `${days.toLocaleString()}${t("app.home.dayShort")}`;
     } else if (displayMode === 'months') {
-      return `${Math.round(months)}mo`;
+      return `${Math.round(months)}${t("app.home.monthAbbr")}`;
     } else {
       const years = Math.floor(months / 12);
       const remainingMonths = Math.round(months % 12);
       if (years > 0 && remainingMonths > 0) {
-        return `${years}y ${remainingMonths}m`;
+        return `${years}${t("common.yearShort")} ${remainingMonths}${t("common.monthShort")}`;
       } else if (years > 0) {
-        return `${years} years`;
+        return `${years} ${t("app.home.unitYears")}`;
       } else {
-        return `${remainingMonths} months`;
+        return `${remainingMonths} ${t("app.home.unitMonths")}`;
       }
     }
   };
@@ -208,7 +210,7 @@ const Home = () => {
       {/* Header */}
       <PageHeader title="Years">
         <h1 className="text-2xl text-foreground tracking-tight">
-          <span className="font-light">Welcome to </span>
+          <span className="font-light">{t("app.home.welcome")} </span>
           <span className="font-cursive italic">Years</span>
         </h1>
       </PageHeader>
@@ -217,7 +219,7 @@ const Home = () => {
       <div className="px-6 mb-4 space-y-4">
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Income/mo</label>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.home.incomeMo")}</label>
             <input
               type="number"
               value={monthlyIncome || ""}
@@ -228,7 +230,7 @@ const Home = () => {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Costs/mo</label>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.home.costsMo")}</label>
             <input
               type="number"
               value={monthlyExpenses || ""}
@@ -239,7 +241,7 @@ const Home = () => {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Net Worth</label>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.home.netWorth")}</label>
             <input
               type="number"
               value={netWorth || ""}
@@ -255,14 +257,14 @@ const Home = () => {
       {/* Connect Accounts - Coming Soon */}
       <div className="px-6 mb-6">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">sync accounts</h2>
-          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">soon</span>
+          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.home.syncAccounts")}</h2>
+          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">{t("app.home.soon")}</span>
         </div>
         <div className="grid grid-cols-4 gap-2">
           {[
             { icon: Building2, label: "Schwab" },
             { icon: CreditCard, label: "Stripe" },
-            { icon: Landmark, label: "Bank" },
+            { icon: Landmark, label: t("app.home.bank") },
             { icon: Coins, label: "Crypto" },
           ].map((item, idx) => (
             <button
@@ -287,7 +289,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-1 mb-2">
               <TrendingDown className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">if you stop</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("app.home.ifYouStop")}</span>
             </div>
             <p 
               key={displayMode + '-without'}
@@ -296,7 +298,7 @@ const Home = () => {
               {formatLifeBuffer(lifeBufferWithoutIncome)}
             </p>
             <div className="flex items-center justify-between mt-1">
-              <p className="text-[10px] text-muted-foreground font-light">runway now</p>
+              <p className="text-[10px] text-muted-foreground font-light">{t("app.home.runwayNow")}</p>
               <span className="text-[8px] text-muted-foreground/50 uppercase tracking-wider">{displayMode}</span>
             </div>
           </button>
@@ -308,7 +310,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-1 mb-2">
               <TrendingUp className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">keep earning</span>
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{t("app.home.keepEarning")}</span>
             </div>
             <p 
               key={displayMode + '-with'}
@@ -317,7 +319,7 @@ const Home = () => {
               {formatLifeBuffer(calculateProjectionWithIncome(1))}
             </p>
             <div className="flex items-center justify-between mt-1">
-              <p className="text-[10px] text-muted-foreground font-light">in 1 year</p>
+              <p className="text-[10px] text-muted-foreground font-light">{t("app.home.inOneYear")}</p>
               <span className="text-[8px] text-muted-foreground/50 uppercase tracking-wider">{displayMode}</span>
             </div>
           </button>
@@ -330,14 +332,14 @@ const Home = () => {
             : 'bg-card border-border'
         }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-light">this month you gained</span>
+            <span className="text-xs text-muted-foreground font-light">{t("app.home.gainedThisMonth")}</span>
             <span className={`text-xl font-light ${isNegative ? 'text-destructive' : 'text-foreground'}`}>
-              {isNegative ? '' : '+'}{hoursGainedOrLost.toLocaleString()} hours
+              {isNegative ? '' : '+'}{hoursGainedOrLost.toLocaleString()} {t("app.home.hours")}
             </span>
           </div>
           {isNegative && (
             <p className="text-xs text-destructive/80 font-light mt-1">
-              You're trading future life
+              {t("app.home.tradingFuture")}
             </p>
           )}
         </div>
@@ -345,7 +347,7 @@ const Home = () => {
 
       {/* Projection Chart */}
       <div className="px-6 mb-6">
-        <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">future projection</h2>
+        <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">{t("app.home.futureProjection")}</h2>
         <div className="bg-card border border-border rounded-2xl p-4">
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
@@ -379,7 +381,7 @@ const Home = () => {
                   }}
                   formatter={(value: number, name: string) => [
                     formatLifeBuffer(value), 
-                    name === 'withIncome' ? 'With income' : 'Without income'
+                    name === 'withIncome' ? t("app.home.withIncome") : t("app.home.withoutIncome")
                   ]}
                 />
                 <Area
@@ -409,7 +411,7 @@ const Home = () => {
           <div className="flex justify-center gap-6 mt-3 pt-3 border-t border-border/50">
             <div className="flex items-center gap-1.5">
               <div className="w-4 h-0.5 bg-foreground rounded-full" />
-              <span className="text-[10px] text-muted-foreground">keep earning</span>
+              <span className="text-[10px] text-muted-foreground">{t("app.home.keepEarning")}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-4 h-0.5 bg-muted-foreground rounded-full opacity-60" />
@@ -441,7 +443,7 @@ const Home = () => {
                 <p className="text-sm font-light text-foreground">
                   Every month you save ${monthlySavings.toLocaleString()}, you gain{" "}
                   <span className="font-medium">
-                    {Math.round((monthlySavings / monthlyExpenses) * 30 * 24).toLocaleString()} hours
+                    {Math.round((monthlySavings / monthlyExpenses) * 30 * 24).toLocaleString()} {t("app.home.hours")}
                   </span>{" "}
                   of optional life.
                 </p>
@@ -470,7 +472,7 @@ const Home = () => {
           </div>
 
           <div className="flex items-center justify-between border-b border-border p-4">
-            <h2 className="font-display text-lg">Time Advisor</h2>
+            <h2 className="font-display text-lg">{t("app.home.advisorTitle")}</h2>
             <button
               onClick={() => setShowChat(false)}
               className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
@@ -482,7 +484,7 @@ const Home = () => {
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
               <div className="text-center py-12">
-                <p className="font-light text-muted-foreground">Ask me anything about optimizing your time</p>
+                <p className="font-light text-muted-foreground">{t("app.home.advisorEmpty")}</p>
               </div>
             )}
             {messages.map((msg, idx) => (
@@ -516,7 +518,7 @@ const Home = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && sendMessage(input)}
-              placeholder="Ask about your time..."
+              placeholder={t("app.home.advisorPlaceholder")}
               className="flex-1 rounded-full border border-border bg-input px-4 py-2.5 text-sm font-light backdrop-blur-md placeholder:text-muted-foreground focus:border-white/25 focus:outline-none"
             />
             <button

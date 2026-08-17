@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, TrendingDown, Loader2, Info, ExternalLink, ArrowDown, Home, Car, Plane, ShoppingBag, ImageOff, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
+import { useI18n } from "@/i18n/I18nProvider";
 import { PageHeader } from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
@@ -39,6 +40,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const Purchase = () => {
+  const { t } = useI18n();
   const [query, setQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -109,11 +111,11 @@ const Purchase = () => {
       console.log("Search result:", data);
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Could not find price for this item");
+        throw new Error(data.error || t("app.purchase.errNoPrice"));
       }
       
       if (!data.price || data.price === 0) {
-        throw new Error("No price found - try being more specific");
+        throw new Error(t("app.purchase.errTooVague"));
       }
       
       const productPrice = data.price;
@@ -155,7 +157,7 @@ const Purchase = () => {
       }
     } catch (err) {
       console.error("Search error:", err);
-      setError(err instanceof Error ? err.message : "Failed to find price. Try a more specific search.");
+      setError(err instanceof Error ? err.message : t("app.purchase.errGeneric"));
     }
     
     setIsAnalyzing(false);
@@ -194,8 +196,9 @@ const Purchase = () => {
     <div className="min-h-screen bg-transparent text-foreground pb-28">
       {/* Header */}
       <PageHeader 
-        title="Purchase" 
-        subtitle="See the true cost in hours of life" 
+        title={t("app.purchase.title")}
+        subtitle={t("app.purchase.sub")}
+
       />
 
       {/* Warning if no data */}
@@ -214,7 +217,7 @@ const Purchase = () => {
       {hasData && !result && (
         <div className="px-6 mb-6">
           <div className="bg-card border border-border rounded-2xl p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your time-cost rate</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("app.purchase.rate")}</p>
             <p className="text-lg font-light text-foreground">
               ${dollarPerHour.toFixed(2)}/hour earned
             </p>
@@ -240,7 +243,7 @@ const Purchase = () => {
                   setError(null);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && analyze()}
-                placeholder="House in Minorca, Tesla Model S, Bali vacation..."
+                placeholder={t("app.purchase.placeholder")}
                 className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
               />
             </div>
@@ -266,13 +269,13 @@ const Purchase = () => {
                 Searching the web...
               </>
             ) : (
-              "Find & Calculate"
+              t("app.purchase.findCalculate")
             )}
           </button>
 
           {/* Quick examples */}
           <div className="pt-4">
-            <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Try these</p>
+            <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">{t("app.purchase.tryThese")}</p>
             <div className="flex flex-wrap gap-2">
               {["House in Minorca", "Tesla Model S", "MacBook Pro M3", "Vacation in Bali", "Porsche 911", "iPhone 16 Pro"].map(item => (
                 <button
@@ -325,7 +328,7 @@ const Purchase = () => {
                             <p className="text-sm font-light text-foreground">{item.search_query}</p>
                             {item.result_data && (
                               <p className="text-[10px] text-muted-foreground mt-0.5">
-                                ${item.result_data.price?.toLocaleString()} • {item.result_data.workingDays?.toFixed(1)} days
+                                ${item.result_data.price?.toLocaleString()} • {item.result_data.workingDays?.toFixed(1)} {t("app.purchase.days")}
                               </p>
                             )}
                           </button>
@@ -407,7 +410,7 @@ const Purchase = () => {
                         
                         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
                           <div>
-                            <p className="text-2xl font-light">{listing.workingDays?.toFixed(1)}<span className="text-sm text-muted-foreground ml-1">days</span></p>
+                            <p className="text-2xl font-light">{listing.workingDays?.toFixed(1)}<span className="text-sm text-muted-foreground ml-1">{t("app.purchase.days")}</span></p>
                             <p className="text-[10px] text-muted-foreground">to earn back</p>
                           </div>
                           
@@ -456,11 +459,11 @@ const Purchase = () => {
                   <>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase">Current Buffer</p>
+                        <p className="text-[10px] text-muted-foreground uppercase">{t("app.purchase.currentBuffer")}</p>
                         <p className="text-lg font-light">{currentBufferMonths.toFixed(1)} mo</p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase">After Purchase</p>
+                        <p className="text-[10px] text-muted-foreground uppercase">{t("app.purchase.afterPurchase")}</p>
                         <p className="text-lg font-light text-destructive">{impact.newBufferMonths.toFixed(1)} mo</p>
                       </div>
                     </div>

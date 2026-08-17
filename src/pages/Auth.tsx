@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n } from "@/i18n/I18nProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -8,6 +9,7 @@ import VoiceBubbleLogo from "@/components/VoiceBubbleLogo";
 import { Star } from "lucide-react";
 
 const Auth = () => {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(false);
@@ -61,7 +63,7 @@ const Auth = () => {
       if (error) throw error;
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("app.auth.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -81,8 +83,8 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Password updated!",
-          description: "Your password has been reset successfully.",
+          title: t("app.auth.passwordUpdated"),
+          description: t("app.auth.passwordUpdatedSub"),
         });
 
         // Clear the hash from URL
@@ -97,8 +99,8 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Check your email",
-          description: "We've sent you a password reset link.",
+          title: t("app.auth.checkEmail"),
+          description: t("app.auth.resetSent"),
         });
         setIsForgotPassword(false);
       } else if (isLogin) {
@@ -110,7 +112,7 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Welcome back!",
+          title: t("app.auth.welcomeBack"),
           description: "You've successfully signed in.",
         });
       } else {
@@ -128,13 +130,13 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Account created!",
+          title: t("app.auth.accountCreated"),
           description: "Welcome to Hara.",
         });
       }
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("app.auth.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -220,7 +222,7 @@ const Auth = () => {
               <div>
                 <Input
                   type="text"
-                  placeholder="Nickname"
+                  placeholder={t("app.auth.nickname")}
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   required
@@ -232,7 +234,7 @@ const Auth = () => {
               <div>
                 <Input
                   type="email"
-                  placeholder="Email address"
+                  placeholder={t("app.auth.email")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required

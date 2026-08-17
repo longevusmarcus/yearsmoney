@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Smartphone } from "lucide-react";
 import yearsQr from "@/assets/years-qr.png";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const MobileOnly = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useI18n();
   const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
@@ -48,17 +50,17 @@ const MobileOnly = ({ children }: { children: React.ReactNode }) => {
             </h1>
             
             <p className="text-lg text-foreground mb-3">
-              Mobile experience only
+              {t("app.mobileOnly.title")}
             </p>
             
             <p className="text-sm text-muted-foreground font-light leading-relaxed mb-6">
-              Years is designed for your mobile device. Scan the QR code below to open on your phone.
+              {t("app.mobileOnly.sub")}
             </p>
             
             <div className="flex justify-center">
               <img 
                 src={yearsQr} 
-                alt="Scan to open Years on mobile" 
+                alt={t("app.mobileOnly.qrAlt")} 
                 className="w-32 h-32 rounded-lg"
               />
             </div>

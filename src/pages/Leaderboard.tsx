@@ -3,10 +3,12 @@ import { useMemo } from "react";
 import BottomNav from "@/components/BottomNav";
 import PageHeader from "@/components/PageHeader";
 import { useUserFinances } from "@/hooks/useUserFinances";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const Leaderboard = () => {
   // Signed-in visitors get their own ranked row; signed-out ones see the list as-is.
   const { finances, user } = useUserFinances();
+  const { t } = useI18n();
   // Realistic human names
   const names = [
     "Marcus Chen", "Sofia Rodriguez", "James O'Brien", "Aisha Patel", "Lucas Andersen",
@@ -65,7 +67,7 @@ const Leaderboard = () => {
     if (user && finances.netWorth > 0 && finances.monthlyIncome > 0) {
       users.push({
         rank: 0,
-        name: "You",
+        name: t("app.leaderboard.you"),
         buffer0Years: finances.netWorth / (finances.monthlyIncome * 12),
         buffer1Years:
           finances.monthlyExpenses > 0
@@ -80,7 +82,7 @@ const Leaderboard = () => {
       ...u,
       rank: i + 1
     }));
-  }, [user, finances.netWorth, finances.monthlyIncome, finances.monthlyExpenses]);
+  }, [user, finances.netWorth, finances.monthlyIncome, finances.monthlyExpenses, t]);
 
   const formatYears = (years: number) => {
     if (years >= 1) {
@@ -92,8 +94,8 @@ const Leaderboard = () => {
   return (
     <div className="min-h-screen bg-transparent pb-32">
       <PageHeader 
-        title="Leaderboard" 
-        subtitle="Ranked by life buffers, not money"
+        title={t("app.leaderboard.title")}
+        subtitle={t("app.leaderboard.sub")}
       />
 
       <div className="px-6 space-y-0">
@@ -156,14 +158,14 @@ const Leaderboard = () => {
                     ? "logo-gradient-text inline-block"
                     : "text-muted-foreground/50"
                 }`}>
-                  y
+                  {t("common.yearShort")}
                 </span>
                 <span className={`text-[10px] font-light ml-1 ${
                   user.isCurrentUser
                     ? "logo-gradient-text inline-block"
                     : "text-muted-foreground/30"
                 }`}>
-                  /{formatYears(user.buffer1Years)}y
+                  /{formatYears(user.buffer1Years)}{t("common.yearShort")}
                 </span>
               </div>
             </div>
@@ -173,7 +175,7 @@ const Leaderboard = () => {
         {/* Footer Note */}  
         <div className="pt-8 pb-4">
           <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40 font-light text-center">
-            Buffer 0 · Buffer 1
+            {t("app.leaderboard.footer")}
           </p>
         </div>
       </div>

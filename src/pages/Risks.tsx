@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, AlertTriangle, Loader2, RefreshCw, Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
+import { useI18n } from "@/i18n/I18nProvider";
 import { PageHeader } from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +37,7 @@ interface RiskAnalysis {
 }
 
 const Risks = () => {
+  const { t } = useI18n();
   const { toast } = useToast();
   const { isMsx, entitled: msxEntitled } = useMsx();
   const suppressAuth = isMsx || msxEntitled;
@@ -104,7 +106,7 @@ const Risks = () => {
 
     if (error) {
       console.error("Error loading investments:", error);
-      toast({ title: "Error loading investments", variant: "destructive" });
+      toast({ title: t("app.risks.errLoading"), variant: "destructive" });
     } else {
       setInvestments(data || []);
       if (data && data.length > 0) {
@@ -154,9 +156,9 @@ const Risks = () => {
     });
 
     if (error) {
-      toast({ title: "Error adding investment", description: error.message, variant: "destructive" });
+      toast({ title: t("app.risks.errAdding"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Investment added" });
+      toast({ title: t("app.risks.added") });
       setAsset("");
       setAmount("");
       setShowAddForm(false);
@@ -168,7 +170,7 @@ const Risks = () => {
   const deleteInvestment = async (id: string) => {
     const { error } = await supabase.from("investments").delete().eq("id", id);
     if (error) {
-      toast({ title: "Error deleting investment", variant: "destructive" });
+      toast({ title: t("app.risks.errDeleting"), variant: "destructive" });
     } else {
       setInvestments(investments.filter((inv) => inv.id !== id));
     }
@@ -193,7 +195,7 @@ const Risks = () => {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to analyze");
+      if (!response.ok) throw new Error(t("app.risks.errAnalyze"));
 
       const data = await response.json();
 
@@ -209,7 +211,7 @@ const Risks = () => {
           hours: (investment.amount_invested * (data.potentialLossPercent || 10)) / 100 / hourlyLifeCost,
         },
         volatilityLevel: data.volatilityLevel || "medium",
-        recommendation: data.recommendation || "Consider your risk tolerance before investing.",
+        recommendation: data.recommendation || t("app.risks.defaultRecommendation"),
       });
     } catch (error) {
       const gainPercent = 15;
@@ -262,16 +264,16 @@ const Risks = () => {
     const scenarios = [];
 
     if (yearsLost >= 1) {
-      scenarios.push({ label: "Years of freedom", value: yearsLost.toFixed(1), unit: "years" });
+      scenarios.push({ label: t("app.risks.scenarioYears"), value: yearsLost.toFixed(1), unit: t("app.risks.unitYears") });
     }
     if (monthsLost >= 1) {
-      scenarios.push({ label: "Months to help parents", value: monthsLost.toFixed(1), unit: "months" });
+      scenarios.push({ label: t("app.risks.scenarioParents"), value: monthsLost.toFixed(1), unit: t("app.risks.unitMonths") });
     }
     if (weeksLost >= 2) {
-      scenarios.push({ label: "Weeks to build something", value: weeksLost.toFixed(0), unit: "weeks" });
+      scenarios.push({ label: t("app.risks.scenarioBuild"), value: weeksLost.toFixed(0), unit: t("app.risks.unitWeeks") });
     }
     if (daysLost >= 30) {
-      scenarios.push({ label: "Family vacation days", value: Math.floor(daysLost / 7), unit: "trips" });
+      scenarios.push({ label: t("app.risks.scenarioVacation"), value: Math.floor(daysLost / 7), unit: t("app.risks.unitTrips") });
     }
 
     return scenarios.slice(0, 3);
@@ -287,7 +289,7 @@ const Risks = () => {
     return (
       <MobileOnly>
         <div className="min-h-screen bg-transparent text-foreground pb-28">
-          <PageHeader title="Risks" subtitle="See investments in years at stake" />
+          <PageHeader title={t("app.risks.title")} subtitle={t("app.risks.sub")} />
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="px-6">
             {/* Asset header - minimal */}
@@ -316,7 +318,7 @@ const Risks = () => {
             {/* Life scenarios - what you could lose */}
             {scenarios.length > 0 && (
               <div className="mt-6">
-                <p className="text-xs text-muted-foreground mb-3">If this investment fails, you lose:</p>
+                <p className="text-xs text-muted-foreground mb-3">{t("app.risks.ifItFails")}</p>
                 <div className="space-y-2">
                   {scenarios.map((scenario, i) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-border/30">
@@ -340,7 +342,7 @@ const Risks = () => {
 
             {/* Volatility */}
             <div className="mt-4 flex items-center justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground font-light">Volatility</span>
+              <span className="text-sm text-muted-foreground font-light">{t("app.risks.volatility")}</span>
               <span className={`text-sm font-light capitalize ${volatilityColors[result.volatilityLevel]}`}>
                 {result.volatilityLevel}
               </span>
@@ -348,7 +350,7 @@ const Risks = () => {
 
             {/* AI Recommendation - minimal */}
             <div className="mt-6">
-              <p className="text-xs text-muted-foreground mb-2">AI insight</p>
+              <p className="text-xs text-muted-foreground mb-2">{t("app.risks.aiInsight")}</p>
               <p className="text-sm font-light leading-relaxed">{result.recommendation}</p>
             </div>
 
@@ -377,12 +379,12 @@ const Risks = () => {
   return (
     <MobileOnly>
       <div className="min-h-screen bg-transparent text-foreground pb-28">
-        <PageHeader title="Risks" subtitle="See investments in years at stake" />
+        <PageHeader title={t("app.risks.title")} subtitle={t("app.risks.sub")} />
 
         {/* Not logged in - minimal prompt */}
         {!user && !isLoadingInvestments && !suppressAuth && (
           <div className="px-6 py-8">
-            <p className="text-sm text-muted-foreground text-center mb-4">Sign in to track your investments</p>
+            <p className="text-sm text-muted-foreground text-center mb-4">{t("app.risks.signInToTrack")}</p>
             <button
               onClick={() => setShowAuthModal(true)}
               className="w-full py-3 border border-border rounded-xl text-sm font-light hover:bg-muted/20 transition-colors"
@@ -415,7 +417,7 @@ const Risks = () => {
             {investments.length > 0 && (
               <div className="px-6 mb-4">
                 <div className="py-4">
-                  <p className="text-xs text-muted-foreground mb-1">Total Portfolio</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t("app.risks.totalPortfolio")}</p>
                   <p className="text-3xl font-light">${getTotalInvested().toLocaleString()}</p>
                   <div className="flex items-center gap-4 mt-2">
                     <p className="text-xs text-muted-foreground">~{getTotalHoursAtRisk().toFixed(0)}h at risk</p>
@@ -492,7 +494,7 @@ const Risks = () => {
                             <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...
                           </>
                         ) : (
-                          "Analyze risk in hours & years"
+                          t("app.risks.analyzeButton")
                         )}
                       </button>
                     </motion.div>
@@ -510,18 +512,18 @@ const Risks = () => {
               >
                 <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
                   <div>
-                    <label className="text-sm text-muted-foreground">Asset name</label>
+                    <label className="text-sm text-muted-foreground">{t("app.risks.assetName")}</label>
                     <input
                       type="text"
                       value={asset}
                       onChange={(e) => setAsset(e.target.value)}
-                      placeholder="Bitcoin, Tesla, S&P 500..."
+                      placeholder={t("app.risks.assetPlaceholder")}
                       className="w-full bg-muted/30 rounded-xl px-4 py-3 mt-2"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm text-muted-foreground">Amount invested ($)</label>
+                    <label className="text-sm text-muted-foreground">{t("app.risks.amountInvested")} ({t("common.currency")})</label>
                     <input
                       type="number"
                       value={amount}

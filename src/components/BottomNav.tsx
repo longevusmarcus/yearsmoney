@@ -1,16 +1,18 @@
 import { Home, Search, AlertTriangle, Trophy } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const navItems = [
-    { icon: Home, label: "Home", path: "/home" },
-    { icon: Search, label: "Purchase", path: "/purchase" },
-    { icon: AlertTriangle, label: "Risks", path: "/risks" },
-    { icon: Trophy, label: "Rank", path: "/leaderboard" },
+    { icon: Home, label: t("app.nav.home"), path: "/home" },
+    { icon: Search, label: t("app.nav.purchase"), path: "/purchase" },
+    { icon: AlertTriangle, label: t("app.nav.risks"), path: "/risks" },
+    { icon: Trophy, label: t("app.nav.rank"), path: "/leaderboard" },
   ];
 
   return (
