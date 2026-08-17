@@ -2,6 +2,7 @@ import { Trophy } from "lucide-react";
 import { useMemo } from "react";
 import BottomNav from "@/components/BottomNav";
 import PageHeader from "@/components/PageHeader";
+import MobileOnly from "@/components/MobileOnly";
 import { useUserFinances } from "@/hooks/useUserFinances";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -92,96 +93,98 @@ const Leaderboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent pb-32">
-      <PageHeader 
-        title={t("app.leaderboard.title")}
-        subtitle={t("app.leaderboard.sub")}
-      />
+    <MobileOnly>
+      <div className="min-h-screen bg-transparent pb-32">
+        <PageHeader 
+          title={t("app.leaderboard.title")}
+          subtitle={t("app.leaderboard.sub")}
+        />
 
-      <div className="px-6 space-y-0">
-        {/* Leaderboard List */}
-        <div>
-          {leaderboardData.map((user, index) => (
-            <div
-              key={user.rank}
-              className={`flex items-center justify-between py-5 ${
-                index !== leaderboardData.length - 1 ? "border-b border-border/30" : ""
-              }`}
-            >
-              {/* Rank & Name */}
-              <div className="flex items-center gap-5">
-                <span className={`text-sm font-light w-6 tabular-nums ${
-                  user.isCurrentUser
-                    ? "logo-gradient-text inline-block font-display"
-                    : user.rank <= 3 ? "text-foreground" : "text-muted-foreground/50"
-                }`}>
-                  {user.rank}
-                </span>
-                <div className="flex items-center gap-3">
-                  {/* Trophy stays a top-3 marker; on the visitor's own row it turns gold
-                      rather than appearing at any rank, which would misread as a win. */}
-                  {user.rank <= 3 && (
-                    <Trophy
-                      className={`w-4 h-4 ${
-                        user.isCurrentUser
-                          ? "text-[oklch(0.85_0.19_90)]"
-                          : user.rank === 1
-                            ? "text-foreground"
-                            : user.rank === 2
-                              ? "text-muted-foreground/70"
-                              : "text-muted-foreground/50"
-                      }`}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                  <span className={`text-sm ${
+        <div className="px-6 space-y-0">
+          {/* Leaderboard List */}
+          <div>
+            {leaderboardData.map((user, index) => (
+              <div
+                key={user.rank}
+                className={`flex items-center justify-between py-5 ${
+                  index !== leaderboardData.length - 1 ? "border-b border-border/30" : ""
+                }`}
+              >
+                {/* Rank & Name */}
+                <div className="flex items-center gap-5">
+                  <span className={`text-sm font-light w-6 tabular-nums ${
+                    user.isCurrentUser
+                      ? "logo-gradient-text inline-block font-display"
+                      : user.rank <= 3 ? "text-foreground" : "text-muted-foreground/50"
+                  }`}>
+                    {user.rank}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    {/* Trophy stays a top-3 marker; on the visitor's own row it turns gold
+                        rather than appearing at any rank, which would misread as a win. */}
+                    {user.rank <= 3 && (
+                      <Trophy
+                        className={`w-4 h-4 ${
+                          user.isCurrentUser
+                            ? "text-[oklch(0.85_0.19_90)]"
+                            : user.rank === 1
+                              ? "text-foreground"
+                              : user.rank === 2
+                                ? "text-muted-foreground/70"
+                                : "text-muted-foreground/50"
+                        }`}
+                        strokeWidth={1.5}
+                      />
+                    )}
+                    <span className={`text-sm ${
+                      user.isCurrentUser
+                        ? "logo-gradient-text inline-block font-display"
+                        : "font-light text-foreground"
+                    }`}>
+                      {user.name}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Buffers in Years */}
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-lg tabular-nums ${
                     user.isCurrentUser
                       ? "logo-gradient-text inline-block font-display"
                       : "font-light text-foreground"
                   }`}>
-                    {user.name}
+                    {formatYears(user.buffer0Years)}
+                  </span>
+                  <span className={`text-[10px] font-light ${
+                    user.isCurrentUser
+                      ? "logo-gradient-text inline-block"
+                      : "text-muted-foreground/50"
+                  }`}>
+                    {t("common.yearShort")}
+                  </span>
+                  <span className={`text-[10px] font-light ml-1 ${
+                    user.isCurrentUser
+                      ? "logo-gradient-text inline-block"
+                      : "text-muted-foreground/30"
+                  }`}>
+                    /{formatYears(user.buffer1Years)}{t("common.yearShort")}
                   </span>
                 </div>
               </div>
+            ))}
+          </div>
 
-              {/* Buffers in Years */}
-              <div className="flex items-baseline gap-1">
-                <span className={`text-lg tabular-nums ${
-                  user.isCurrentUser
-                    ? "logo-gradient-text inline-block font-display"
-                    : "font-light text-foreground"
-                }`}>
-                  {formatYears(user.buffer0Years)}
-                </span>
-                <span className={`text-[10px] font-light ${
-                  user.isCurrentUser
-                    ? "logo-gradient-text inline-block"
-                    : "text-muted-foreground/50"
-                }`}>
-                  {t("common.yearShort")}
-                </span>
-                <span className={`text-[10px] font-light ml-1 ${
-                  user.isCurrentUser
-                    ? "logo-gradient-text inline-block"
-                    : "text-muted-foreground/30"
-                }`}>
-                  /{formatYears(user.buffer1Years)}{t("common.yearShort")}
-                </span>
-              </div>
-            </div>
-          ))}
+          {/* Footer Note */}  
+          <div className="pt-8 pb-4">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40 font-light text-center">
+              {t("app.leaderboard.footer")}
+            </p>
+          </div>
         </div>
 
-        {/* Footer Note */}  
-        <div className="pt-8 pb-4">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/40 font-light text-center">
-            {t("app.leaderboard.footer")}
-          </p>
-        </div>
+        <BottomNav />
       </div>
-
-      <BottomNav />
-    </div>
+    </MobileOnly>
   );
 };
 
