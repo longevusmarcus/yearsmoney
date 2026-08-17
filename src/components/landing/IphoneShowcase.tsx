@@ -485,8 +485,8 @@ export function IphoneShowcase() {
       setActive(Math.floor(progress * SCREEN_KEYS.length));
 
       const mobile = window.innerWidth < 768;
-      const startScale = mobile ? 0.7 : 1.0;
-      const endScale = mobile ? 0.62 : 0.72;
+      const startScale = mobile ? 0.58 : 1.0;
+      const endScale = mobile ? 0.52 : 0.72;
       const s = startScale - (startScale - endScale) * progress;
       if (phoneRef.current) {
         phoneRef.current.style.transform = `translate(-50%, -50%) scale(${s})`;
