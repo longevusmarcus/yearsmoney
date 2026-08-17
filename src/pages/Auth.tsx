@@ -293,7 +293,7 @@ const Auth = () => {
                 type="button"
                 onClick={handleGoogleSignIn}
                 variant="outline"
-                className="w-full rounded-[1rem] h-10 text-sm font-medium bg-background/60 border-border/40 hover:bg-background/80"
+                className="w-full rounded-[1rem] h-10 text-sm font-medium bg-white text-[oklch(0.15_0_0)] border-white/40 hover:bg-white/90 hover:text-[oklch(0.15_0_0)]"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
