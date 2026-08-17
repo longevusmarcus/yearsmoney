@@ -148,14 +148,14 @@ const Hero = () => {
       </motion.div>
 
       {/* Content container */}
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-4 pt-24 md:px-8 md:pt-28">
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pt-20 md:px-8 md:pt-28">
         {/* Hero section */}
-        <div className="flex flex-1 flex-col items-center justify-center px-2 pt-6 pb-24 text-center md:pt-8">
+        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-12 pt-2 text-center md:pb-24 md:pt-8">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: dur(0.7), delay: d(0.2) }}
             className="mb-5 md:mb-6"
           >
             <Link
@@ -173,8 +173,8 @@ const Hero = () => {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3 }}
-            className="mx-auto max-w-5xl font-grotesk text-5xl font-medium leading-[1.08] tracking-[-0.02em] text-white md:text-7xl lg:text-[5rem]"
+            transition={{ duration: dur(0.9), delay: d(0.3) }}
+            className="mx-auto max-w-5xl font-grotesk text-[2.6rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
           >
             <TypedHeadline />
           </motion.h1>
@@ -182,8 +182,8 @@ const Hero = () => {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="mt-8 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg"
+            transition={{ duration: dur(0.7), delay: d(0.5) }}
+            className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 md:mt-8 md:text-lg"
           >
             {t("hero.sub")}
           </motion.p>
@@ -191,7 +191,7 @@ const Hero = () => {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.55 }}
+            transition={{ duration: dur(0.7), delay: d(0.55) }}
             className="mt-3 max-w-2xl text-sm leading-relaxed text-white/50"
           >
             {t("hero.subSecondary")}
@@ -200,8 +200,8 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.65 }}
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+            transition={{ duration: dur(0.7), delay: d(0.65) }}
+            className="mt-7 flex flex-wrap items-center justify-center gap-3 md:mt-10 md:gap-4"
           >
             <Link
               to={APP_ENTRY}
