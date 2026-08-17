@@ -756,7 +756,7 @@ function Plan({ plan }: { plan: PlanData }) {
 
       <div className="mt-auto space-y-3 pt-8">
         <Link
-          to="/home"
+          to="/auth"
           className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3.5 text-sm font-medium text-black transition-transform hover:-translate-y-0.5"
         >
           {t("onboarding.plan.startJourney")}
