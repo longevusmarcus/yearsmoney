@@ -123,49 +123,17 @@ const Hero = () => {
             </span>
           </a>
 
-          {/* Desktop Navigation — all right-aligned next to CTA */}
-          <div className="hidden items-center gap-3 md:flex">
+          {/* Right-hand actions — visible on all screen sizes, no burger menu */}
+          <div className="flex items-center gap-2 md:gap-3">
             <LanguageSwitcher />
             <Link
               to={APP_ENTRY}
-              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-5 py-1.5 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95"
+              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-4 py-1.5 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95 md:px-5 md:py-1.5"
             >
               {t("nav.calculate")}
             </Link>
           </div>
-
-          {/* Mobile menu button */}
-          <button
-            aria-label={t("common.toggleMenu")}
-            className="text-white md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </nav>
-
-        {/* Mobile Navigation Menu with animation */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mx-auto mt-2 max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-black/70 backdrop-blur-xl md:hidden"
-            >
-              <div className="flex flex-col gap-1 p-4">
-                <LanguageSwitcher className="self-start" />
-                <Link
-                  to={APP_ENTRY}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="mt-3 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black"
-                >
-                  {t("nav.calculateMobile")}
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
 
       {/* Content container */}
