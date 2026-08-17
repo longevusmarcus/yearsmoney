@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import yearsLogo from "@/assets/years-logo.webp";
 import { APP_ENTRY } from "./appEntry";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 /* Typing effect on the localised headline. The highlighted word comes from the
@@ -252,6 +253,9 @@ const Hero = () => {
  * fused with heavy blur. Central darkening keeps typography readable.
  */
 function LightLeakBackdrop() {
+  // The drift repaints several very large blurred layers forever. That is fine on a
+  // desktop GPU and ruinous on a phone, so mobile gets the same field, held still.
+  const isMobile = useIsMobile();
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
       <div className="absolute inset-0 bg-black" />
@@ -259,12 +263,20 @@ function LightLeakBackdrop() {
       {/* Diagonal drift wrapper — the whole light-field breathes gently */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, x: [0, 30, -10, 0], y: [0, -20, 10, 0] }}
-        transition={{
-          opacity: { duration: 1.8, ease: "easeOut" },
-          x: { duration: 24, repeat: Infinity, ease: "easeInOut" },
-          y: { duration: 28, repeat: Infinity, ease: "easeInOut" },
-        }}
+        animate={
+          isMobile
+            ? { opacity: 1 }
+            : { opacity: 1, x: [0, 30, -10, 0], y: [0, -20, 10, 0] }
+        }
+        transition={
+          isMobile
+            ? { opacity: { duration: 1.8, ease: "easeOut" } }
+            : {
+                opacity: { duration: 1.8, ease: "easeOut" },
+                x: { duration: 24, repeat: Infinity, ease: "easeInOut" },
+                y: { duration: 28, repeat: Infinity, ease: "easeInOut" },
+              }
+        }
         className="absolute inset-[-10%]"
       >
         {/* Violet-warm cluster — left: soft violet → peach */}
@@ -285,11 +297,15 @@ function LightLeakBackdrop() {
 
         {/* Sunset-violet cluster — right: peach → coral → soft violet */}
         <motion.div
-          animate={{ x: [0, -20, 15, 0], y: [0, 15, -8, 0] }}
-          transition={{
-            x: { duration: 30, repeat: Infinity, ease: "easeInOut" },
-            y: { duration: 34, repeat: Infinity, ease: "easeInOut" },
-          }}
+          animate={isMobile ? undefined : { x: [0, -20, 15, 0], y: [0, 15, -8, 0] }}
+          transition={
+            isMobile
+              ? undefined
+              : {
+                  x: { duration: 30, repeat: Infinity, ease: "easeInOut" },
+                  y: { duration: 34, repeat: Infinity, ease: "easeInOut" },
+                }
+          }
           className="absolute right-[-15%] top-[-10%] h-[95vh] w-[85vw] rotate-[12deg] rounded-full blur-[170px]"
           style={{
             background:

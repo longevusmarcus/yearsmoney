@@ -101,6 +101,61 @@
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
+/* ── Mobile compositing budget ─────────────────────────────────────────
+   The design leans on very large decorative blurs (up to 190px) plus ~23
+   backdrop-filter surfaces. A desktop GPU absorbs that; a phone GPU does not —
+   large blur kernels and backdrop readbacks are the single most expensive thing
+   you can ask a mobile compositor to do, and they made sections crawl into view
+   on real handsets even though emulated mobile (running on desktop hardware)
+   looked fine.
+
+   Below 768px the decorative blooms are capped at a radius a phone can handle.
+   80px keeps them reading as soft light rather than distinct blobs while more than
+   halving the kernel; dropping to ~44px did look visibly patchy. The small functional blurs
+   (`blur-[6px]` paywall masks, `blur-2xl` reflections) are left alone.
+   ------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .blur-\[110px\],
+  .blur-\[120px\],
+  .blur-\[140px\],
+  .blur-\[150px\],
+  .blur-\[160px\],
+  .blur-\[170px\],
+  .blur-\[180px\],
+  .blur-\[190px\] {
+    filter: blur(80px);
+  }
+
+  .blur-\[55px\],
+  .blur-\[65px\],
+  .blur-\[80px\] {
+    filter: blur(40px);
+  }
+
+  /* Each backdrop-filter forces the compositor to re-read what is behind it.
+     These surfaces are already translucent over a dark ground, so dropping the
+     blur costs almost nothing visually and removes ~23 readbacks per frame. */
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-md,
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Honour an explicit request for less motion, and drop the infinite
+   light-leak drift that repaints those large blurred layers forever. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .logo-gradient-text {
   background-image: linear-gradient(
     100deg,

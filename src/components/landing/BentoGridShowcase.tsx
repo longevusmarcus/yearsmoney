@@ -73,13 +73,40 @@ function MobileHorizontalScroll({ children }: { children: React.ReactNode[] }) {
       update();
     };
 
+    // Scroll work is coalesced into one rAF per frame. Without this, a real phone
+    // fires scroll far faster than it can lay out, and every event calls
+    // getBoundingClientRect — layout thrash that stalls the whole page.
+    let queued = false;
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        update();
+      });
+    };
+
+    // Only re-measure when the width actually changes. On a real handset,
+    // scrolling collapses the URL bar, which fires resize continuously and
+    // changes innerHeight — re-measuring there rewrote the wrapper height
+    // mid-scroll and made the section appear to stall. Desktop never sees this.
+    let lastWidth = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === lastWidth) {
+        update();
+        return;
+      }
+      lastWidth = window.innerWidth;
+      measure();
+    };
+
     measure();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
 
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 

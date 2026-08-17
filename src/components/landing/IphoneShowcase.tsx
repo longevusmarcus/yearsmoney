@@ -492,12 +492,24 @@ export function IphoneShowcase() {
         phoneRef.current.style.transform = `translate(-50%, -50%) scale(${s})`;
       }
     };
+    // Coalesce to one measurement per frame; this handler reads layout and
+    // writes a transform, which is expensive to run on every raw scroll event.
+    let queued = false;
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        onScroll();
+      });
+    };
+
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
   }, []);
 
