@@ -84,6 +84,20 @@ export const useUserFinances = () => {
           localStorage.setItem("tc_income", String(dbFinances.monthlyIncome));
           localStorage.setItem("tc_expenses", String(dbFinances.monthlyExpenses));
           localStorage.setItem("tc_networth", String(dbFinances.netWorth));
+        } else {
+          // Fresh account: carry over the numbers computed during onboarding.
+          const localIncome = Number(localStorage.getItem("tc_income")) || 0;
+          const localExpenses = Number(localStorage.getItem("tc_expenses")) || 0;
+          const localNetWorth = Number(localStorage.getItem("tc_networth")) || 0;
+          if (localIncome > 0 || localExpenses > 0 || localNetWorth > 0) {
+            setFinances({ monthlyIncome: localIncome, monthlyExpenses: localExpenses, netWorth: localNetWorth });
+            await supabase.from("user_finances").upsert({
+              user_id: session.user.id,
+              monthly_income: localIncome,
+              monthly_expenses: localExpenses,
+              net_worth: localNetWorth,
+            });
+          }
         }
       }
     });
