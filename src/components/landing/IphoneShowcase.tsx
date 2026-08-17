@@ -605,7 +605,7 @@ export function IphoneShowcase() {
                 </motion.div>
               </AnimatePresence>
 
-              <div className="mt-6 flex gap-2 md:mt-8">
+              <div className="mt-4 flex gap-2 md:mt-8">
                 {SCREENS.map((s, i) => (
                   <span
                     key={s.label}
