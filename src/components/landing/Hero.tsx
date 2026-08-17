@@ -138,6 +138,12 @@ const Hero = () => {
           <div className="flex items-center gap-2 md:gap-3">
             <LanguageSwitcher />
             <Link
+              to="/auth"
+              className="inline-flex items-center rounded-full border border-white/20 px-3.5 py-1.5 text-sm font-medium text-white/85 transition-colors hover:border-white/40 hover:text-white active:scale-95 md:px-4"
+            >
+              Entra
+            </Link>
+            <Link
               to={APP_ENTRY}
               className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-4 py-1.5 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95 md:px-5 md:py-1.5"
             >
