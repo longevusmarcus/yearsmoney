@@ -41,7 +41,7 @@ function ScreenShell({
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-10 left-[-15%] h-48 w-48 rounded-full bg-[oklch(0.72_0.19_55/0.20)] blur-[55px]" />
         <div className="absolute top-1/2 right-[-20%] h-56 w-56 rounded-full bg-[oklch(0.55_0.24_295/0.20)] blur-[65px]" />
-        <div className="absolute bottom-[-8%] left-1/4 h-40 w-40 rounded-full bg-[oklch(0.70_0.16_180/0.14)] blur-[55px]" />
+        <div className="absolute bottom-[-8%] left-1/4 h-40 w-40 rounded-full bg-[oklch(0.55_0.24_295/0.18)] blur-[55px]" />
       </div>
       <div className="relative flex items-start justify-between px-4 pt-12">
         <div>
@@ -224,7 +224,7 @@ function GoalsScreen() {
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
             <Target className="h-2.5 w-2.5 shrink-0" /> {t("showcase.goals.scenario")}
           </p>
-          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
+          <p className="logo-gradient-text mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">
             {t("showcase.goals.scenarioValue")}
           </p>
           <p className="mt-1 text-[8px] text-white/40">{t("showcase.goals.inFiveYears")}</p>
@@ -237,10 +237,17 @@ function GoalsScreen() {
         </p>
         <Tile className="flex h-[86px] flex-col p-3">
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="min-h-0 w-full flex-1">
+            <defs>
+              <linearGradient id="simLineGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="oklch(0.72 0.19 310)" />
+                <stop offset="55%" stopColor="oklch(0.98 0.01 300)" />
+                <stop offset="100%" stopColor="oklch(0.85 0.19 90)" />
+              </linearGradient>
+            </defs>
             <path
               d="M2 34 L26 30 L50 24 L74 15 L98 4"
               fill="none"
-              stroke="oklch(0.75 0.19 150)"
+              stroke="url(#simLineGradient)"
               strokeWidth="1"
               strokeLinecap="round"
             />
@@ -376,7 +383,7 @@ function RisksScreen() {
       <div className="grid grid-cols-2 gap-2.5">
         <Tile className="p-3">
           <p className="text-[8px] text-white/40">{t("showcase.risks.ifUp")}</p>
-          <p className="mt-1 font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
+          <p className="logo-gradient-text mt-1 font-grotesk text-xl font-bold tracking-tight">
             +8053
           </p>
           <p className="text-[8px] text-white/35">{t("showcase.risks.hoursGained")}</p>
