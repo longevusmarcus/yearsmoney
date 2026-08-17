@@ -520,7 +520,7 @@ export function IphoneShowcase() {
     <section id="scopri" className="relative bg-black">
       <div ref={wrapperRef} style={{ height: `calc(${SCREEN_KEYS.length * 35}vh + 100vh)` }}>
         <div className="sticky top-0 flex h-[100svh] max-w-full items-center overflow-hidden px-4 pt-12 pb-8 md:px-8 md:pt-36 md:pb-32">
-          <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="pointer-events-none absolute inset-0 -z-10 hidden md:block">
             <div className="absolute left-[8%] top-1/4 h-[420px] w-[420px] rounded-full bg-[oklch(0.72_0.19_55/0.16)] blur-[140px]" />
             <div className="absolute bottom-1/4 right-[10%] h-[460px] w-[460px] rounded-full bg-[oklch(0.55_0.24_295/0.16)] blur-[150px]" />
           </div>
@@ -596,16 +596,16 @@ export function IphoneShowcase() {
                   exit={{ opacity: 0, y: -18 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
                 >
-                  <h3 className="mt-4 font-grotesk text-2xl font-bold leading-[1.1] tracking-tight text-white md:mt-5 md:text-5xl">
+                  <h3 className="mt-4 font-grotesk text-xl font-bold leading-[1.1] tracking-tight text-white md:mt-5 md:text-5xl">
                     {current.title}
                   </h3>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-white/60 md:mt-4 md:text-lg">
+                  <p className="mt-2 max-w-md text-sm leading-snug text-white/60 md:mt-4 md:text-lg md:leading-relaxed">
                     {current.desc}
                   </p>
                 </motion.div>
               </AnimatePresence>
 
-              <div className="mt-6 flex gap-2 md:mt-8">
+              <div className="mt-4 flex gap-2 md:mt-8">
                 {SCREENS.map((s, i) => (
                   <span
                     key={s.label}
