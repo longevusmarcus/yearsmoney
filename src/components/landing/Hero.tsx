@@ -74,7 +74,6 @@ function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
 
 const Hero = () => {
   const { t } = useI18n();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
