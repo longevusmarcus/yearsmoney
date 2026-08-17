@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/PageHeader";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
 
@@ -153,18 +152,6 @@ const Settings = () => {
               </p>
             </Card>
           )}
-        </div>
-
-        {/* Appearance */}
-        <div className="space-y-3">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground font-light">
-            appearance
-          </h2>
-          
-          <Card className="bg-card border-border p-4 rounded-2xl flex items-center justify-between">
-            <p className="text-sm font-light text-foreground">Theme</p>
-            <ThemeToggle />
-          </Card>
         </div>
 
         {/* Leaderboard */}

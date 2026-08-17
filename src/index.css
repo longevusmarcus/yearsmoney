@@ -2,9 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TimeCost Design System - existential, minimal, black & white focus
-   All colors MUST be HSL.
-*/
+/* YEARS design system — dark-only, existential, translucent glass surfaces.
+   All colours are HSL triples; `-a` vars carry each surface's resting opacity. */
 
 @layer base {
   :root {
@@ -13,10 +12,15 @@
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 8%;
+    /* Surfaces are translucent white overlays, matching the onboarding glass
+       (border-white/10 on bg-white/[0.03]). The `-a` vars are the resting opacity;
+       see the `surface()` helper in tailwind.config.ts. */
+    --card: 0 0% 100%;
+    --card-a: 0.04;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 8%;
+    /* Popovers and dropdowns stay opaque — they float over arbitrary content */
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
 
     /* Muted white as primary - clean, minimal */
@@ -24,10 +28,12 @@
     --primary-foreground: 0 0% 4%;
 
     /* Subtle gray for secondary */
-    --secondary: 0 0% 20%;
+    --secondary: 0 0% 100%;
+    --secondary-a: 0.09;
     --secondary-foreground: 0 0% 90%;
 
-    --muted: 0 0% 12%;
+    --muted: 0 0% 100%;
+    --muted-a: 0.06;
     --muted-foreground: 0 0% 55%;
 
     /* Warm gold accent for emphasis */
@@ -40,48 +46,13 @@
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
+    --border: 0 0% 100%;
+    --border-a: 0.10;
+    --input: 0 0% 100%;
+    --input-a: 0.05;
     --ring: 0 0% 90%;
 
     --radius: 1.25rem;
-  }
-
-  .light {
-    /* Light mode - clean white */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 8%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
-
-    /* Dark as primary in light mode */
-    --primary: 0 0% 12%;
-    --primary-foreground: 0 0% 98%;
-
-    /* Light gray secondary */
-    --secondary: 0 0% 92%;
-    --secondary-foreground: 0 0% 12%;
-
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-
-    /* Warm gold accent */
-    --accent: 45 85% 55%;
-    --accent-foreground: 0 0% 8%;
-
-    --success: 142 70% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 12%;
   }
 }
 
@@ -128,12 +99,6 @@
 
 .font-mono {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-}
-
-/* Ambient blooms behind every in-app screen (see components/AppBackground.tsx).
-   Full strength on the dark default; pulled back in light mode so text stays readable. */
-.light .years-ambient {
-  opacity: 0.4;
 }
 
 .logo-gradient-text {

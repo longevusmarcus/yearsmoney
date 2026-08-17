@@ -2,9 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Settings } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import ShareableWidget from "@/components/ShareableWidget";
-import { YearsWordmark } from "@/components/YearsWordmark";
 import bearMascot from "@/assets/bear-mascot.png";
 
 interface PageHeaderProps {
@@ -58,9 +56,6 @@ export const PageHeader = ({
           </motion.button>
         )}
         
-        {/* Same lockup as the onboarding header, so the funnel and the app read as one product */}
-        <YearsWordmark className="mb-3" />
-
         <div className="flex justify-between items-start">
           <motion.div
             className="flex-1"
@@ -95,7 +90,6 @@ export const PageHeader = ({
                   <img src={bearMascot} alt="Share" className="w-6 h-6 object-contain" />
                 </button>
               )}
-              <ThemeToggle />
               <button
                 onClick={() => navigate("/settings")}
                 className="p-1 hover:opacity-70 transition-opacity"

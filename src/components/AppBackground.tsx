@@ -7,7 +7,7 @@
  * `bg-transparent` on their root so this shows through; the landing page paints its
  * own opaque sections over it.
  *
- * In light mode the blooms are dimmed via `.light .years-ambient` in `index.css`.
+ * The app is dark-only — there is no light theme to account for.
  */
 export function AppBackground() {
   return (

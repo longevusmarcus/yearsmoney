@@ -291,7 +291,7 @@ const Home = () => {
             </div>
             <p 
               key={displayMode + '-without'}
-              className="text-3xl font-light text-foreground tracking-tight animate-fade-in"
+              className="font-display text-3xl text-foreground tracking-tight animate-fade-in"
             >
               {formatLifeBuffer(lifeBufferWithoutIncome)}
             </p>
@@ -312,7 +312,7 @@ const Home = () => {
             </div>
             <p 
               key={displayMode + '-with'}
-              className="text-3xl font-light text-foreground tracking-tight animate-fade-in"
+              className="font-display text-3xl text-foreground tracking-tight animate-fade-in"
             >
               {formatLifeBuffer(calculateProjectionWithIncome(1))}
             </p>

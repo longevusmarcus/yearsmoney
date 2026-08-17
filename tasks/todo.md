@@ -144,6 +144,42 @@ still renders dark text on a light ground with only a soft warm tint.
 Verified by screenshot on `/home` and `/leaderboard` in both themes. Class-name changes only — no
 component logic, props, or data flow touched.
 
+## H. Fourth pass — glass surfaces, dark-only, no in-app logo
+
+Four follow-up requests, in order:
+
+**1. Cards and fields should be glass / transparent, some gradient.** The app had ~360 uses of
+`bg-card` / `bg-muted` / `bg-secondary` / `border-border`, many with opacity modifiers
+(`bg-card/80`, `border-border/50`), so per-element edits were out. Fixed at the token level instead:
+
+- `tailwind.config.ts` gains a `surface()` helper returning an alpha-aware colour function.
+  `card`, `muted`, `secondary`, `input`, and `border` now resolve to translucent white overlays.
+- Each token carries a resting opacity (`--card-a: 0.04`, `--border-a: 0.10`, …) matching the
+  onboarding's `border-white/10 bg-white/[0.03]`.
+- Opacity modifiers still work and **compose**: `bg-card/80` → `calc(var(--card-a) * .8)`, i.e.
+  "80% as present as a card" rather than "80% opaque grey". Verified in the built CSS.
+- `popover` deliberately stays opaque — dropdowns and selects float over arbitrary content.
+- `ui/card`, `ui/input`, `ui/textarea` gained `backdrop-blur` so they read as glass, not just tint.
+- Gradient: `ui/progress` indicator now uses the YEARS violet→gold ramp, so every progress bar in
+  the app picks it up.
+
+No legacy `bg-opacity-*` / `border-opacity-*` utilities exist in the repo, which is what makes the
+colour-function approach safe here.
+
+**2. Remove the logo from inside the app.** `YearsWordmark` dropped from `PageHeader` and the
+component deleted.
+
+**3. Remove light mode.** `ThemeProvider` now `forcedTheme="dark" enableSystem={false}`; the whole
+`.light` token block is gone from `index.css`; `ThemeToggle` deleted and removed from both
+`PageHeader` and Settings (its "appearance" section went with it). The provider stays because
+`ui/sonner` reads `useTheme()`.
+
+**4. Headline figures in white, not gradient.** Home's two runway numbers keep the display face but
+render `text-foreground`. Gradient now appears only on progress bars.
+
+Verified by screenshot: `/home` (glass cards over the ambient blooms, white figures, no logo, no
+toggle) and `/settings` (Appearance section cleanly gone, glass cards intact).
+
 ### One thing to be aware of
 `MsxBootGate.isAtAuthedRoute()` (`src/msx/MsxBootGate.tsx:531`) does not list `/calcola`, `/onboarding`,
 or `/filosofia`. Inside the MSX shell those routes show the splash and get replaced by `/home`. Harmless

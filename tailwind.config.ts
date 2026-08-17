@@ -1,5 +1,21 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Translucent surface token — the glass language used by the onboarding flow
+ * (`border-white/10 bg-white/[0.03]`) expressed as a theme colour so every existing
+ * `bg-card` / `bg-muted` / `border-border` in the app picks it up.
+ *
+ * `hslVar` carries hue/sat/lightness, `alphaVar` the resting opacity. Opacity
+ * modifiers still work and compose against the resting value, so `bg-card/50`
+ * means "half as present as a card", not "50% opaque grey".
+ */
+const surface =
+  (hslVar: string, alphaVar: string) =>
+  ({ opacityValue }: { opacityValue?: string }) =>
+    opacityValue === undefined
+      ? `hsl(var(${hslVar}) / var(${alphaVar}))`
+      : `hsl(var(${hslVar}) / calc(var(${alphaVar}) * ${opacityValue}))`;
+
 export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
@@ -22,8 +38,8 @@ export default {
         cormorant: ['Cormorant Garamond', 'serif'],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
+        border: surface("--border", "--border-a"),
+        input: surface("--input", "--input-a"),
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -32,7 +48,7 @@ export default {
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: surface("--secondary", "--secondary-a"),
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
@@ -40,7 +56,7 @@ export default {
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
+          DEFAULT: surface("--muted", "--muted-a"),
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
@@ -56,7 +72,7 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: surface("--card", "--card-a"),
           foreground: "hsl(var(--card-foreground))",
         },
       },
