@@ -18,7 +18,6 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import yearsLogo from "@/assets/years-logo.webp";
-import { APP_ENTRY } from "@/components/landing/appEntry";
 import { useI18n } from "@/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -739,7 +738,7 @@ function Plan({ plan }: { plan: PlanData }) {
 
       <div className="mt-auto space-y-3 pt-8">
         <Link
-          to={APP_ENTRY}
+          to="/home"
           className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3.5 text-sm font-medium text-black transition-transform hover:-translate-y-0.5"
         >
           {t("onboarding.plan.startJourney")}
