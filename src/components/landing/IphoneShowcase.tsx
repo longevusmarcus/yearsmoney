@@ -237,10 +237,17 @@ function GoalsScreen() {
         </p>
         <Tile className="flex h-[86px] flex-col p-3">
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="min-h-0 w-full flex-1">
+            <defs>
+              <linearGradient id="simLineGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="oklch(0.72 0.19 310)" />
+                <stop offset="55%" stopColor="oklch(0.98 0.01 300)" />
+                <stop offset="100%" stopColor="oklch(0.85 0.19 90)" />
+              </linearGradient>
+            </defs>
             <path
               d="M2 34 L26 30 L50 24 L74 15 L98 4"
               fill="none"
-              stroke="oklch(0.75 0.19 150)"
+              stroke="url(#simLineGradient)"
               strokeWidth="1"
               strokeLinecap="round"
             />
