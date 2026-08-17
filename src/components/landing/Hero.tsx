@@ -96,7 +96,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section id="top" className="relative min-h-[75svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
+    <section id="top" className="relative min-h-[100svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
       {/* Cinematic light-field background: soft diffuse blooms on pure black */}
       <LightLeakBackdrop />
 
@@ -154,9 +154,9 @@ const Hero = () => {
       </motion.div>
 
       {/* Content container */}
-      <div className="relative z-10 mx-auto flex min-h-[75svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
         {/* Hero section */}
-        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-8 pt-3 text-center md:pb-24 md:pt-8">
+        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-0 pt-3 text-center md:pb-24 md:pt-8">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
