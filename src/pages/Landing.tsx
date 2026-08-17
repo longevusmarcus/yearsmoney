@@ -13,8 +13,8 @@ import japanImg from "@/assets/example-japan.jpg";
 import phoneImg from "@/assets/example-phone.jpg";
 import fashionImg from "@/assets/example-fashion.jpg";
 import yearsLogo from "@/assets/years-logo.webp";
-import womanSky from "@/assets/woman-sky.png";
-import womanSkyDesktop from "@/assets/woman-sky-desktop.png";
+import womanSky from "@/assets/woman-sky.jpg";
+import womanSkyDesktop from "@/assets/woman-sky-desktop.jpg";
 import peopleMountain from "@/assets/people-mountain.jpg";
 import peopleHome from "@/assets/people-home.jpg";
 import peopleRetire from "@/assets/people-retire.jpg";
@@ -301,6 +301,7 @@ function FullBleedStory({
   chips,
   goals,
   align = "center",
+  eager = false,
   gradient = "from-[oklch(0.72_0.16_55/0.30)] via-[oklch(0.62_0.15_290/0.22)] via-[oklch(0.55_0.14_260/0.26)] to-[oklch(0.32_0.14_300/0.55)]",
 }: {
   id?: string;
@@ -326,6 +327,8 @@ function FullBleedStory({
     cardBudget?: string;
   }[];
   align?: "center" | "left";
+  /** Only set on a story that can actually be in the first viewport. */
+  eager?: boolean;
   gradient?: string;
 }) {
   const { t } = useI18n();
@@ -349,14 +352,15 @@ function FullBleedStory({
           key={shownImg}
           src={shownImg}
           alt={shownAlt}
-          loading="eager"
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
           width={1920}
           height={1280}
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="absolute inset-0 h-full w-full object-cover"
-          {...{ fetchpriority: "high" }}
+          {...(eager ? { fetchpriority: "high" } : {})}
         />
       </picture>
 

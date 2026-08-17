@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,19 +9,22 @@ import { AppBackground } from "./components/AppBackground";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { MsxBootGate } from "./msx/MsxBootGate";
 import Landing from "./pages/Landing";
-import Onboarding from "./pages/Onboarding";
-import Filosofia from "./pages/Filosofia";
-import Calcola from "./pages/Calcola";
-import Home from "./pages/Home";
-import Purchase from "./pages/Purchase";
-import Risks from "./pages/Risks";
-import Leaderboard from "./pages/Leaderboard";
-import Settings from "./pages/Settings";
-import UBI from "./pages/UBI";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
+
+// Only the landing page ships in the initial bundle; every other route is fetched
+// on demand, which keeps first paint on mobile off the critical path.
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Filosofia = lazy(() => import("./pages/Filosofia"));
+const Calcola = lazy(() => import("./pages/Calcola"));
+const Home = lazy(() => import("./pages/Home"));
+const Purchase = lazy(() => import("./pages/Purchase"));
+const Risks = lazy(() => import("./pages/Risks"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const Settings = lazy(() => import("./pages/Settings"));
+const UBI = lazy(() => import("./pages/UBI"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Auth = lazy(() => import("./pages/Auth"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -35,6 +39,7 @@ const App = () => {
         <BrowserRouter>
           <ScrollToTop />
           <MsxBootGate>
+          <Suspense fallback={<div className="min-h-screen bg-transparent" />}>
           <Routes>
             {/* Landing page — same component on both paths so existing /about links keep working */}
             <Route path="/" element={<Landing />} />
@@ -61,6 +66,7 @@ const App = () => {
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
           </MsxBootGate>
         </BrowserRouter>
       </TooltipProvider>
