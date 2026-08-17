@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Menu, X, Smartphone } from "lucide-react";
+import { ArrowRight, X, Smartphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import yearsLogo from "@/assets/years-logo.webp";
