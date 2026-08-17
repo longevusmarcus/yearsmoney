@@ -1,6 +1,4 @@
-import { Suspense, lazy } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -9,6 +7,11 @@ import { AppBackground } from "./components/AppBackground";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { MsxBootGate } from "./msx/MsxBootGate";
 import Landing from "./pages/Landing";
+
+// Toast layers are never visible on first paint, so they load after the app boots.
+const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
+
 
 // Only the landing page ships in the initial bundle; every other route is fetched
 // on demand, which keeps first paint on mobile off the critical path.
@@ -29,13 +32,25 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Defer non-visual overlays until after the first paint.
+  const [overlays, setOverlays] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setOverlays(true), 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
+        {overlays && (
+          <Suspense fallback={null}>
+            <Toaster />
+            <Sonner />
+          </Suspense>
+        )}
         <AppBackground />
+
         <BrowserRouter>
           <ScrollToTop />
           <MsxBootGate>

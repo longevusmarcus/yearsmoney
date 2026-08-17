@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+// Loaded on demand: keeping the auth client out of the initial bundle makes the
+// public landing page much faster to boot on mobile.
+const getSupabase = async () => (await import("@/integrations/supabase/client")).supabase;
 
 type BootStatus = "idle" | "booting" | "ready" | "failed" | "not-msx";
 
@@ -367,7 +369,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         setIsMsx(true);
         setStatus("booting");
 
-        const { data: existingSession } = await supabase.auth.getSession();
+        const { data: existingSession } = await (await getSupabase()).auth.getSession();
         if (existingSession.session) {
           setEntitled(true);
           setStatus("ready");
@@ -402,7 +404,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         // the local Supabase session still exists.
         const cachedEntitled = sessionStorage.getItem(STORAGE_ENTITLED) === "1";
         if (cachedEntitled) {
-          const { data: s } = await supabase.auth.getSession();
+          const { data: s } = await (await getSupabase()).auth.getSession();
           if (s.session) {
             if (cancelled) return;
             setEntitled(true);
@@ -435,7 +437,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
           if (isInvalidToken) {
             clearPersistedLaunch();
             // If we already have a local session, just proceed.
-            const { data: existingSession } = await supabase.auth.getSession();
+            const { data: existingSession } = await (await getSupabase()).auth.getSession();
             if (existingSession.session) {
               setEntitled(true);
               setStatus("ready");
@@ -456,7 +458,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
         }
 
         // 2. Install the real local session.
-        const { error: setErr } = await supabase.auth.setSession({
+        const { error: setErr } = await (await getSupabase()).auth.setSession({
           access_token: data.access_token,
           refresh_token: data.refresh_token,
         });
@@ -464,7 +466,7 @@ export const MsxBootGate = ({ children }: { children: ReactNode }) => {
 
         // 3. Confirm the session is live before unlocking the app.
         const { data: sessionData, error: sessErr } =
-          await supabase.auth.getSession();
+          await (await getSupabase()).auth.getSession();
         if (sessErr) throw sessErr;
         if (!sessionData?.session) {
           throw new Error("Local session not established after bootstrap");
