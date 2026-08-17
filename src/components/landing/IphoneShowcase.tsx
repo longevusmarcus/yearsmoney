@@ -485,8 +485,8 @@ export function IphoneShowcase() {
       setActive(Math.floor(progress * SCREEN_KEYS.length));
 
       const mobile = window.innerWidth < 768;
-      const startScale = mobile ? 0.58 : 1.0;
-      const endScale = mobile ? 0.52 : 0.72;
+      const startScale = mobile ? 0.78 : 1.0;
+      const endScale = mobile ? 0.7 : 0.72;
       const s = startScale - (startScale - endScale) * progress;
       if (phoneRef.current) {
         phoneRef.current.style.transform = `translate(-50%, -50%) scale(${s})`;
@@ -528,7 +528,7 @@ export function IphoneShowcase() {
           <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-3 md:grid-cols-2 md:gap-16">
             {/* iPhone 18 mockup */}
             <div className="order-1 flex min-w-0 justify-center overflow-hidden md:order-2">
-              <div className="relative h-[348px] w-[174px] md:h-[600px] md:w-[296px]">
+              <div className="relative h-[470px] w-[232px] md:h-[600px] md:w-[296px]">
                 <div
                   ref={phoneRef}
                   className="absolute left-1/2 top-1/2 h-[600px] w-[296px]"
