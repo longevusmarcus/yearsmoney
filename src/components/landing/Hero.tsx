@@ -154,7 +154,7 @@ const Hero = () => {
       </motion.div>
 
       {/* Content container */}
-      <div className="relative z-10 mx-auto flex min-h-[80svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
+      <div className="relative z-10 mx-auto flex min-h-[75svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
         {/* Hero section */}
         <div className="flex flex-1 flex-col items-center justify-center px-2 pb-8 pt-3 text-center md:pb-24 md:pt-8">
           {/* Badge */}
