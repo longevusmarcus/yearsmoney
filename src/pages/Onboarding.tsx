@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,7 @@ import {
 import yearsLogo from "@/assets/years-logo.webp";
 import { useI18n } from "@/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useUserFinances } from "@/hooks/useUserFinances";
 
 /* ================== OPTION MODEL ==================
  * Options are identified by stable ids, never by their labels. The projection maths
@@ -152,6 +153,23 @@ export default function Onboarding() {
   ][i];
 
   const plan = usePlan(a);
+
+  // Persist onboarding results so the Home dashboard shows the same numbers.
+  const { updateFinances } = useUserFinances();
+  useEffect(() => {
+    if (i !== 10) return;
+    const income = incomeValue(a);
+    const savings = savingValue(a);
+    const expenses = Math.max(income - savings, 0);
+    const netWorth = Math.max(Number(a.wealth) || 0, 0);
+    localStorage.setItem("tc_onboarding_done", "1");
+    updateFinances({
+      monthlyIncome: income,
+      monthlyExpenses: expenses,
+      netWorth,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i]);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
