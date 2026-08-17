@@ -96,7 +96,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section id="top" className="relative min-h-[100svh] w-full overflow-hidden bg-black text-foreground">
+    <section id="top" className="relative min-h-[75svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
       {/* Cinematic light-field background: soft diffuse blooms on pure black */}
       <LightLeakBackdrop />
 
@@ -154,15 +154,15 @@ const Hero = () => {
       </motion.div>
 
       {/* Content container */}
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pt-20 md:px-8 md:pt-28">
+      <div className="relative z-10 mx-auto flex min-h-[75svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
         {/* Hero section */}
-        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-12 pt-2 text-center md:pb-24 md:pt-8">
+        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-8 pt-3 text-center md:pb-24 md:pt-8">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur(0.7), delay: d(0.2) }}
-            className="mb-5 md:mb-6"
+            className="mb-4 md:mb-6"
           >
             <Link
               to="/filosofia"
@@ -180,7 +180,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur(0.9), delay: d(0.3) }}
-            className="mx-auto max-w-5xl font-grotesk text-[2.6rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
+            className="mx-auto max-w-5xl font-grotesk text-[2.4rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
           >
             <TypedHeadline />
           </motion.h1>
@@ -189,7 +189,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur(0.7), delay: d(0.5) }}
-            className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 md:mt-8 md:text-lg"
+            className="mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:mt-8 md:text-lg"
           >
             {t("hero.sub")}
           </motion.p>
@@ -198,7 +198,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur(0.7), delay: d(0.55) }}
-            className="mt-3 max-w-2xl text-sm leading-relaxed text-white/50"
+            className="mt-2 max-w-2xl text-sm leading-relaxed text-white/50 md:mt-3"
           >
             {t("hero.subSecondary")}
           </motion.p>
@@ -207,18 +207,18 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur(0.7), delay: d(0.65) }}
-            className="mt-7 flex flex-wrap items-center justify-center gap-3 md:mt-10 md:gap-4"
+            className="mt-5 flex flex-wrap items-center justify-center gap-3 md:mt-10 md:gap-4"
           >
             <Link
               to={APP_ENTRY}
-              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-8 py-3.5 text-sm font-medium text-black shadow-[0_10px_40px_-12px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95"
+              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-7 py-3 text-sm font-medium text-black shadow-[0_10px_40px_-12px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95 md:px-8 md:py-3.5"
             >
               {t("hero.ctaPrimary")}
             </Link>
             <a
               href="#scopri"
               onClick={(e) => scrollToSection(e, "scopri")}
-              className="inline-flex items-center rounded-full border border-white/20 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
+              className="inline-flex items-center rounded-full border border-white/20 px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-white/5 md:px-8 md:py-3.5"
             >
               {t("hero.ctaSecondary")}
             </a>
