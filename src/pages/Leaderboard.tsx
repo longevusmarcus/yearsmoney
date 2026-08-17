@@ -2,8 +2,11 @@ import { Trophy } from "lucide-react";
 import { useMemo } from "react";
 import BottomNav from "@/components/BottomNav";
 import PageHeader from "@/components/PageHeader";
+import { useUserFinances } from "@/hooks/useUserFinances";
 
 const Leaderboard = () => {
+  // Signed-in visitors get their own ranked row; signed-out ones see the list as-is.
+  const { finances, user } = useUserFinances();
   // Realistic human names
   const names = [
     "Marcus Chen", "Sofia Rodriguez", "James O'Brien", "Aisha Patel", "Lucas Andersen",
@@ -53,6 +56,22 @@ const Leaderboard = () => {
         name: abbreviateName(names[i]),
         buffer0Years: buffer0,
         buffer1Years: buffer1,
+        isCurrentUser: false,
+      });
+    }
+
+    // Signed in and with real numbers entered → slot the visitor into the ranking.
+    // Same buffer formulas as above so the comparison is apples to apples.
+    if (user && finances.netWorth > 0 && finances.monthlyIncome > 0) {
+      users.push({
+        rank: 0,
+        name: "You",
+        buffer0Years: finances.netWorth / (finances.monthlyIncome * 12),
+        buffer1Years:
+          finances.monthlyExpenses > 0
+            ? finances.netWorth / (finances.monthlyExpenses * 12)
+            : 0,
+        isCurrentUser: true,
       });
     }
 
@@ -61,7 +80,7 @@ const Leaderboard = () => {
       ...u,
       rank: i + 1
     }));
-  }, []);
+  }, [user, finances.netWorth, finances.monthlyIncome, finances.monthlyExpenses]);
 
   const formatYears = (years: number) => {
     if (years >= 1) {
@@ -90,24 +109,34 @@ const Leaderboard = () => {
               {/* Rank & Name */}
               <div className="flex items-center gap-5">
                 <span className={`text-sm font-light w-6 tabular-nums ${
-                  user.rank <= 3 ? "text-foreground" : "text-muted-foreground/50"
+                  user.isCurrentUser
+                    ? "logo-gradient-text inline-block font-display"
+                    : user.rank <= 3 ? "text-foreground" : "text-muted-foreground/50"
                 }`}>
                   {user.rank}
                 </span>
                 <div className="flex items-center gap-3">
+                  {/* Trophy stays a top-3 marker; on the visitor's own row it turns gold
+                      rather than appearing at any rank, which would misread as a win. */}
                   {user.rank <= 3 && (
-                    <Trophy 
+                    <Trophy
                       className={`w-4 h-4 ${
-                        user.rank === 1 
-                          ? "text-foreground" 
-                          : user.rank === 2 
-                            ? "text-muted-foreground/70" 
-                            : "text-muted-foreground/50"
-                      }`} 
-                      strokeWidth={1.5} 
+                        user.isCurrentUser
+                          ? "text-[oklch(0.85_0.19_90)]"
+                          : user.rank === 1
+                            ? "text-foreground"
+                            : user.rank === 2
+                              ? "text-muted-foreground/70"
+                              : "text-muted-foreground/50"
+                      }`}
+                      strokeWidth={1.5}
                     />
                   )}
-                  <span className="text-sm font-light text-foreground">
+                  <span className={`text-sm ${
+                    user.isCurrentUser
+                      ? "logo-gradient-text inline-block font-display"
+                      : "font-light text-foreground"
+                  }`}>
                     {user.name}
                   </span>
                 </div>
@@ -115,13 +144,25 @@ const Leaderboard = () => {
 
               {/* Buffers in Years */}
               <div className="flex items-baseline gap-1">
-                <span className="text-lg font-light text-foreground tabular-nums">
+                <span className={`text-lg tabular-nums ${
+                  user.isCurrentUser
+                    ? "logo-gradient-text inline-block font-display"
+                    : "font-light text-foreground"
+                }`}>
                   {formatYears(user.buffer0Years)}
                 </span>
-                <span className="text-[10px] text-muted-foreground/50 font-light">
+                <span className={`text-[10px] font-light ${
+                  user.isCurrentUser
+                    ? "logo-gradient-text inline-block"
+                    : "text-muted-foreground/50"
+                }`}>
                   y
                 </span>
-                <span className="text-[10px] text-muted-foreground/30 font-light ml-1">
+                <span className={`text-[10px] font-light ml-1 ${
+                  user.isCurrentUser
+                    ? "logo-gradient-text inline-block"
+                    : "text-muted-foreground/30"
+                }`}>
                   /{formatYears(user.buffer1Years)}y
                 </span>
               </div>

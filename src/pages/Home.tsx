@@ -7,7 +7,7 @@ import MobileOnly from "@/components/MobileOnly";
 import { useMsx } from "@/msx/MsxBootGate";
 
 import { useUserFinances } from "@/hooks/useUserFinances";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { ComposedChart, Area, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Message {
   role: "user" | "assistant";
@@ -291,7 +291,7 @@ const Home = () => {
             </div>
             <p 
               key={displayMode + '-without'}
-              className="font-display text-3xl text-foreground tracking-tight animate-fade-in"
+              className="logo-gradient-text inline-block font-display text-3xl tracking-tight animate-fade-in"
             >
               {formatLifeBuffer(lifeBufferWithoutIncome)}
             </p>
@@ -312,7 +312,7 @@ const Home = () => {
             </div>
             <p 
               key={displayMode + '-with'}
-              className="font-display text-3xl text-foreground tracking-tight animate-fade-in"
+              className="logo-gradient-text inline-block font-display text-3xl tracking-tight animate-fade-in"
             >
               {formatLifeBuffer(calculateProjectionWithIncome(1))}
             </p>
@@ -349,11 +349,23 @@ const Home = () => {
         <div className="bg-card border border-border rounded-2xl p-4">
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={projectionData}>
-                <XAxis 
-                  dataKey="label" 
-                  axisLine={false} 
-                  tickLine={false} 
+              <ComposedChart data={projectionData}>
+                {/* Same gradient ramp as the onboarding plan chart: warm fill fading
+                    into violet, violet-to-gold stroke */}
+                <defs>
+                  <linearGradient id="homeFreedomFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.72 0.19 55)" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="oklch(0.55 0.24 295)" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="homeFreedomLine" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="oklch(0.55 0.24 295)" />
+                    <stop offset="100%" stopColor="oklch(0.78 0.17 60)" />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
                   tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                 />
                 <YAxis hide />
@@ -370,22 +382,26 @@ const Home = () => {
                     name === 'withIncome' ? 'With income' : 'Without income'
                   ]}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="withIncome" 
-                  stroke="hsl(var(--foreground))" 
+                <Area
+                  type="monotone"
+                  dataKey="withIncome"
+                  stroke="url(#homeFreedomLine)"
                   strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--foreground))', strokeWidth: 0, r: 3 }}
+                  strokeLinecap="round"
+                  fill="url(#homeFreedomFill)"
+                  dot={false}
+                  activeDot={{ r: 3, fill: 'hsl(var(--foreground))', strokeWidth: 0 }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="withoutIncome" 
-                  stroke="hsl(var(--muted-foreground))" 
+                <Line
+                  type="monotone"
+                  dataKey="withoutIncome"
+                  stroke="hsl(var(--muted-foreground))"
                   strokeWidth={1.5}
                   strokeDasharray="4 4"
-                  dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 0, r: 2 }}
+                  dot={false}
+                  activeDot={{ r: 2, fill: 'hsl(var(--muted-foreground))', strokeWidth: 0 }}
                 />
-              </LineChart>
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
           

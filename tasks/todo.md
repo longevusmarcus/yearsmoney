@@ -180,6 +180,36 @@ render `text-foreground`. Gradient now appears only on progress bars.
 Verified by screenshot: `/home` (glass cards over the ambient blooms, white figures, no logo, no
 toggle) and `/settings` (Appearance section cleanly gone, glass cards intact).
 
+## I. Fifth pass — Home chart + figures, and the leaderboard's own row
+
+**Home projection chart** now uses the onboarding plan chart's treatment: `LineChart` → `ComposedChart`
+with the same two gradients (warm→violet area fill, violet→gold stroke), dots off, `activeDot` kept so
+the tooltip still has a target. Same data keys, same formatter — behaviour untouched, styling only.
+
+**"If you stop" / "keep earning" figures** carry `logo-gradient-text` like the onboarding plan figures.
+
+> These were set to white two requests earlier. The reason the gradient looked wrong then: with
+> `background-clip: text` the ramp maps across the *element box*, and a `<p>` is full-width, so short
+> text only sampled the violet start. Adding `inline-block` makes the box hug the glyphs, so the full
+> violet→white→gold ramp lands on the text — which is exactly why it looks right inside onboarding's
+> narrow cards. Same fix applied to the leaderboard spans.
+
+**Leaderboard own-row.** There was no current-user row at all — all 50 entries are generated names.
+Added one, driven by the existing `useUserFinances` hook:
+
+- Appears only when signed in **and** net worth + income are set. Signed out → list renders exactly as
+  before, per the brief.
+- Uses the same buffer formulas as the synthetic rows, so the ranking compares like with like.
+- Labelled "You"; rank, name, and both buffer figures get the gradient.
+- The trophy stays a top-3 marker and merely turns gold on the visitor's row. Giving them a trophy at
+  any rank would read as a win they hadn't earned.
+- **Caveat worth knowing:** this places a real figure among fabricated competitors, so the rank is
+  illustrative, not a true standing. It becomes real once the leaderboard reads from Supabase.
+
+Verified: chart and gradient figures screenshotted with seeded demo numbers (6y 7m / 6y 11m, gradient
+area visibly curving up); signed-out leaderboard confirmed unchanged. The signed-in "You" row was not
+rendered — that needs a real sign-in.
+
 ### One thing to be aware of
 `MsxBootGate.isAtAuthedRoute()` (`src/msx/MsxBootGate.tsx:531`) does not list `/calcola`, `/onboarding`,
 or `/filosofia`. Inside the MSX shell those routes show the splash and get replaced by `/home`. Harmless
