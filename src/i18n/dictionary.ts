@@ -523,6 +523,22 @@ const it = {
       resetSent: "Ti abbiamo inviato un link per reimpostare la password.",
       passwordUpdated: "Password aggiornata",
       passwordUpdatedSub: "La tua password è stata reimpostata correttamente.",
+      consentBefore: "Continuando, accetti i",
+      consentTerms: "Termini di servizio",
+      consentAnd: "e l'",
+      consentPrivacy: "Informativa sulla privacy",
+      consentAfter: "di Years.",
+      welcomeTitle: "Benvenuto in Years",
+      welcomeSub: "Misura la tua ricchezza in tempo, non in denaro.",
+      newPassword: "Nuova password",
+      loading: "Caricamento…",
+      updatePassword: "Aggiorna password",
+      sendResetLink: "Invia link di reimpostazione",
+      getStarted: "Inizia",
+      backToSignIn: "Torna all'accesso",
+      noAccountYet: "Non hai un account? ",
+      alreadyHaveAccount: "Hai già un account? ",
+      passwordHint: "Consigliati almeno 8 caratteri",
       continueGoogle: "Continua con Google",
     },
     home: {
@@ -648,6 +664,163 @@ const it = {
         { h: "8. Contatti", p: [], li: [] },
       ],
     },
+  },
+  ubi: {
+    "back": "Indietro",
+    "copyright": "© 2026 Years. Il tempo è l'unica valuta che conta.",
+    "badge": "Il futuro",
+    "title": "Reddito di Base Universale",
+    "sub": "Perché il reddito di base è inevitabile, e cosa significa per il tempo",
+    "cardZeroTitle": "Life Buffer Zero",
+    "cardZeroBody": "Misura il tempo di sopravvivenza. Se ogni entrata si fermasse oggi, per quanto potresti continuare a vivere? Patrimonio diviso costi mensili.",
+    "cardOneTitle": "Life Buffer One",
+    "cardOneBody": "Misura il tempo opzionale. Quanta vita futura puoi accumulare oltre la sopravvivenza? Questo buffer riguarda la scelta.",
+    "blocks": [
+      {
+        "t": "lead",
+        "x": "La transizione verso il Reddito di Base Universale non avverrà perché la società diventerà generosa. Avverrà perché il sistema attuale diventerà matematicamente instabile."
+      },
+      {
+        "t": "p",
+        "x": "Con l'espansione dell'automazione e il disaccoppiamento della produttività dal lavoro umano, il legame tra lavoro e sopravvivenza si indebolisce. Servono meno persone per produrre lo stesso risultato. Allo stesso tempo, il costo politico di lasciare grandi fasce di popolazione senza reddito cresce oltre ciò che gli stati possono tollerare."
+      },
+      {
+        "t": "p",
+        "x": "Il reddito di base non emerge come riforma idealista, ma come stabilizzatore: un modo per garantire continuità sociale quando il lavoro non è più il meccanismo principale di distribuzione."
+      },
+      {
+        "t": "p",
+        "x": "Ma una volta garantito il reddito, inizia un cambiamento più profondo, di cui si parla raramente. Quando la sopravvivenza non dipende più dal lavoro, il denaro perde la sua funzione più potente: la coercizione. Ciò che resta è un ruolo più silenzioso e preciso."
+      },
+      {
+        "t": "quote",
+        "x": "Il denaro diventa un meccanismo per allocare il Tempo."
+      },
+      {
+        "t": "h2",
+        "x": "Una nuova unità di ricchezza"
+      },
+      {
+        "t": "p",
+        "x": "Per comprendere questa transizione serve una nuova unità di ricchezza. Non il reddito. Non il patrimonio netto. Ma i buffer di tempo."
+      },
+      {
+        "t": "p",
+        "x": "Un life buffer misura per quanto tempo una persona può esistere senza essere costretta ad agire. Non è filosofia. È matematica."
+      },
+      {
+        "t": "cards",
+        "x": ""
+      },
+      {
+        "t": "h2",
+        "x": "Il reddito di base cambia tutto"
+      },
+      {
+        "t": "p",
+        "x": "Per come è concepito, il reddito di base allinea le entrate mensili al costo della vita di base. Il tempo di sopravvivenza diventa garantito. Il Life Buffer Zero diventa fornito dalla collettività. Nessuno è costretto a vendere il proprio tempo solo per restare in vita."
+      },
+      {
+        "t": "p",
+        "x": "Non è abbondanza. È sufficienza. Ciò che scompare è la disperazione."
+      },
+      {
+        "t": "p",
+        "x": "Ciò che emerge, lentamente e inevitabilmente, è un'economia della vita opzionale."
+      },
+      {
+        "t": "h2",
+        "x": "L'economia della vita opzionale"
+      },
+      {
+        "t": "p",
+        "x": "Spazi più grandi. Viaggi. Velocità. Privacy. Strumenti premium. Istruzione oltre il livello base. Esperienze che comprimono o dilatano il tempo. Queste cose non scompaiono in un mondo con reddito di base. Diventano esplicitamente opzionali."
+      },
+      {
+        "t": "quote",
+        "x": "E le cose opzionali vanno pagate: non moralmente, non punitivamente, ma temporalmente."
+      },
+      {
+        "t": "h2",
+        "x": "Il prezzo è vita futura"
+      },
+      {
+        "t": "p",
+        "x": "In un'economia basata sul tempo, beni ed esperienze opzionali hanno un prezzo in vita futura. Non perché siano frivoli, ma perché consumano capacità che avresti potuto usare altrove."
+      },
+      {
+        "t": "p",
+        "x": "Una vacanza lunga non è costosa perché è un lusso; è costosa perché occupa tempo che avresti potuto allocare diversamente. Un dispositivo premium non è costoso perché superfluo; è costoso perché accelera certi risultati chiudendone altri."
+      },
+      {
+        "t": "lead",
+        "x": "Quando una persona scelge un bene opzionale, non viene punita. Sta semplicemente spendendo vita opzionale futura."
+      },
+      {
+        "t": "h2",
+        "x": "Lavoro opzionale"
+      },
+      {
+        "t": "p",
+        "x": "Per accedere ai livelli opzionali della vita, una persona deve accumulare tempo opzionale. E il tempo opzionale si accumula solo creando valore in eccesso. Il lavoro torna, ma in una forma diversa."
+      },
+      {
+        "t": "lead",
+        "x": "Non più come lavoro di sopravvivenza, ma come lavoro opzionale. Si lavora non per vivere, ma per ampliare la gamma delle proprie scelte future."
+      },
+      {
+        "t": "p",
+        "x": "Se qualcuno scegle di non creare surplus, non si rompe nulla. Resta vivo. Sostenuto. Legittimo. Semplicemente rimane entro il livello base. Il sistema non lo giudica. Non lo costringe. Chiude soltanto i cancelli opzionali."
+      },
+      {
+        "t": "h2",
+        "x": "Non è una distopia"
+      },
+      {
+        "t": "p",
+        "x": "È questa la distinzione decisiva rispetto alle letture distopiche. Nessuno è costretto a correre. Nessuno muore quando un contatore arriva a zero. La conseguenza del non guadagnare tempo opzionale non è la morte: è l'assenza di opzionalità."
+      },
+      {
+        "t": "lead",
+        "x": "E l'opzionalità, una volta visibile, motiva profondamente."
+      },
+      {
+        "t": "p",
+        "x": "Il Life Buffer One può crescere, ma può anche ridursi. Se una persona continua a consumare beni opzionali senza ricostituire il proprio surplus, il buffer si erode. Non crolla. Scende dolcemente verso il livello base. Il sistema la riassorbe senza punirla."
+      },
+      {
+        "t": "p",
+        "x": "Burnout, debiti e rimpianti, patologie del sistema attuale, diventano misurabili molto prima di diventare catastrofici."
+      },
+      {
+        "t": "h2",
+        "x": "Ciò che cambia di più"
+      },
+      {
+        "t": "p",
+        "x": "Le persone smettono di ottimizzare il reddito e iniziano a ottimizzare la propria autonomia di vita. Smettono di chiedersi se qualcosa è accessibile e iniziano a chiedersi se valga il futuro che consuma."
+      },
+      {
+        "t": "p",
+        "x": "L'accumulo perde il suo fascino astratto. Accumulare per accumulare diventa incomprensibile. I segnali di status si indeboliscono quando il costo è espresso come consumo della propria vita invece che come valore simbolico."
+      },
+      {
+        "t": "lead",
+        "x": "Il sistema non rende le persone uguali. Rende la disuguaglianza leggibile."
+      },
+      {
+        "t": "p",
+        "x": "Soprattutto, l'economia si allinea alla realtà. Il tempo è l'unica risorsa che nessuno può stampare, prendere in prestito o rifinanziare. Ogni sistema finisce per ridursi a questo."
+      },
+      {
+        "t": "quote",
+        "x": "Il reddito di base non è la fine del lavoro. È la fine della liquidazione obbligatoria del tempo."
+      },
+      {
+        "t": "p",
+        "x": "Ciò che lo sostituisce è qualcosa di più silenzioso e più esigente: la responsabilità verso il proprio sé futuro."
+      }
+    ]
   },
   filosofia: {
     home: "YEARS",
@@ -1212,6 +1385,22 @@ const en: typeof it = {
       resetSent: "We've sent you a password reset link.",
       passwordUpdated: "Password updated",
       passwordUpdatedSub: "Your password has been reset successfully.",
+      consentBefore: "By continuing, you agree to Years'",
+      consentTerms: "Terms of Service",
+      consentAnd: "and",
+      consentPrivacy: "Privacy Policy",
+      consentAfter: ".",
+      welcomeTitle: "Welcome to Years",
+      welcomeSub: "Measure your wealth in time, not money.",
+      newPassword: "New password",
+      loading: "Loading…",
+      updatePassword: "Update password",
+      sendResetLink: "Send reset link",
+      getStarted: "Get started",
+      backToSignIn: "Back to sign in",
+      noAccountYet: "Don't have an account? ",
+      alreadyHaveAccount: "Already have an account? ",
+      passwordHint: "8+ characters recommended",
       continueGoogle: "Continue with Google",
     },
     home: {
@@ -1337,6 +1526,163 @@ const en: typeof it = {
         { h: "8. Contact Us", p: [], li: [] },
       ],
     },
+  },
+  ubi: {
+    "back": "Back",
+    "copyright": "© 2026 Years. Time is the only currency that matters.",
+    "badge": "The Future",
+    "title": "Universal Basic Income",
+    "sub": "Why UBI is inevitable, and what it means for time",
+    "cardZeroTitle": "Life Buffer Zero",
+    "cardZeroBody": "Measures survival time. If all income stopped today, how long could you continue to live? Net worth divided by monthly costs.",
+    "cardOneTitle": "Life Buffer One",
+    "cardOneBody": "Measures optional time. How much future life can you accumulate beyond survival? This buffer is about choice.",
+    "blocks": [
+      {
+        "t": "lead",
+        "x": "The transition to Universal Basic Income will not happen because society becomes generous. It will happen because the existing system becomes mathematically unstable."
+      },
+      {
+        "t": "p",
+        "x": "As automation expands and productivity decouples from human labor, the link between work and survival weakens. Fewer people are required to produce the same output. At the same time, the political cost of leaving large populations without income rises beyond what states can tolerate."
+      },
+      {
+        "t": "p",
+        "x": "UBI emerges not as an idealistic reform, but as a stabilizer: a way to ensure social continuity when labor is no longer the primary distribution mechanism."
+      },
+      {
+        "t": "p",
+        "x": "But once income is guaranteed, a deeper shift begins — one that is rarely discussed. When survival is no longer conditional on work, money loses its most powerful function: coercion. What remains is a quieter, more precise role."
+      },
+      {
+        "t": "quote",
+        "x": "Money becomes a mechanism for allocating Time."
+      },
+      {
+        "t": "h2",
+        "x": "A New Unit of Wealth"
+      },
+      {
+        "t": "p",
+        "x": "To understand this transition, we need a new unit of wealth. Not income. Not net worth. But buffers of time."
+      },
+      {
+        "t": "p",
+        "x": "A life buffer is a measure of how long a person can exist without being forced into action. It is not philosophical. It is arithmetic."
+      },
+      {
+        "t": "cards",
+        "x": ""
+      },
+      {
+        "t": "h2",
+        "x": "UBI Changes Everything"
+      },
+      {
+        "t": "p",
+        "x": "By design, UBI aligns monthly income with basic living costs. Survival time becomes guaranteed. Life Buffer Zero becomes socially provisioned. No one is required to sell their time simply to remain alive."
+      },
+      {
+        "t": "p",
+        "x": "This is not abundance. It is sufficiency. What disappears is desperation."
+      },
+      {
+        "t": "p",
+        "x": "What emerges, slowly and inevitably, is an economy of optional life."
+      },
+      {
+        "t": "h2",
+        "x": "The Economy of Optional Life"
+      },
+      {
+        "t": "p",
+        "x": "Larger spaces. Travel. Speed. Privacy. Premium tools. Education beyond the baseline. Experiences that compress or expand time. These things do not disappear in a UBI world. They become explicitly optional."
+      },
+      {
+        "t": "quote",
+        "x": "And optional things must be paid for — not morally, not punitively, but temporally."
+      },
+      {
+        "t": "h2",
+        "x": "Priced in Future Life"
+      },
+      {
+        "t": "p",
+        "x": "In a time-based economy, optional goods and experiences are priced in future life. Not because they are frivolous, but because they consume capacity that could have been used elsewhere."
+      },
+      {
+        "t": "p",
+        "x": "A long vacation is not expensive because it is indulgent; it is expensive because it occupies time that could have been allocated differently. A premium device is not costly because it is unnecessary; it is costly because it accelerates certain outcomes while closing others."
+      },
+      {
+        "t": "lead",
+        "x": "When a person chooses an optional good, they are not punished. They are simply spending future optional life."
+      },
+      {
+        "t": "h2",
+        "x": "Optional Labor"
+      },
+      {
+        "t": "p",
+        "x": "To access optional layers of life, a person must accumulate optional time. And optional time can only be accumulated by creating surplus value. Work returns, but in a different form."
+      },
+      {
+        "t": "lead",
+        "x": "No longer as survival labor, but as optional labor. People work not to live, but to expand the range of their future choices."
+      },
+      {
+        "t": "p",
+        "x": "If someone chooses not to create surplus, nothing breaks. They remain alive. Supported. Legitimate. They simply remain within the baseline. The system does not shame them. It does not compel them. It simply closes the optional gates."
+      },
+      {
+        "t": "h2",
+        "x": "Not Dystopia"
+      },
+      {
+        "t": "p",
+        "x": "This is the critical distinction from dystopian interpretations. No one is forced to run. No one dies when a counter reaches zero. The consequence of not earning optional time is not death — it is the absence of optionality."
+      },
+      {
+        "t": "lead",
+        "x": "And optionality, once visible, becomes deeply motivating."
+      },
+      {
+        "t": "p",
+        "x": "Life Buffer One can grow, but it can also shrink. If a person continues to consume optional goods without replenishing their surplus, their buffer erodes. They do not collapse. They descend gently back to the baseline. The system absorbs them without punishment."
+      },
+      {
+        "t": "p",
+        "x": "Burnout, debt, and regret — pathologies of the current system — become measurable long before they become catastrophic."
+      },
+      {
+        "t": "h2",
+        "x": "What Changes Most"
+      },
+      {
+        "t": "p",
+        "x": "People stop optimizing for income and start optimizing for life runway. They stop asking whether something is affordable and start asking whether it is worth the future it consumes."
+      },
+      {
+        "t": "p",
+        "x": "Accumulation loses its abstract appeal. Hoarding becomes unintelligible. Status signaling weakens when the cost is framed as personal life depletion rather than symbolic value."
+      },
+      {
+        "t": "lead",
+        "x": "The system does not make people equal. It makes inequality legible."
+      },
+      {
+        "t": "p",
+        "x": "Most importantly, the economy becomes aligned with reality. Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into it."
+      },
+      {
+        "t": "quote",
+        "x": "UBI is not the end of work. It is the end of compulsory time liquidation."
+      },
+      {
+        "t": "p",
+        "x": "What replaces it is something quieter and more demanding: responsibility for one's future self."
+      }
+    ]
   },
   filosofia: {
     home: "YEARS",

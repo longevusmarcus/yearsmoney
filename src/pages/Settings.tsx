@@ -114,7 +114,7 @@ const Settings = () => {
     <MobileOnly>
     <div className="min-h-screen bg-transparent pb-24">
       <PageHeader 
-        title="Settings" 
+        title={t("app.settings.title")}
         titleClassName="text-2xl font-cursive italic text-foreground tracking-tight"
         showBackButton 
         showActions={false} 

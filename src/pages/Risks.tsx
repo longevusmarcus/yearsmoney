@@ -389,7 +389,7 @@ const Risks = () => {
               onClick={() => setShowAuthModal(true)}
               className="w-full py-3 border border-border rounded-xl text-sm font-light hover:bg-muted/20 transition-colors"
             >
-              Sign in
+              {t("app.settings.signIn")}
             </button>
           </div>
         )}

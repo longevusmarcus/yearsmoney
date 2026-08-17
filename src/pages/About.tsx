@@ -788,7 +788,7 @@ const About = () => {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border/50">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-muted-foreground text-sm">© 2025 Years. Time is the only currency that matters.</div>
+          <div className="text-muted-foreground text-sm">© 2026 Years. Time is the only currency that matters.</div>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link to="/ubi" className="hover:text-foreground transition-colors">
               UBI

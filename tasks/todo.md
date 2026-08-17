@@ -210,7 +210,7 @@ Verified: chart and gradient figures screenshotted with seeded demo numbers (6y 
 area visibly curving up); signed-out leaderboard confirmed unchanged. The signed-in "You" row was not
 rendered — that needs a real sign-in.
 
-## J. Sixth pass — Italian/English switching (IN PROGRESS)
+## J. Sixth pass — Italian/English switching (COMPLETE for all reachable routes)
 
 Asked for: Italian default plus an English switcher, applying to the whole product — site,
 onboarding **and** the app screens.
@@ -236,16 +236,40 @@ The typed headline is worth noting: the highlighted word comes from the dictiona
 (`hero.headlineHighlight`), so the gradient lands on "libertà" in Italian and "freedom" in English
 rather than a fixed character range.
 
-### Still to migrate
-| Surface | Notes |
-|---|---|
-| `/onboarding` | ~994 lines; all 9 steps, option lists, trust copy, plan screen |
-| `/calcola` | Auth screen, simulator labels, purchase catalog |
-| 20 app screens | Currently English-only: Home, Purchase, Risks, Leaderboard, Settings, Insights, Calculator, Profile, Achievements, CheckIn, GutMap, Opportunities, Help, FAQ, UBI, Terms, Privacy, Cookie, Auth, NotFound |
-| Shared app chrome | BottomNav labels, AuthModal, MobileOnly, AICoach, PatternCard, ShareableWidget |
+### Coverage — all 14 reachable routes, both languages
+`/` · `/about` · `/onboarding` · `/filosofia` · `/calcola` · `/home` · `/purchase` · `/risks` ·
+`/leaderboard` · `/settings` · `/auth` · `/ubi` · `/terms` · `/privacy` · 404
 
-Staged deliberately by page so no screen is ever half-translated. Verified: full IT→EN switch across
-every landing section and Filosofia, `<html lang>` updating, and the choice surviving a reload.
+Verified by walking every route in both languages and scanning the rendered text for
+cross-language leaks and stray euro signs. Zero hits in either direction.
+
+Units and currency follow the language everywhere: durations (`6a 7m` / `6y 7m`), the euro/dollar
+symbol, number locale, and every unit word.
+
+### Deliberately not translated — 12 unrouted dead pages
+`About` (old landing, kept on purpose), `Achievements`, `Calculator`, `CheckIn`, `Cookie`, `FAQ`,
+`GutMap`, `Help`, `Index`, `Insights`, `Opportunities`, `Profile`.
+
+None are in `App.tsx`, so none are reachable. Most are leftovers from a **different product** — an
+intuition/gut-feel tracker called **Hara** ("Inner Map", "gut honored", `support@hara.app`).
+Translating them would have been waste. They are worth deleting.
+
+### Stale branding found and fixed on a live route
+`/auth` was still branded Hara: "Welcome to Hara", "Learn to trust your gut (hara)", and a consent
+line reading "you agree to Hara's…". It also linked to `/faq` and `/cookie`, neither of which is
+routed — both would have 404'd. Now Years-branded, localised, and pointing only at live routes.
+
+### Structural cleanups made along the way
+- `Terms` and `Privacy` collapsed into one `LegalDocument` renderer driven by dictionary content,
+  replacing ~200 lines of duplicated markup
+- `UBI` renders its essay from a typed block list (`lead` / `p` / `h2` / `quote` / `cards`)
+- Onboarding options carry stable ids so the projection maths is language-independent
+
+### Caveats worth knowing
+- The Italian for Terms, Privacy and the UBI essay is a translation of the existing English, not
+  reviewed by anyone qualified. Have it checked before relying on it.
+- The UBI essay's inline emphasis (a handful of bolded words mid-sentence) was flattened when the
+  prose moved into the dictionary, so both languages share one structure.
 
 ### One thing to be aware of
 `MsxBootGate.isAtAuthedRoute()` (`src/msx/MsxBootGate.tsx:531`) does not list `/calcola`, `/onboarding`,

@@ -131,7 +131,7 @@ const Auth = () => {
 
         toast({
           title: t("app.auth.accountCreated"),
-          description: "Welcome to Hara.",
+          description: t("app.auth.welcomeSub"),
         });
       }
     } catch (error: any) {
@@ -177,13 +177,13 @@ const Auth = () => {
             className="text-2xl font-cursive text-foreground tracking-tight mb-1 animate-in fade-in slide-in-from-bottom-4 duration-700"
             style={{ animationDelay: "200ms" }}
           >
-            Welcome to Hara
+            {t("app.auth.welcomeTitle")}
           </h1>
           <p
             className="text-sm text-muted-foreground/70 font-light animate-in fade-in slide-in-from-bottom-4 duration-700"
             style={{ animationDelay: "300ms" }}
           >
-            Learn to trust your gut (hara) and make decisions that feel right.
+            {t("app.auth.welcomeSub")}
           </p>
         </div>
 
@@ -246,7 +246,7 @@ const Auth = () => {
               <div>
                 <Input
                   type="password"
-                  placeholder={isResettingPassword ? "New password" : "Password"}
+                  placeholder={isResettingPassword ? t("app.auth.newPassword") : t("app.auth.password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -254,7 +254,7 @@ const Auth = () => {
                   className="bg-background/60 border-border/40 rounded-[1rem] h-10 text-sm placeholder:text-muted-foreground/60"
                 />
                 {(!isLogin || isResettingPassword) && (
-                  <p className="text-xs text-muted-foreground/70 mt-1 ml-1">8+ characters recommended</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1 ml-1">{t("app.auth.passwordHint")}</p>
                 )}
               </div>
             )}
@@ -265,14 +265,14 @@ const Auth = () => {
               className="w-full rounded-[1rem] h-10 text-sm font-medium bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02]"
             >
               {loading
-                ? "Loading..."
+                ? t("app.auth.loading")
                 : isResettingPassword
-                  ? "Update password"
+                  ? t("app.auth.updatePassword")
                   : isForgotPassword
-                    ? "Send reset link"
+                    ? t("app.auth.sendResetLink")
                     : isLogin
-                      ? "Sign in"
-                      : "Get started"}
+                      ? t("app.auth.signIn")
+                      : t("app.auth.getStarted")}
             </Button>
           </form>
 
@@ -311,7 +311,7 @@ const Auth = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Continue with Google
+                {t("app.auth.continueGoogle")}
               </Button>
             </>
           )}
@@ -323,7 +323,7 @@ const Auth = () => {
                   onClick={() => setIsForgotPassword(true)}
                   className="text-sm text-muted-foreground/80 font-light hover:text-foreground transition-colors block w-full"
                 >
-                  Forgot password?
+                  {t("app.auth.forgotPassword")}
                 </button>
               )}
               <button
@@ -334,12 +334,12 @@ const Auth = () => {
                 className="text-sm text-muted-foreground/80 font-light hover:text-foreground transition-colors"
               >
                 {isForgotPassword
-                  ? "Back to sign in"
+                  ? t("app.auth.backToSignIn")
                   : isLogin
-                    ? "Don't have an account? "
-                    : "Already have an account? "}
+                    ? t("app.auth.noAccountYet")
+                    : t("app.auth.alreadyHaveAccount")}
                 <span className="text-primary font-medium">
-                  {isForgotPassword ? "" : isLogin ? "Sign up" : "Sign in"}
+                  {isForgotPassword ? "" : isLogin ? t("app.auth.signUp") : t("app.auth.signIn")}
                 </span>
               </button>
             </div>
@@ -351,27 +351,15 @@ const Auth = () => {
           className="text-center text-xs text-muted-foreground/60 mt-4 animate-in fade-in duration-700"
           style={{ animationDelay: "600ms" }}
         >
-          Check our{" "}
-          <a href="/about" className="text-primary hover:underline">
-            About
-          </a>{" "}
-          and{" "}
-          <a href="/faq" className="text-primary hover:underline">
-            FAQs
-          </a>
-          . By continuing, you agree to Hara's{" "}
+          {t("app.auth.consentBefore")}{" "}
           <a href="/terms" className="text-primary hover:underline">
-            Terms of Service
-          </a>
-          ,{" "}
-          <a href="/privacy" className="text-primary hover:underline">
-            Privacy Policy
+            {t("app.auth.consentTerms")}
           </a>{" "}
-          and{" "}
-          <a href="/cookie" className="text-primary hover:underline">
-            Cookie Policy
+          {t("app.auth.consentAnd")}{" "}
+          <a href="/privacy" className="text-primary hover:underline">
+            {t("app.auth.consentPrivacy")}
           </a>
-          .
+          {t("app.auth.consentAfter")}
         </p>
       </div>
     </div>
