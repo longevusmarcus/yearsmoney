@@ -1,7 +1,4 @@
-import { Suspense, lazy } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -9,6 +6,11 @@ import { AppBackground } from "./components/AppBackground";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { MsxBootGate } from "./msx/MsxBootGate";
 import Landing from "./pages/Landing";
+
+// Toast layers are never visible on first paint, so they load after the app boots.
+const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
+
 
 // Only the landing page ships in the initial bundle; every other route is fetched
 // on demand, which keeps first paint on mobile off the critical path.
