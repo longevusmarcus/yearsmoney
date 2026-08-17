@@ -31,13 +31,25 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Defer non-visual overlays until after the first paint.
+  const [overlays, setOverlays] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setOverlays(true), 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
+        {overlays && (
+          <Suspense fallback={null}>
+            <Toaster />
+            <Sonner />
+          </Suspense>
+        )}
         <AppBackground />
+
         <BrowserRouter>
           <ScrollToTop />
           <MsxBootGate>
