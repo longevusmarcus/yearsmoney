@@ -83,6 +83,10 @@ const Hero = () => {
   const { t } = useI18n();
   const [qrOpen, setQrOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isMobile = useIsMobile();
+  // On phones the hero must be readable the instant the page paints.
+  const d = (delay: number) => (isMobile ? 0 : delay);
+  const dur = (duration: number) => (isMobile ? 0.35 : duration);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.75);
@@ -92,7 +96,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section id="top" className="relative min-h-screen w-full overflow-hidden bg-black text-foreground">
+    <section id="top" className="relative min-h-[100svh] w-full overflow-hidden bg-black text-foreground">
       {/* Cinematic light-field background: soft diffuse blooms on pure black */}
       <LightLeakBackdrop />
 
