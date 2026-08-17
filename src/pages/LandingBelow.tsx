@@ -369,44 +369,44 @@ function FullBleedStory({
         }`}
       >
         <h2
-          className="font-display text-[2.6rem] leading-[1.02] whitespace-normal text-white md:whitespace-nowrap md:text-[4.5rem]"
+          className="font-display text-[2rem] leading-[1.02] whitespace-normal text-white md:whitespace-nowrap md:text-[4.5rem]"
           style={{ textShadow: "0 2px 30px rgba(0,0,0,0.55)" }}
         >
           {title}
         </h2>
         <p
-          className="mt-4 max-w-xl text-base leading-relaxed text-white/90 md:mt-6 md:text-xl"
+          className="mt-3 max-w-xl text-sm leading-relaxed text-white/90 md:mt-6 md:text-xl"
           style={{ textShadow: "0 1px 18px rgba(0,0,0,0.5)" }}
         >
           {sub}
         </p>
         <Link
           to={APP_ENTRY}
-          className="mt-6 inline-flex items-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[oklch(0.15_0_0)] transition-transform duration-200 hover:scale-[1.03] md:mt-9 md:px-8 md:py-4 md:text-base"
+          className="mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[oklch(0.15_0_0)] transition-transform duration-200 hover:scale-[1.03] md:mt-9 md:px-8 md:py-4 md:text-base"
         >
           {cta}
         </Link>
 
-        <div className="mt-auto pt-10 md:pt-16">
+        <div className="mt-auto pt-6 md:pt-16">
           <motion.div
             key={shownLabel}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="rounded-3xl border border-white/25 bg-white/5 px-6 py-4 text-center backdrop-blur-md md:px-10 md:py-6"
+            className="rounded-3xl border border-white/25 bg-white/5 px-5 py-3 text-center backdrop-blur-md md:px-10 md:py-6"
           >
             <span className="text-xs text-white/70">{shownLabel}</span>
             <div className="text-[10px] uppercase tracking-[0.2em] text-white/50">
               {t("sections.final.priceInTime")}
             </div>
-            <div className="font-display mt-1 text-3xl text-white md:text-5xl">{shownValue}</div>
+            <div className="font-display mt-1 text-2xl text-white md:text-5xl">{shownValue}</div>
             {shownBudget && (
               <div className="mt-1 text-xs text-white/70">
                 {t("sections.final.freedomBudget")}: <span className="font-semibold text-white">{shownBudget}</span>
               </div>
             )}
             {shownAction && (
-              <span className="mt-3 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-[oklch(0.15_0_0)]">
+              <span className="mt-2 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-[oklch(0.15_0_0)]">
                 {shownAction}
               </span>
             )}
