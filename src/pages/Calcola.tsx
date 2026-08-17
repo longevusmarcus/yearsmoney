@@ -4,6 +4,8 @@ import { Search, LogOut, Eye, EyeOff } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import yearsLogo from "@/assets/years-logo.webp";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
+
 import { useI18n } from "@/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -67,12 +69,17 @@ function AuthScreen() {
 
   const google = async () => {
     setErr(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/calcola` },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) setErr(error.message || t("calcola.googleError"));
+    if (result.error) {
+      setErr(result.error.message || t("calcola.googleError"));
+      return;
+    }
+    if (result.redirected) return;
+    window.location.href = "/calcola";
   };
+
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
