@@ -485,8 +485,8 @@ export function IphoneShowcase() {
       setActive(Math.floor(progress * SCREEN_KEYS.length));
 
       const mobile = window.innerWidth < 768;
-      const startScale = mobile ? 0.85 : 1.0;
-      const endScale = 0.72;
+      const startScale = mobile ? 0.7 : 1.0;
+      const endScale = mobile ? 0.62 : 0.72;
       const s = startScale - (startScale - endScale) * progress;
       if (phoneRef.current) {
         phoneRef.current.style.transform = `translate(-50%, -50%) scale(${s})`;
@@ -519,7 +519,7 @@ export function IphoneShowcase() {
   return (
     <section id="scopri" className="relative bg-black">
       <div ref={wrapperRef} style={{ height: `calc(${SCREEN_KEYS.length * 35}vh + 100vh)` }}>
-        <div className="sticky top-0 flex h-screen items-center overflow-hidden px-4 pt-24 pb-16 md:px-8 md:pt-36 md:pb-32">
+        <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden px-4 pt-16 pb-10 md:px-8 md:pt-36 md:pb-32">
           <div className="pointer-events-none absolute inset-0 -z-10">
             <div className="absolute left-[8%] top-1/4 h-[420px] w-[420px] rounded-full bg-[oklch(0.72_0.19_55/0.16)] blur-[140px]" />
             <div className="absolute bottom-1/4 right-[10%] h-[460px] w-[460px] rounded-full bg-[oklch(0.55_0.24_295/0.16)] blur-[150px]" />
@@ -528,7 +528,7 @@ export function IphoneShowcase() {
           <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-16">
             {/* iPhone 18 mockup */}
             <div className="order-1 flex justify-center md:order-2">
-              <div className="relative h-[510px] w-[252px] md:h-[600px] md:w-[296px]">
+              <div className="relative h-[420px] w-[210px] md:h-[600px] md:w-[296px]">
                 <div
                   ref={phoneRef}
                   className="absolute left-1/2 top-1/2 h-[600px] w-[296px]"
