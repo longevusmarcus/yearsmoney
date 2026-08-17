@@ -109,7 +109,7 @@ export function MorphingCardStack({
                     onCardClick?.(card);
                   }}
                   className={cn(
-                    "cursor-pointer rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl sm:p-7",
+                    "cursor-pointer rounded-3xl border border-white/10 bg-background/90 p-5 backdrop-blur-xl sm:p-7",
                     "shadow-[0_20px_80px_-30px_oklch(0.5_0.15_270/0.35)] transition-colors hover:border-white/25",
                     layout === "stack" &&
                       "absolute flex h-[21rem] w-[16rem] flex-col overflow-hidden sm:h-[19rem] sm:w-[22rem]",
@@ -118,7 +118,13 @@ export function MorphingCardStack({
                     isExpanded && "border-white/30",
                   )}
                 >
-                  <div className={cn("min-h-0", layout === "list" && "flex items-start gap-5")}>
+                  <div
+                    className={cn(
+                      "min-h-0 transition-opacity duration-300",
+                      layout === "list" && "flex items-start gap-5",
+                      layout === "stack" && !isTopCard && "opacity-0",
+                    )}
+                  >
                     {card.icon && (
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-white/20 to-white/5 text-white ring-1 ring-inset ring-white/15 shadow-[0_4px_20px_-8px_rgba(255,255,255,0.25)] sm:h-11 sm:w-11">
                         {card.icon}
@@ -138,6 +144,7 @@ export function MorphingCardStack({
                       </p>
                     </div>
                   </div>
+
 
                   {isTopCard && (
                     <div className="mt-auto pt-4 text-[10px] uppercase tracking-[0.2em] text-white/30">
