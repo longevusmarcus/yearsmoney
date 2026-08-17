@@ -224,7 +224,7 @@ function GoalsScreen() {
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
             <Target className="h-2.5 w-2.5 shrink-0" /> {t("showcase.goals.scenario")}
           </p>
-          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
+          <p className="logo-gradient-text mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">
             {t("showcase.goals.scenarioValue")}
           </p>
           <p className="mt-1 text-[8px] text-white/40">{t("showcase.goals.inFiveYears")}</p>
