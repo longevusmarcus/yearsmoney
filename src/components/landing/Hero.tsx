@@ -96,7 +96,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section id="top" className="relative min-h-[80svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
+    <section id="top" className="relative min-h-[75svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
       {/* Cinematic light-field background: soft diffuse blooms on pure black */}
       <LightLeakBackdrop />
 
