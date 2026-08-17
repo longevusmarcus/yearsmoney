@@ -896,6 +896,7 @@ const en: typeof it = {
   nav: {
     calculate: "Calculate",
     calculateMobile: "Calculate your time",
+    join: "Join",
   },
 
   hero: {
