@@ -77,9 +77,8 @@
   }
 }
 
-/* Custom font for headings - Cormorant Garamond for that existential feel */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
-
+/* Cormorant Garamond is requested from index.html; re-importing it here would
+   serialise a second font request behind the CSS bundle. */
 .font-cormorant {
   font-family: 'Cormorant Garamond', serif;
 }
