@@ -19,6 +19,7 @@ import peopleMountain from "@/assets/people-mountain.jpg";
 import peopleHome from "@/assets/people-home.jpg";
 import peopleRetire from "@/assets/people-retire.jpg";
 import { APP_ENTRY } from "@/components/landing/appEntry";
+import { useI18n } from "@/i18n/I18nProvider";
 
 
 export default function Landing() {
@@ -182,39 +183,40 @@ function PhotoTile({
 }
 
 function MoneyReimagined() {
+  const { t } = useI18n();
   return (
     <LightSection id="il-tuo-tempo">
       <CenteredHeader
-        title="Il tuo denaro, reinventato"
-        sub="Ogni euro che spendi ha un secondo prezzo: il tempo. YEARS te lo mostra prima che tu decida."
-        cta="Prova il calcolatore"
+        title={t("sections.money.title")}
+        sub={t("sections.money.sub")}
+        cta={t("sections.money.cta")}
         ctaTo={APP_ENTRY}
       />
 
       <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3 md:items-center">
         <PhotoTile
           img={japanImg}
-          caption="Viaggio"
-          value="18 giorni"
-          action="Costo libertà"
-          footLabel="Giappone"
+          caption={t("sections.money.travel")}
+          value={t("sections.money.travelValue")}
+          action={t("sections.money.freedomCost")}
+          footLabel={t("sections.money.travelFootLabel")}
           footValue="€ 3.500"
         />
         <PhotoTile
           featured
           img={carImg}
-          caption="Mobilità"
-          value="7 mesi"
-          action="Costo libertà"
-          footLabel="Tesla Model 3"
+          caption={t("sections.money.mobility")}
+          value={t("sections.money.mobilityValue")}
+          action={t("sections.money.freedomCost")}
+          footLabel={t("sections.money.mobilityFootLabel")}
           footValue="€ 42.990"
         />
         <PhotoTile
           img={fashionImg}
-          caption="Lusso"
-          value="6 settimane"
-          action="Costo libertà"
-          footLabel="Borsa + orologio"
+          caption={t("sections.money.luxury")}
+          value={t("sections.money.luxuryValue")}
+          action={t("sections.money.freedomCost")}
+          footLabel={t("sections.money.luxuryFootLabel")}
           footValue="€ 8.500"
         />
       </div>
@@ -223,39 +225,40 @@ function MoneyReimagined() {
 }
 
 function FinalCTA() {
+  const { t } = useI18n();
   return (
     <FullBleedStory
       id="inizia"
       img={peopleMountain}
-      alt="Persona in cima a una montagna sopra le nuvole al tramonto"
-      title="La libertà, misurata in anni"
-      sub="Ogni obiettivo ha un prezzo in tempo. Scopri quanto costa in anni di libertà e confrontalo con il budget che hai già a disposizione."
-      cta="Calcola i tuoi anni"
-      cardLabel="Nuovo obiettivo"
+      alt={t("sections.final.mountainAlt")}
+      title={t("sections.final.title")}
+      sub={t("sections.final.sub")}
+      cta={t("sections.final.cta")}
+      cardLabel={t("sections.final.cardLabel")}
       cardValue="3a 4m"
       budgetTotal="6a 7m"
       goals={[
         {
-          label: "Sabbatico",
+          label: t("sections.final.sabbatical"),
           img: peopleMountain,
-          alt: "Persona in cima a una montagna sopra le nuvole al tramonto",
-          cardLabel: "Anno sabbatico",
+          alt: t("sections.final.mountainAlt"),
+          cardLabel: t("sections.final.sabbaticalCardLabel"),
           cardValue: "1a 2m",
           cardBudget: "6a 7m",
         },
         {
-          label: "Casa",
+          label: t("sections.final.house"),
           img: peopleHome,
-          alt: "Persona alla finestra di casa al tramonto",
-          cardLabel: "Acquisto casa",
+          alt: t("sections.final.homeAlt"),
+          cardLabel: t("sections.final.houseCardLabel"),
           cardValue: "6a 8m",
           cardBudget: "6a 7m",
         },
         {
-          label: "Pensione anticipata",
+          label: t("sections.final.retire"),
           img: peopleRetire,
-          alt: "Coppia che cammina lungo la costa al tramonto",
-          cardLabel: "Pensione anticipata",
+          alt: t("sections.final.retireAlt"),
+          cardLabel: t("sections.final.retireCardLabel"),
           cardValue: "12a 5m",
           cardBudget: "6a 7m",
         },
@@ -265,18 +268,19 @@ function FinalCTA() {
 }
 
 function SkyStory() {
+  const { t } = useI18n();
   return (
     <FullBleedStory
       id="il-tempo-e-tuo"
       img={womanSky}
       imgDesktop={womanSkyDesktop}
-      alt="Donna su un tetto urbano al tramonto con cielo viola e rosa"
-      title="Il tempo, prima del denaro"
-      sub="YEARS traduce quello che hai, guadagni e spendi in anni di libertà. Una misura umana, non un saldo."
-      cta="Prova il calcolatore"
-      cardLabel="I tuoi anni"
-      cardValue="5,4 anni"
-      cardAction="Libertà"
+      alt={t("sections.sky.imgAlt")}
+      title={t("sections.sky.title")}
+      sub={t("sections.sky.sub")}
+      cta={t("sections.sky.cta")}
+      cardLabel={t("sections.sky.cardLabel")}
+      cardValue={t("sections.sky.cardValue")}
+      cardAction={t("sections.sky.cardAction")}
       gradient="from-[oklch(0.70_0.10_55/0.18)] via-[oklch(0.55_0.09_85/0.10)] to-[oklch(0.35_0.12_300/0.52)]"
     />
   );
@@ -324,6 +328,7 @@ function FullBleedStory({
   align?: "center" | "left";
   gradient?: string;
 }) {
+  const { t } = useI18n();
   const [active, setActive] = useState(0);
   const current = goals?.[active];
   const shownImg = current?.img ?? img;
@@ -391,12 +396,12 @@ function FullBleedStory({
           >
             <span className="text-xs text-white/70">{shownLabel}</span>
             <div className="text-[10px] uppercase tracking-[0.2em] text-white/50">
-              Prezzo in tempo
+              {t("sections.final.priceInTime")}
             </div>
             <div className="font-display mt-1 text-3xl text-white md:text-5xl">{shownValue}</div>
             {shownBudget && (
               <div className="mt-1 text-xs text-white/70">
-                Budget libertà: <span className="font-semibold text-white">{shownBudget}</span>
+                {t("sections.final.freedomBudget")}: <span className="font-semibold text-white">{shownBudget}</span>
               </div>
             )}
             {shownAction && (
@@ -493,14 +498,15 @@ function GlassCard({
 }
 
 function Solution() {
+  const { t } = useI18n();
   return (
     <SectionShell id="soluzione">
       <h2 className="mb-12 flex flex-wrap items-center justify-center gap-1 text-center font-grotesk text-4xl font-medium leading-[1.05] tracking-tight text-white md:text-6xl">
-        <span>Terminologia</span>
+        <span>{t("terminology.heading")}</span>
         <span className="flex items-center">
           <img
             src={yearsLogo}
-            alt="Logo YEARS"
+            alt={t("common.logoAlt")}
             className="h-16 w-16 object-contain md:h-24 md:w-24"
           />
           <span className="-ml-5 font-cormorant italic leading-none tracking-[0.02em] text-white md:-ml-7">
@@ -514,26 +520,23 @@ function Solution() {
           {
             id: "buffer-zero",
             icon: <Scale className="h-5 w-5" strokeWidth={1.5} />,
-            kicker: "Tempo di sopravvivenza",
-            title: "Life Buffer Zero",
-            description:
-              "Per quanto potresti vivere se ogni entrata si fermasse oggi? Patrimonio diviso spese mensili: questa è la tua autonomia.",
+            kicker: t("terminology.bufferZeroKicker"),
+            title: t("terminology.bufferZeroTitle"),
+            description: t("terminology.bufferZeroDesc"),
           },
           {
             id: "buffer-one",
             icon: <TrendingUp className="h-5 w-5" strokeWidth={1.5} />,
-            kicker: "Tempo opzionale",
-            title: "Life Buffer One",
-            description:
-              "Quanta vita futura puoi accumulare oltre la sopravvivenza? Questa riserva non serve a resistere: serve a scegliere.",
+            kicker: t("terminology.bufferOneKicker"),
+            title: t("terminology.bufferOneTitle"),
+            description: t("terminology.bufferOneDesc"),
           },
           {
             id: "time-advisor",
             icon: <RouteIcon className="h-5 w-5" strokeWidth={1.5} />,
-            kicker: "Decisioni temporali",
-            title: "Time Advisor",
-            description:
-              "Ogni acquisto ritarda o accelera la tua vita opzionale. Vedi esattamente quante ore costa ogni decisione.",
+            kicker: t("terminology.advisorKicker"),
+            title: t("terminology.advisorTitle"),
+            description: t("terminology.advisorDesc"),
           },
         ]}
       />
@@ -543,12 +546,16 @@ function Solution() {
 
 function PurchaseCard({
   img,
+  kicker,
+  equals,
   label,
   price,
   time,
   detail,
 }: {
   img: string;
+  kicker: string;
+  equals: string;
   label: string;
   price: string;
   time: string;
@@ -565,14 +572,14 @@ function PurchaseCard({
         className="h-40 w-full object-cover"
       />
       <div className="flex flex-1 flex-col p-7">
-        <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Acquisto</div>
+        <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">{kicker}</div>
         <div className="mt-2 text-sm text-white/80">{label}</div>
         <div className="mt-1 font-grotesk text-3xl font-medium text-white">{price}</div>
 
         <div className="mt-auto pt-8">
           <div className="flex items-center gap-3">
             <span className="h-px flex-1 bg-white/10" />
-            <span className="text-[10px] uppercase tracking-widest text-white/40">Equivale a</span>
+            <span className="text-[10px] uppercase tracking-widest text-white/40">{equals}</span>
             <span className="h-px flex-1 bg-white/10" />
           </div>
           <div className="logo-gradient-text mt-4 text-2xl font-medium">{time}</div>
@@ -584,16 +591,17 @@ function PurchaseCard({
 }
 
 function FlowCard() {
+  const { t } = useI18n();
   const steps = [
-    { k: "Quanto hai", v: "€ 300.000" },
-    { k: "Quanto guadagni", v: "€ 5.000 / mese" },
-    { k: "Quanto spendi", v: "€ 3.800 / mese" },
+    { k: t("sections.how.howMuchHave"), v: "€ 300.000" },
+    { k: t("sections.how.howMuchEarn"), v: `€ 5.000 ${t("sections.how.perMonth")}` },
+    { k: t("sections.how.howMuchSpend"), v: `€ 3.800 ${t("sections.how.perMonth")}` },
   ];
   return (
     <GlassCard className="flex h-full flex-col p-8">
-      <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">Il flusso</div>
+      <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">{t("sections.how.flowKicker")}</div>
       <h3 className="mt-3 font-grotesk text-2xl font-medium text-white">
-        Dai tuoi numeri ai tuoi anni di libertà.
+        {t("sections.how.flowTitle")}
       </h3>
 
       <div className="mt-8 space-y-4">
@@ -610,15 +618,16 @@ function FlowCard() {
 
       <div className="mt-6 flex items-center gap-3">
         <span className="h-px flex-1 bg-white/10" />
-        <span className="text-[10px] uppercase tracking-widest text-white/50">Risultato</span>
+        <span className="text-[10px] uppercase tracking-widest text-white/50">{t("sections.how.result")}</span>
         <span className="h-px flex-1 bg-white/10" />
       </div>
 
       <div className="mt-6">
-        <div className="logo-gradient-text font-grotesk text-4xl font-medium">6 anni 7 mesi</div>
+        <div className="logo-gradient-text font-grotesk text-4xl font-medium">{t("sections.how.resultValue")}</div>
         <p className="mt-3 text-sm leading-relaxed text-white/60">
-          È la tua autonomia se ogni entrata si fermasse oggi. Continuando a guadagnare diventa{" "}
-          <span className="text-white">6 anni e 11 mesi</span> entro un anno.
+          {t("sections.how.resultCopyBefore")}{" "}
+          <span className="text-white">{t("sections.how.resultCopyHighlight")}</span>{" "}
+          {t("sections.how.resultCopyAfter")}
         </p>
       </div>
 
@@ -628,6 +637,7 @@ function FlowCard() {
 }
 
 function MiniYearsChart() {
+  const { t } = useI18n();
   const data = [
     { y: "2026", v: 6.6 },
     { y: "2027", v: 6.9 },
@@ -654,7 +664,7 @@ function MiniYearsChart() {
     <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
       <div className="flex items-baseline justify-between">
         <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
-          Anni di libertà nel tempo
+          {t("sections.how.chartTitle")}
         </span>
         <motion.span
           key={active}
@@ -709,19 +719,21 @@ function MiniYearsChart() {
       </div>
 
       <div className="mt-4 text-[11px] text-white/45">
-        Da <span className="text-white/80">6a 7m</span> a{" "}
-        <span className="text-white/80">9a 10m</span> mantenendo lo stesso ritmo.
+        {t("sections.how.chartFootBefore")} <span className="text-white/80">6a 7m</span>{" "}
+        {t("sections.how.chartFootMiddle")} <span className="text-white/80">9a 10m</span>{" "}
+        {t("sections.how.chartFootAfter")}
       </div>
     </div>
   );
 }
 
 function HowItWorks() {
+  const { t } = useI18n();
   return (
     <SectionShell id="come-funziona" className="bg-[oklch(0.16_0.005_260)]">
       <SectionHeader
-        title="Il denaro diventa tempo"
-        sub="YEARS parte da quanto hai, guadagni e spendi per mostrarti quanti anni di libertà hai oggi, come possono crescere nel tempo e quanto ogni acquisto incide sul tuo futuro."
+        title={t("sections.how.title")}
+        sub={t("sections.how.sub")}
       />
 
       <BentoGridShowcase
@@ -729,37 +741,45 @@ function HowItWorks() {
         trackers={
           <PurchaseCard
             img={phoneImg}
-            label="iPhone 18"
+            kicker={t("sections.how.purchase")}
+            equals={t("sections.how.equals")}
+            label={t("sections.how.phoneLabel")}
             price="€ 1.200"
-            time="48 ore di lavoro"
-            detail="≈ 6 giornate della tua vita"
+            time={t("sections.how.phoneTime")}
+            detail={t("sections.how.phoneDetail")}
           />
         }
         statistic={
           <PurchaseCard
             img={japanImg}
-            label="Viaggio in Giappone"
+            kicker={t("sections.how.purchase")}
+            equals={t("sections.how.equals")}
+            label={t("sections.how.japanLabel")}
             price="€ 3.500"
-            time="140 ore di lavoro"
-            detail="≈ 18 giornate della tua vita"
+            time={t("sections.how.japanTime")}
+            detail={t("sections.how.japanDetail")}
           />
         }
         focus={
           <PurchaseCard
             img={carImg}
-            label="Tesla Model 3"
+            kicker={t("sections.how.purchase")}
+            equals={t("sections.how.equals")}
+            label={t("sections.how.carLabel")}
             price="€ 42.990"
-            time="1.720 ore di lavoro"
-            detail="≈ 7 mesi della tua vita"
+            time={t("sections.how.carTime")}
+            detail={t("sections.how.carDetail")}
           />
         }
         productivity={
           <PurchaseCard
             img={fashionImg}
-            label="Borsa + orologio di lusso"
+            kicker={t("sections.how.purchase")}
+            equals={t("sections.how.equals")}
+            label={t("sections.how.fashionLabel")}
             price="€ 8.500"
-            time="340 ore di lavoro"
-            detail="≈ 6 settimane della tua vita"
+            time={t("sections.how.fashionTime")}
+            detail={t("sections.how.fashionDetail")}
           />
         }
       />
@@ -768,27 +788,28 @@ function HowItWorks() {
 }
 
 function Footer() {
+  const { t } = useI18n();
   return (
     <footer className="border-t border-white/10 px-4 py-12 md:px-8">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div>
           <div className="flex items-center">
-            <img src={yearsLogo} alt="Logo YEARS" className="h-14 w-14 object-contain" />
+            <img src={yearsLogo} alt={t("common.logoAlt")} className="h-14 w-14 object-contain" />
             <span className="-ml-4 font-cormorant text-3xl italic leading-none tracking-[0.02em] text-white">
               ears
             </span>
           </div>
-          <div className="mt-2 text-xs text-white/40">© 2026 — Il denaro è tempo</div>
+          <div className="mt-2 text-xs text-white/40">{t("footer.tagline")}</div>
         </div>
         <div className="flex gap-8 text-sm text-white/60">
           <Link to="/ubi" className="hover:text-white">
-            UBI
+            {t("footer.ubi")}
           </Link>
           <Link to="/privacy" className="hover:text-white">
-            Privacy
+            {t("footer.privacy")}
           </Link>
           <Link to="/terms" className="hover:text-white">
-            Terms
+            {t("footer.terms")}
           </Link>
         </div>
       </div>

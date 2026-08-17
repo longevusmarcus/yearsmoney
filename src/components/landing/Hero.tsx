@@ -4,38 +4,44 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import yearsLogo from "@/assets/years-logo.webp";
 import { APP_ENTRY } from "./appEntry";
+import { useI18n } from "@/i18n/I18nProvider";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
-/* Typing effect: "Misura la tua libertà." */
-const PART_ONE = "Misura la tua libertà.";
-const PART_TWO = "";
-const FULL = PART_ONE + PART_TWO;
-const HL_START = PART_ONE.indexOf("libertà");
-const HL_END = HL_START + "libertà".length;
-
+/* Typing effect on the localised headline. The highlighted word comes from the
+   dictionary too, so the gradient lands on the right word in each language. */
 function TypedHeadline() {
+  const { t } = useI18n();
+  const full = t("hero.headline");
+  const highlight = t("hero.headlineHighlight");
+  const hlStart = full.indexOf(highlight);
+  const hlEnd = hlStart >= 0 ? hlStart + highlight.length : -1;
+
   const [n, setN] = useState(0);
 
+  // Restart the animation when the language changes
+  useEffect(() => setN(0), [full]);
+
   useEffect(() => {
-    if (n >= FULL.length) return;
-    const pause = n === PART_ONE.length ? 700 : 45;
+    if (n >= full.length) return;
+    const pause = n === full.length ? 700 : 45;
     const id = window.setTimeout(() => setN((v) => v + 1), pause);
     return () => window.clearTimeout(id);
-  }, [n]);
+  }, [n, full.length]);
 
-  const typed = FULL.slice(0, n);
-  const before = typed.slice(0, Math.min(n, HL_START));
-  const highlight = typed.slice(Math.min(n, HL_START), Math.min(n, HL_END));
-  const after = typed.slice(Math.min(n, HL_END));
+  const typed = full.slice(0, n);
+  const before = hlStart < 0 ? typed : typed.slice(0, Math.min(n, hlStart));
+  const mid = hlStart < 0 ? "" : typed.slice(Math.min(n, hlStart), Math.min(n, hlEnd));
+  const after = hlStart < 0 ? "" : typed.slice(Math.min(n, hlEnd));
 
   return (
     <span>
       <span className="whitespace-pre-wrap">{before}</span>
-      <span className="logo-gradient-text whitespace-pre-wrap">{highlight}</span>
+      <span className="logo-gradient-text whitespace-pre-wrap">{mid}</span>
       <span className="whitespace-pre-wrap">{after}</span>
       <span
         aria-hidden
         className={`ml-1 inline-block h-[0.85em] w-[0.06em] translate-y-[0.06em] bg-white/70 align-middle ${
-          n >= FULL.length ? "animate-pulse" : ""
+          n >= full.length ? "animate-pulse" : ""
         }`}
       />
     </span>
@@ -66,6 +72,7 @@ function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
 }
 
 const Hero = () => {
+  const { t } = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -100,7 +107,7 @@ const Hero = () => {
           <a href="#top" className="flex items-center gap-0">
             <img
               src={yearsLogo}
-              alt="Logo YEARS"
+              alt={t("common.logoAlt")}
               className={`object-contain transition-all duration-300 ${
                 scrolled ? "h-9 w-9 md:h-10 md:w-10" : "h-10 w-10 md:h-11 md:w-11"
               }`}
@@ -117,18 +124,19 @@ const Hero = () => {
           </a>
 
           {/* Desktop Navigation — all right-aligned next to CTA */}
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-3 md:flex">
+            <LanguageSwitcher />
             <Link
               to={APP_ENTRY}
               className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-5 py-1.5 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95"
             >
-              Calcola
+              {t("nav.calculate")}
             </Link>
           </div>
 
           {/* Mobile menu button */}
           <button
-            aria-label="Toggle menu"
+            aria-label={t("common.toggleMenu")}
             className="text-white md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -146,12 +154,13 @@ const Hero = () => {
               className="mx-auto mt-2 max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-black/70 backdrop-blur-xl md:hidden"
             >
               <div className="flex flex-col gap-1 p-4">
+                <LanguageSwitcher className="self-start" />
                 <Link
                   to={APP_ENTRY}
                   onClick={() => setMobileMenuOpen(false)}
                   className="mt-3 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black"
                 >
-                  Calcola il tuo tempo
+                  {t("nav.calculateMobile")}
                 </Link>
               </div>
             </motion.div>
@@ -175,9 +184,9 @@ const Hero = () => {
               className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1 pl-1 pr-3 text-xs text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
             >
               <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.12em] text-white">
-                YEARS
+                {t("hero.badgeChip")}
               </span>
-              Scopri la filosofia
+              {t("hero.badge")}
               <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </motion.div>
@@ -197,8 +206,7 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.5 }}
             className="mt-8 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg"
           >
-            YEARS ti fa vedere per quanto tempo puoi vivere con quello che hai oggi e ti aiuta a
-            progettare come avere più libertà domani.
+            {t("hero.sub")}
           </motion.p>
 
           <motion.p
@@ -207,7 +215,7 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.55 }}
             className="mt-3 max-w-2xl text-sm leading-relaxed text-white/50"
           >
-            Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.
+            {t("hero.subSecondary")}
           </motion.p>
 
           <motion.div
@@ -220,14 +228,14 @@ const Hero = () => {
               to={APP_ENTRY}
               className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-8 py-3.5 text-sm font-medium text-black shadow-[0_10px_40px_-12px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95"
             >
-              Prova il calcolatore
+              {t("hero.ctaPrimary")}
             </Link>
             <a
               href="#scopri"
               onClick={(e) => scrollToSection(e, "scopri")}
               className="inline-flex items-center rounded-full border border-white/20 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
             >
-              Guarda come funziona
+              {t("hero.ctaSecondary")}
             </a>
           </motion.div>
         </div>
@@ -331,6 +339,7 @@ function LightLeakBackdrop() {
 }
 
 function QrModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useI18n();
   const target =
     typeof window !== "undefined" ? `${window.location.origin}${APP_ENTRY}` : APP_ENTRY;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data=${encodeURIComponent(
@@ -358,27 +367,26 @@ function QrModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           >
             <button
               onClick={onClose}
-              aria-label="Chiudi"
+              aria-label={t("common.close")}
               className="absolute right-4 top-4 rounded-full p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/80">
               <Smartphone className="h-3.5 w-3.5" />
-              Solo da mobile
+              {t("hero.qrBadge")}
             </div>
             <h3 className="mt-5 font-grotesk text-2xl font-medium leading-tight text-white">
-              Scansiona per calcolare
+              {t("hero.qrTitle")}
             </h3>
             <p className="mt-2 text-sm text-white/60">
-              Il simulatore è pensato per il tuo telefono. Inquadra il codice con la fotocamera per
-              aprirlo.
+              {t("hero.qrSub")}
             </p>
             <div className="mt-6 flex items-center justify-center">
               <div className="rounded-2xl bg-white p-4">
                 <img
                   src={qrUrl}
-                  alt="QR code per aprire il calcolatore su mobile"
+                  alt={t("hero.qrAlt")}
                   width={280}
                   height={280}
                   className="h-[280px] w-[280px]"

@@ -210,6 +210,43 @@ Verified: chart and gradient figures screenshotted with seeded demo numbers (6y 
 area visibly curving up); signed-out leaderboard confirmed unchanged. The signed-in "You" row was not
 rendered — that needs a real sign-in.
 
+## J. Sixth pass — Italian/English switching (IN PROGRESS)
+
+Asked for: Italian default plus an English switcher, applying to the whole product — site,
+onboarding **and** the app screens.
+
+### Foundation (done)
+- `src/i18n/dictionary.ts` — Italian is the source of truth; `en` is typed as `typeof it`, so a
+  missing or misspelled English key is a **compile error**, not a silent runtime fallback.
+- `src/i18n/I18nProvider.tsx` — context + `t()` / `tList()` dot-path lookup, `localStorage`
+  persistence (`years_lang`), `<html lang>` kept in sync, Italian default, and English falling back
+  to Italian copy for any key not yet translated. Dev builds warn on missing keys.
+- `src/components/LanguageSwitcher.tsx` — IT / EN pill.
+- Provider wired in `App.tsx`, so one choice covers every route.
+
+### Migrated so far
+| Surface | Status |
+|---|---|
+| Hero (nav, typed headline, sub-copy, CTAs, QR modal) | ✅ |
+| Landing sections (sky, money, how-it-works, terminology, final CTA, footer) | ✅ |
+| iPhone showcase — all 5 phone screens and their micro-copy | ✅ |
+| `/filosofia` — all 5 chapters read from the dictionary | ✅ |
+
+The typed headline is worth noting: the highlighted word comes from the dictionary too
+(`hero.headlineHighlight`), so the gradient lands on "libertà" in Italian and "freedom" in English
+rather than a fixed character range.
+
+### Still to migrate
+| Surface | Notes |
+|---|---|
+| `/onboarding` | ~994 lines; all 9 steps, option lists, trust copy, plan screen |
+| `/calcola` | Auth screen, simulator labels, purchase catalog |
+| 20 app screens | Currently English-only: Home, Purchase, Risks, Leaderboard, Settings, Insights, Calculator, Profile, Achievements, CheckIn, GutMap, Opportunities, Help, FAQ, UBI, Terms, Privacy, Cookie, Auth, NotFound |
+| Shared app chrome | BottomNav labels, AuthModal, MobileOnly, AICoach, PatternCard, ShareableWidget |
+
+Staged deliberately by page so no screen is ever half-translated. Verified: full IT→EN switch across
+every landing section and Filosofia, `<html lang>` updating, and the choice surviving a reload.
+
 ### One thing to be aware of
 `MsxBootGate.isAtAuthedRoute()` (`src/msx/MsxBootGate.tsx:531`) does not list `/calcola`, `/onboarding`,
 or `/filosofia`. Inside the MSX shell those routes show the splash and get replaced by `/home`. Harmless

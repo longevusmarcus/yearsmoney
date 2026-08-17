@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { AppBackground } from "./components/AppBackground";
+import { I18nProvider } from "./i18n/I18nProvider";
 import { MsxBootGate } from "./msx/MsxBootGate";
 import Landing from "./pages/Landing";
 import Onboarding from "./pages/Onboarding";
@@ -26,6 +27,7 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
+      <I18nProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -62,6 +64,7 @@ const App = () => {
           </MsxBootGate>
         </BrowserRouter>
       </TooltipProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 };

@@ -2,62 +2,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Home } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
+import { dictionary } from "@/i18n/dictionary";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
-type Page = { chapter?: string; title?: string; body: string[] };
-
-const PAGES: Page[] = [
-  {
-    chapter: "Capitolo I",
-    title: "Filosofia",
-    body: [
-      "Il denaro non è ricchezza.",
-      "Il tempo è ricchezza.",
-      "Ogni dollaro che accumuli è semplicemente tempo messo da parte: ore che puoi scegliere di non vendere attraverso il lavoro.",
-    ],
-  },
-  {
-    chapter: "Capitolo II",
-    title: "La rivelazione",
-    body: [
-      "Years rende tutto questo visibile.",
-      "Il tuo buffer non è il tuo patrimonio netto. È il tempo per cui potresti vivere senza essere costretto ad agire.",
-      "Non è filosofia. È matematica.",
-    ],
-  },
-  {
-    chapter: "Capitolo III",
-    title: "Ciò che è visto",
-    body: [
-      "Una volta che il tempo diventa visibile, non può essere ignorato a lungo.",
-      "Nel sistema attuale, i buffer di vita esistono, ma sono nascosti.",
-      "Le persone li percepiscono vagamente come ansia o sicurezza, ma non hanno un nome, non sono visibili e, di conseguenza, non vengono gestiti consapevolmente.",
-    ],
-  },
-  {
-    chapter: "Capitolo IV",
-    title: "La coercizione svanisce",
-    body: [
-      "Quando la sopravvivenza non è più condizionata dal lavoro, il denaro perde la sua funzione più potente: la coercizione.",
-      "Ciò che rimane è un ruolo più silenzioso e preciso.",
-      "Il denaro diventa uno strumento per allocare qualcos'altro.",
-      "Il tempo.",
-    ],
-  },
-  {
-    chapter: "Capitolo V",
-    title: "Una nuova unità",
-    body: [
-      "Per comprendere questa transizione, abbiamo bisogno di una nuova unità di misura della ricchezza.",
-      "Non il reddito. Non il patrimonio netto.",
-      "Ma i buffer di tempo.",
-    ],
-  },
-];
+type Chapter = { chapter: string; title: string; body: string[] };
 
 export default function Filosofia() {
+  const { t, lang } = useI18n();
+  const chapters = dictionary[lang].filosofia.chapters as Chapter[];
   const [page, setPage] = useState(0);
   const [dir, setDir] = useState(1);
-  const total = PAGES.length;
+  const total = chapters.length;
 
   const go = (d: number) => {
     const next = page + d;
@@ -66,7 +22,7 @@ export default function Filosofia() {
     setPage(next);
   };
 
-  const current = PAGES[page];
+  const current = chapters[page];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[oklch(0.09_0.01_260)] text-white">
@@ -84,11 +40,12 @@ export default function Filosofia() {
           className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
         >
           <Home className="h-3.5 w-3.5" />
-          YEARS
+          {t("filosofia.home")}
         </Link>
         <span className="ml-auto font-grotesk text-right text-[9px] uppercase tracking-[0.3em] text-white/40 md:ml-0 md:text-[10px] md:tracking-[0.4em]">
-          La vera ricchezza è il tempo
+          {t("filosofia.tagline")}
         </span>
+        <LanguageSwitcher />
         <span className="hidden font-cormorant text-xs text-white/50 md:inline">
           {String(page + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
@@ -176,13 +133,13 @@ export default function Filosofia() {
             onClick={() => go(-1)}
             disabled={page === 0}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 backdrop-blur-md transition-all hover:bg-white/10 disabled:opacity-30"
-            aria-label="Pagina precedente"
+            aria-label={t("filosofia.prevPage")}
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
 
           <div className="flex items-center gap-2">
-            {PAGES.map((_, i) => (
+            {chapters.map((_, i) => (
               <button
                 key={i}
                 onClick={() => {
@@ -192,7 +149,7 @@ export default function Filosofia() {
                 className={`h-1.5 rounded-full transition-all ${
                   i === page ? "w-8 bg-white" : "w-2 bg-white/25 hover:bg-white/50"
                 }`}
-                aria-label={`Vai a pagina ${i + 1}`}
+                aria-label={`${t("filosofia.goToPage")} ${i + 1}`}
               />
             ))}
           </div>
@@ -201,7 +158,7 @@ export default function Filosofia() {
             onClick={() => go(1)}
             disabled={page === total - 1}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 backdrop-blur-md transition-all hover:bg-white/10 disabled:opacity-30"
-            aria-label="Pagina successiva"
+            aria-label={t("filosofia.nextPage")}
           >
             <ArrowRight className="h-4 w-4" />
           </button>
@@ -218,7 +175,7 @@ export default function Filosofia() {
               to="/"
               className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-transform hover:-translate-y-0.5"
             >
-              Torna al simulatore
+              {t("filosofia.backToSimulator")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </motion.div>

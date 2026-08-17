@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import carRed from "@/assets/car-red.jpg";
 import carGrey from "@/assets/car-grey.jpg";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /* ---------- screens rendered with the site's own UI language ---------- */
 
@@ -65,19 +66,20 @@ function Tile({ className = "", children }: { className?: string; children: Reac
 }
 
 function BufferScreen() {
+  const { t } = useI18n();
   return (
     <ScreenShell
       title={
         <>
-          Benvenuto in <span className="font-cormorant italic">Years</span>
+          {t("showcase.buffer.welcome")} <span className="font-cormorant italic">Years</span>
         </>
       }
     >
       <div className="grid grid-cols-3 gap-2">
         {[
-          ["ENTRATE/M", "5000"],
-          ["USCITE/M", "3800"],
-          ["PATRIMONIO", "300000"],
+          [t("showcase.buffer.incomeMo"), "5000"],
+          [t("showcase.buffer.costsMo"), "3800"],
+          [t("showcase.buffer.netWorth"), "300000"],
         ].map(([k, v]) => (
           <div key={k} className="min-w-0">
             <p className="mb-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">{k}</p>
@@ -90,14 +92,14 @@ function BufferScreen() {
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-[7px] uppercase tracking-[0.14em] text-white/35">Collega conti</p>
-          <span className="text-[7px] uppercase tracking-[0.14em] text-white/25">PRESTO</span>
+          <p className="text-[7px] uppercase tracking-[0.14em] text-white/35">{t("showcase.buffer.linkAccounts")}</p>
+          <span className="text-[7px] uppercase tracking-[0.14em] text-white/25">{t("showcase.buffer.soon")}</span>
         </div>
         <div className="grid grid-cols-4 gap-1.5">
           {[
             ["Schwab", Building2],
             ["Stripe", CreditCard],
-            ["Banca", Landmark],
+            [t("showcase.buffer.bank"), Landmark],
             ["Crypto", Bitcoin],
           ].map(([s, Ico]) => {
             const I = Ico as typeof Building2;
@@ -117,36 +119,36 @@ function BufferScreen() {
       <div className="grid grid-cols-2 gap-2">
         <Tile className="min-w-0 p-2.5">
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
-            <TrendingDown className="h-2.5 w-2.5 shrink-0" /> Se ti fermi
+            <TrendingDown className="h-2.5 w-2.5 shrink-0" /> {t("showcase.buffer.ifYouStop")}
           </p>
           <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">6a 7m</p>
           <div className="mt-1.5 flex items-end justify-between">
-            <span className="text-[8px] text-white/40">ora</span>
+            <span className="text-[8px] text-white/40">{t("showcase.buffer.now")}</span>
             <span className="text-[7px] uppercase tracking-widest text-white/25">YEARS</span>
           </div>
         </Tile>
         <Tile className="min-w-0 p-2.5">
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
-            <TrendingUp className="h-2.5 w-2.5 shrink-0" /> Continuando
+            <TrendingUp className="h-2.5 w-2.5 shrink-0" /> {t("showcase.buffer.keepGoing")}
           </p>
           <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">6a 11m</p>
           <div className="mt-1.5 flex items-end justify-between">
-            <span className="text-[8px] text-white/40">fra 1 anno</span>
+            <span className="text-[8px] text-white/40">{t("showcase.buffer.inOneYear")}</span>
             <span className="text-[7px] uppercase tracking-widest text-white/25">YEARS</span>
           </div>
         </Tile>
       </div>
 
       <Tile className="flex min-w-0 shrink-0 items-center justify-between gap-2 p-2.5">
-        <span className="truncate text-[9px] text-white/60">questo mese hai guadagnato</span>
+        <span className="truncate text-[9px] text-white/60">{t("showcase.buffer.gainedThisMonth")}</span>
         <span className="shrink-0 whitespace-nowrap font-grotesk text-[13px] font-semibold">
-          +227 ore
+          {t("showcase.buffer.gainedHours")}
         </span>
       </Tile>
 
       <div className="flex shrink-0 flex-col">
         <p className="mb-1.5 text-[7px] uppercase tracking-[0.14em] text-white/35">
-          Proiezione futura
+          {t("showcase.buffer.projection")}
         </p>
         <Tile className="relative flex h-[92px] flex-col p-3">
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="min-h-0 w-full flex-1">
@@ -176,9 +178,9 @@ function BufferScreen() {
             ))}
           </svg>
           <div className="mt-1 flex justify-between text-[7px] text-white/30">
-            <span>1 anno</span>
-            <span>5 anni</span>
-            <span>20 anni</span>
+            <span>{t("showcase.buffer.axis1y")}</span>
+            <span>{t("showcase.buffer.axis5y")}</span>
+            <span>{t("showcase.buffer.axis20y")}</span>
           </div>
           <span className="absolute -bottom-2 right-2 grid h-7 w-7 place-items-center rounded-full bg-white text-black">
             <MessageCircle className="h-3.5 w-3.5" />
@@ -190,34 +192,35 @@ function BufferScreen() {
 }
 
 function GoalsScreen() {
+  const { t } = useI18n();
   const goals: [string, string, number][] = [
-    ["Anno sabbatico", "fra 2a 3m", 72],
-    ["Casa: anticipo", "fra 6a 1m", 41],
-    ["Master", "fra 1a 8m", 58],
+    [t("showcase.goals.sabbatical"), `${t("showcase.goals.inTime")} 2a 3m`, 72],
+    [t("showcase.goals.houseDeposit"), `${t("showcase.goals.inTime")} 6a 1m`, 41],
+    [t("showcase.goals.masters"), `${t("showcase.goals.inTime")} 1a 8m`, 58],
   ];
   const icons = [Plane, Home, GraduationCap];
   return (
-    <ScreenShell title="Obiettivi" sub="Simula gli anni di libertà futuri">
+    <ScreenShell title={t("showcase.goals.label")} sub={t("showcase.goals.title")}>
       <div className="grid grid-cols-2 gap-2">
         <Tile className="min-w-0 p-2.5">
-          <p className="truncate text-[7px] uppercase tracking-[0.14em] text-white/35">Oggi</p>
+          <p className="truncate text-[7px] uppercase tracking-[0.14em] text-white/35">{t("showcase.goals.today")}</p>
           <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">6a 7m</p>
-          <p className="mt-1 text-[8px] text-white/40">di libertà</p>
+          <p className="mt-1 text-[8px] text-white/40">{t("showcase.goals.ofFreedom")}</p>
         </Tile>
         <Tile className="min-w-0 p-2.5">
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
-            <Target className="h-2.5 w-2.5 shrink-0" /> Scenario
+            <Target className="h-2.5 w-2.5 shrink-0" /> {t("showcase.goals.scenario")}
           </p>
           <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
             11a 2m
           </p>
-          <p className="mt-1 text-[8px] text-white/40">fra 5 anni</p>
+          <p className="mt-1 text-[8px] text-white/40">{t("showcase.goals.inFiveYears")}</p>
         </Tile>
       </div>
 
       <div className="flex shrink-0 flex-col">
         <p className="mb-1.5 text-[7px] uppercase tracking-[0.14em] text-white/35">
-          Simulazione: +300 €/mese risparmiati
+          {t("showcase.goals.simulation")}
         </p>
         <Tile className="flex h-[86px] flex-col p-3">
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="min-h-0 w-full flex-1">
@@ -238,15 +241,15 @@ function GoalsScreen() {
             />
           </svg>
           <div className="mt-1 flex justify-between text-[7px] text-white/30">
-            <span>oggi</span>
-            <span>5 anni</span>
-            <span>10 anni</span>
+            <span>{t("showcase.goals.axisToday")}</span>
+            <span>{t("showcase.goals.axis5y")}</span>
+            <span>{t("showcase.goals.axis10y")}</span>
           </div>
         </Tile>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-2">
-        <p className="text-[7px] uppercase tracking-[0.14em] text-white/35">I tuoi obiettivi</p>
+        <p className="text-[7px] uppercase tracking-[0.14em] text-white/35">{t("showcase.goals.yourGoals")}</p>
         {goals.map(([name, eta, pct], i) => {
           const I = icons[i];
           return (
@@ -261,7 +264,7 @@ function GoalsScreen() {
                 <span className="block h-full rounded-full bg-white" style={{ width: `${pct}%` }} />
               </div>
               <div className="mt-1.5 flex items-center justify-between text-[8px] text-white/35">
-                <span>{pct}% raggiunto</span>
+                <span>{pct}% {t("showcase.goals.reached")}</span>
                 <span>{eta}</span>
               </div>
             </Tile>
@@ -273,16 +276,17 @@ function GoalsScreen() {
 }
 
 function PurchaseScreen() {
+  const { t } = useI18n();
   return (
-    <ScreenShell title="Acquisto" sub="Vedi il vero costo in ore di vita">
+    <ScreenShell title={t("showcase.purchase.label")} sub={t("showcase.purchase.sub")}>
       <div className="flex min-w-0 items-center gap-2">
         <span className="inline-flex shrink-0 items-center gap-1 rounded-md border border-white/10 bg-white/[0.05] px-2 py-1 text-[8px] text-white/70">
-          <Car className="h-2.5 w-2.5" /> auto
+          <Car className="h-2.5 w-2.5" /> {t("showcase.purchase.car")}
         </span>
-        <span className="truncate text-[8px] text-white/35">via Exa + SerpAPI</span>
+        <span className="truncate text-[8px] text-white/35">{t("showcase.purchase.via")}</span>
       </div>
       <p className="flex min-w-0 items-center gap-1 text-[8px] uppercase tracking-[0.12em] text-white/35">
-        <CornerDownRight className="h-2.5 w-2.5 shrink-0" /> 4 annunci trovati (caro → economico)
+        <CornerDownRight className="h-2.5 w-2.5 shrink-0" /> {t("showcase.purchase.listingsFound")}
       </p>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
@@ -290,39 +294,39 @@ function PurchaseScreen() {
           <div className="relative h-[110px]">
             <img
               src={carRed}
-              alt="2025 Tesla Model S Plaid"
+              alt={t("showcase.purchase.carName")}
               loading="lazy"
               width={1024}
               height={576}
               className="h-full w-full object-cover"
             />
             <span className="absolute left-2.5 top-2.5 rounded-md bg-black/60 px-2 py-1 text-[7px] text-white/80">
-              Più caro
+              {t("showcase.purchase.mostExpensive")}
             </span>
             <span className="absolute right-2.5 top-2.5 rounded-md bg-black/60 px-2 py-1 text-[10px] font-semibold">
               $94,990
             </span>
           </div>
           <div className="p-3.5">
-            <p className="text-[12px] font-semibold">2025 Tesla Model S Plaid</p>
+            <p className="text-[12px] font-semibold">{t("showcase.purchase.carName")}</p>
             <p className="mt-1 line-clamp-2 text-[9px] leading-relaxed text-white/45">
-              Prestazioni estreme, 0-100 km/h in meno di 2 s e oltre 300 km/h di velocità massima.
+              {t("showcase.purchase.carDesc")}
             </p>
             <div className="mt-3 flex items-end justify-between">
               <div>
                 <span className="font-grotesk text-[22px] font-bold tracking-tight">1741.5</span>
-                <span className="ml-1 text-[10px] text-white/50">giorni</span>
-                <p className="text-[8px] text-white/35">per rientrare</p>
+                <span className="ml-1 text-[10px] text-white/50">{t("showcase.purchase.days")}</span>
+                <p className="text-[8px] text-white/35">{t("showcase.purchase.toBreakEven")}</p>
               </div>
               <div className="text-right">
                 <span className="text-[12px] font-semibold text-[oklch(0.65_0.2_25)]">−31.7%</span>
-                <p className="text-[8px] text-white/35">del buffer</p>
+                <p className="text-[8px] text-white/35">{t("showcase.purchase.ofBuffer")}</p>
               </div>
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-white/[0.07] pt-2.5 text-[8px] text-white/45">
-              <span>Edmunds</span>
+              <span>{t("showcase.purchase.source")}</span>
               <span className="inline-flex items-center gap-1 text-white/70">
-                Vedi annuncio <ExternalLink className="h-2.5 w-2.5" />
+                {t("showcase.purchase.viewListing")} <ExternalLink className="h-2.5 w-2.5" />
               </span>
             </div>
           </div>
@@ -331,7 +335,7 @@ function PurchaseScreen() {
           <div className="relative h-[110px]">
             <img
               src={carGrey}
-              alt="Annuncio berlina elettrica grigia"
+              alt={t("showcase.purchase.greyCarAlt")}
               loading="lazy"
               width={1024}
               height={576}
@@ -348,36 +352,37 @@ function PurchaseScreen() {
 }
 
 function RisksScreen() {
+  const { t } = useI18n();
   return (
-    <ScreenShell title="Rischi" sub="Vedi gli investimenti in anni in gioco">
+    <ScreenShell title={t("showcase.risks.label")} sub={t("showcase.risks.sub")}>
       <div>
         <p className="font-grotesk text-[18px] font-bold tracking-tight">Bitcoin</p>
-        <p className="text-[10px] text-white/40">$50,000 investiti</p>
+        <p className="text-[10px] text-white/40">{t("showcase.risks.invested")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5">
         <Tile className="p-3">
-          <p className="text-[8px] text-white/40">Se +85%</p>
+          <p className="text-[8px] text-white/40">{t("showcase.risks.ifUp")}</p>
           <p className="mt-1 font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
             +8053
           </p>
-          <p className="text-[8px] text-white/35">ore guadagnate</p>
+          <p className="text-[8px] text-white/35">{t("showcase.risks.hoursGained")}</p>
         </Tile>
         <Tile className="p-3">
-          <p className="text-[8px] text-white/40">Se −55%</p>
+          <p className="text-[8px] text-white/40">{t("showcase.risks.ifDown")}</p>
           <p className="mt-1 font-grotesk text-xl font-bold tracking-tight text-[oklch(0.65_0.2_25)]">
             −5211
           </p>
-          <p className="text-[8px] text-white/35">ore perse</p>
+          <p className="text-[8px] text-white/35">{t("showcase.risks.hoursLost")}</p>
         </Tile>
       </div>
 
-      <p className="text-[9px] text-white/40">Se questo investimento fallisce, perdi:</p>
+      <p className="text-[9px] text-white/40">{t("showcase.risks.ifItFails")}</p>
       <div className="space-y-2">
         {[
-          ["Mesi per aiutare i genitori", "7.2 mesi"],
-          ["Settimane per costruire qualcosa", "31 settimane"],
-          ["Giorni di vacanza in famiglia", "31 viaggi"],
+          [t("showcase.risks.helpParents"), t("showcase.risks.helpParentsValue")],
+          [t("showcase.risks.buildSomething"), t("showcase.risks.buildSomethingValue")],
+          [t("showcase.risks.familyHolidays"), t("showcase.risks.familyHolidaysValue")],
         ].map(([k, v]) => (
           <div
             key={k}
@@ -393,18 +398,19 @@ function RisksScreen() {
         <span className="font-grotesk text-4xl font-bold tracking-tight text-[oklch(0.65_0.2_25)]">
           0.59
         </span>
-        <span className="mt-1 text-[9px] text-white/40">anni di vita a rischio</span>
+        <span className="mt-1 text-[9px] text-white/40">{t("showcase.risks.yearsAtRisk")}</span>
       </div>
 
       <div className="flex items-center justify-between border-t border-white/[0.07] pt-2.5 text-[10px]">
-        <span className="text-white/55">Volatilità</span>
-        <span className="font-semibold text-[oklch(0.65_0.2_25)]">Alta</span>
+        <span className="text-white/55">{t("showcase.risks.volatility")}</span>
+        <span className="font-semibold text-[oklch(0.65_0.2_25)]">{t("showcase.risks.high")}</span>
       </div>
     </ScreenShell>
   );
 }
 
 function LeaderboardScreen() {
+  const { t } = useI18n();
   const rows: [string, string, string, string][] = [
     ["1", "Mar…", "4.2", "10.4"],
     ["2", "Sof…", "4.0", "5.3"],
@@ -416,7 +422,7 @@ function LeaderboardScreen() {
     ["8", "Oli…", "3.0", "3.5"],
   ];
   return (
-    <ScreenShell title="Classifica" sub="Ordinata per buffer di vita, non denaro">
+    <ScreenShell title={t("showcase.leaderboard.label")} sub={t("showcase.leaderboard.sub")}>
       <div className="flex min-h-0 flex-1 flex-col justify-between">
         {rows.map(([pos, name, val, alt], i) => (
           <div
@@ -435,40 +441,22 @@ function LeaderboardScreen() {
   );
 }
 
-const SCREENS = [
-  {
-    label: "Buffer",
-    title: "Quanto tempo hai già guadagnato",
-    desc: "Il buffer traduce patrimonio, entrate e spese in anni di libertà: la misura reale di quanto potresti vivere senza lavorare, o facendo quello che ti appassiona.",
-    render: BufferScreen,
-  },
-  {
-    label: "Obiettivi",
-    title: "Simula i tuoi anni di libertà futuri",
-    desc: "Cambia risparmi, entrate e scelte di vita e vedi subito come crescono i tuoi anni di libertà. Imposta obiettivi e scopri quando diventano raggiungibili.",
-    render: GoalsScreen,
-  },
-  {
-    label: "Acquisto",
-    title: "Le spese, viste in modo diverso",
-    desc: "Prima di pagare, scopri quanti giorni di libertà costa davvero ogni acquisto. Simula diverse scelte e vedi come ottimizzare le spese per guadagnare anni di autonomia in più.",
-    render: PurchaseScreen,
-  },
-  {
-    label: "Rischi",
-    title: "Cosa succede se qualcosa va storto",
-    desc: "Simuli gli imprevisti — investimenti che vanno male, spese straordinarie, inflazione — e scopri per quanto tempo reggi davvero.",
-    render: RisksScreen,
-  },
-  {
-    label: "Classifica",
-    title: "Competi sul tempo, non sul denaro",
-    desc: "Confronta i tuoi anni di libertà con la community e usa il confronto come spinta, non come giudizio.",
-    render: LeaderboardScreen,
-  },
-];
+const SCREEN_KEYS = [
+  { key: "buffer", render: BufferScreen },
+  { key: "goals", render: GoalsScreen },
+  { key: "purchase", render: PurchaseScreen },
+  { key: "risks", render: RisksScreen },
+  { key: "leaderboard", render: LeaderboardScreen },
+] as const;
 
 export function IphoneShowcase() {
+  const { t } = useI18n();
+  const SCREENS = SCREEN_KEYS.map(({ key, render }) => ({
+    label: t(`showcase.${key}.label`),
+    title: t(`showcase.${key}.title`),
+    desc: t(`showcase.${key}.desc`),
+    render,
+  }));
   const wrapperRef = useRef<HTMLDivElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -481,7 +469,7 @@ export function IphoneShowcase() {
       const total = rect.height - window.innerHeight;
       if (total <= 0) return;
       const progress = Math.min(Math.max(-rect.top / total, 0), 0.999);
-      setActive(Math.floor(progress * SCREENS.length));
+      setActive(Math.floor(progress * SCREEN_KEYS.length));
 
       const mobile = window.innerWidth < 768;
       const startScale = mobile ? 0.85 : 1.0;
@@ -505,7 +493,7 @@ export function IphoneShowcase() {
 
   return (
     <section id="scopri" className="relative bg-[oklch(0.09_0.01_260)]">
-      <div ref={wrapperRef} style={{ height: `calc(${SCREENS.length * 35}vh + 100vh)` }}>
+      <div ref={wrapperRef} style={{ height: `calc(${SCREEN_KEYS.length * 35}vh + 100vh)` }}>
         <div className="sticky top-0 flex h-screen items-center overflow-hidden px-4 pt-24 pb-16 md:px-8 md:pt-36 md:pb-32">
           <div className="pointer-events-none absolute inset-0 -z-10">
             <div className="absolute left-[8%] top-1/4 h-[420px] w-[420px] rounded-full bg-[oklch(0.72_0.19_55/0.16)] blur-[140px]" />
