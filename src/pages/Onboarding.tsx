@@ -20,6 +20,7 @@ import {
 import yearsLogo from "@/assets/years-logo.webp";
 import { useI18n } from "@/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useUserFinances } from "@/hooks/useUserFinances";
 
 /* ================== OPTION MODEL ==================
  * Options are identified by stable ids, never by their labels. The projection maths
