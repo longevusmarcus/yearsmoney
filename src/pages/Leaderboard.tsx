@@ -2,6 +2,7 @@ import { Trophy } from "lucide-react";
 import { useMemo } from "react";
 import BottomNav from "@/components/BottomNav";
 import PageHeader from "@/components/PageHeader";
+import MobileOnly from "@/components/MobileOnly";
 import { useUserFinances } from "@/hooks/useUserFinances";
 import { useI18n } from "@/i18n/I18nProvider";
 
