@@ -96,7 +96,7 @@ const Achievements = () => {
   const unlockedCount = allAchievements.filter(a => isUnlocked(a.id)).length;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       <div className="p-6 space-y-6">
         <button onClick={() => navigate(-1)} className="mb-4">
           <ArrowLeft className="w-6 h-6 text-foreground" />

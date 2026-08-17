@@ -2,10 +2,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { AppBackground } from "./components/AppBackground";
 import { MsxBootGate } from "./msx/MsxBootGate";
-import About from "./pages/About";
+import Landing from "./pages/Landing";
+import Onboarding from "./pages/Onboarding";
+import Filosofia from "./pages/Filosofia";
+import Calcola from "./pages/Calcola";
 import Home from "./pages/Home";
 import Purchase from "./pages/Purchase";
 import Risks from "./pages/Risks";
@@ -19,26 +23,24 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const RootRedirect = () => {
-  const search = typeof window !== "undefined" ? window.location.search : "";
-  const hash = typeof window !== "undefined" ? window.location.hash : "";
-  return <Navigate to={`/about${search}${hash}`} replace />;
-};
-
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <AppBackground />
         <BrowserRouter>
           <ScrollToTop />
           <MsxBootGate>
           <Routes>
-            {/* Landing page */}
-            <Route path="/" element={<RootRedirect />} />
-            <Route path="/about" element={<About />} />
-            
+            {/* Landing page — same component on both paths so existing /about links keep working */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/about" element={<Landing />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/filosofia" element={<Filosofia />} />
+            <Route path="/calcola" element={<Calcola />} />
+
             {/* App screens */}
             <Route path="/home" element={<Home />} />
             <Route path="/purchase" element={<Purchase />} />

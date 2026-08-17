@@ -351,7 +351,7 @@ const CheckIn = () => {
   if (mode === "voice") {
     if (voiceStep === "recording" || voiceStep === "processing") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6">
+        <div className="min-h-screen bg-transparent flex flex-col p-6">
           <button onClick={() => navigate("/home")} className="self-start mb-8">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
@@ -504,7 +504,7 @@ const CheckIn = () => {
 
     if (voiceStep === "label") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6">
+        <div className="min-h-screen bg-transparent flex flex-col p-6">
           <button onClick={() => setVoiceStep("recording")} className="self-start mb-8">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
@@ -547,7 +547,7 @@ const CheckIn = () => {
 
     if (voiceStep === "response") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6">
+        <div className="min-h-screen bg-transparent flex flex-col p-6">
           <button onClick={() => setVoiceStep("label")} className="self-start mb-8">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
@@ -588,7 +588,7 @@ const CheckIn = () => {
 
     if (voiceStep === "analyzing") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6">
+        <div className="min-h-screen bg-transparent flex flex-col p-6">
           <div className="flex-1 flex flex-col justify-center items-center text-center space-y-8">
             <div className="relative flex items-center justify-center">
               <div className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 via-accent/15 to-primary/20 blur-2xl animate-pulse" />
@@ -610,7 +610,7 @@ const CheckIn = () => {
 
     if (voiceStep === "insights") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6 pb-24">
+        <div className="min-h-screen bg-transparent flex flex-col p-6 pb-24">
           <button onClick={() => navigate("/home")} className="self-start mb-4">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
@@ -677,7 +677,7 @@ const CheckIn = () => {
 
     if (voiceStep === "gut") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6">
+        <div className="min-h-screen bg-transparent flex flex-col p-6">
           <button onClick={() => setVoiceStep("insights")} className="self-start mb-8">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
@@ -715,7 +715,7 @@ const CheckIn = () => {
 
     if (voiceStep === "ignore") {
       return (
-        <div className="min-h-screen bg-background flex flex-col p-6">
+        <div className="min-h-screen bg-transparent flex flex-col p-6">
           <button onClick={() => setVoiceStep("gut")} className="self-start mb-8">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
@@ -763,7 +763,7 @@ const CheckIn = () => {
     
     if (voiceStep === "gentle-reminder") {
       return (
-        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6">
           <div className="max-w-md w-full space-y-12 text-center">
           {/* Bubble Logo */}
           <div className="flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -813,7 +813,7 @@ const CheckIn = () => {
     
     if (voiceStep === "congratulations") {
       return (
-        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6">
           <div className="max-w-md w-full space-y-12 text-center">
             {/* Bubble Logo */}
             <div className="flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -848,7 +848,7 @@ const CheckIn = () => {
   // Tap Flow Render
   if (tapStep === "context") {
     return (
-      <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="min-h-screen bg-transparent flex flex-col p-6">
         <button onClick={() => navigate("/home")} className="self-start mb-8">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
@@ -895,7 +895,7 @@ const CheckIn = () => {
 
   if (tapStep === "describe") {
     return (
-      <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="min-h-screen bg-transparent flex flex-col p-6">
         <button onClick={() => setTapStep("context")} className="self-start mb-8">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
@@ -934,7 +934,7 @@ const CheckIn = () => {
 
   if (tapStep === "body") {
     return (
-      <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="min-h-screen bg-transparent flex flex-col p-6">
         <button onClick={() => setTapStep("describe")} className="self-start mb-8">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
@@ -994,7 +994,7 @@ const CheckIn = () => {
 
   if (tapStep === "gut") {
     return (
-      <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="min-h-screen bg-transparent flex flex-col p-6">
         <button onClick={() => setTapStep("body")} className="self-start mb-8">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
@@ -1032,7 +1032,7 @@ const CheckIn = () => {
 
   if (tapStep === "ignore") {
     return (
-      <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="min-h-screen bg-transparent flex flex-col p-6">
         <button onClick={() => setTapStep("gut")} className="self-start mb-8">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
@@ -1080,7 +1080,7 @@ const CheckIn = () => {
   
   if (tapStep === "gentle-reminder") {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6">
         <div className="max-w-md w-full space-y-12 text-center">
         {/* Bubble Logo */}
         <div className="flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -1130,7 +1130,7 @@ const CheckIn = () => {
   
   if (tapStep === "congratulations") {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6">
         <div className="max-w-md w-full space-y-12 text-center">
           {/* Bubble Logo */}
           <div className="flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -1163,7 +1163,7 @@ const CheckIn = () => {
 
   if (tapStep === "decision") {
     return (
-      <div className="min-h-screen bg-background flex flex-col p-6">
+      <div className="min-h-screen bg-transparent flex flex-col p-6">
         <button onClick={() => setTapStep("ignore")} className="self-start mb-8">
           <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>

@@ -286,7 +286,7 @@ const Risks = () => {
 
     return (
       <MobileOnly>
-        <div className="min-h-screen bg-background text-foreground pb-28">
+        <div className="min-h-screen bg-transparent text-foreground pb-28">
           <PageHeader title="Risks" subtitle="See investments in years at stake" />
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="px-6">
@@ -376,7 +376,7 @@ const Risks = () => {
 
   return (
     <MobileOnly>
-      <div className="min-h-screen bg-background text-foreground pb-28">
+      <div className="min-h-screen bg-transparent text-foreground pb-28">
         <PageHeader title="Risks" subtitle="See investments in years at stake" />
 
         {/* Not logged in - minimal prompt */}

@@ -204,7 +204,7 @@ const Home = () => {
 
   return (
     <MobileOnly>
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       {/* Header */}
       <PageHeader title="Years">
         <h1 className="text-2xl text-foreground tracking-tight">

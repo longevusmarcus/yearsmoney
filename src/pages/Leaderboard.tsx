@@ -71,7 +71,7 @@ const Leaderboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-transparent pb-32">
       <PageHeader 
         title="Leaderboard" 
         subtitle="Ranked by life buffers, not money"

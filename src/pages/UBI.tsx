@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 const UBI = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       {/* Back Navigation */}
       <div className="fixed top-6 left-6 z-50">
         <Link

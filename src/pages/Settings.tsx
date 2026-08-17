@@ -111,7 +111,7 @@ const Settings = () => {
 
   return (
     <MobileOnly>
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       <PageHeader 
         title="Settings" 
         titleClassName="text-2xl font-cursive italic text-foreground tracking-tight"

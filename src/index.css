@@ -8,8 +8,9 @@
 
 @layer base {
   :root {
-    /* Dark mode by default - stark, existential */
-    --background: 0 0% 4%;
+    /* Dark mode by default - stark, existential.
+       Pure black to match the onboarding / calcola ambient field. */
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
     --card: 0 0% 8%;
@@ -91,6 +92,17 @@
 
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
 
@@ -99,4 +111,45 @@
 
 .font-cormorant {
   font-family: 'Cormorant Garamond', serif;
+}
+
+/* ── YEARS display system ──────────────────────────────────────────────
+   Ported from the years-value-explorer design system. Space Grotesk is the
+   display face; .logo-gradient-text is the violet → white → gold treatment
+   derived from the YEARS logo, used for every "time value" figure.
+   ------------------------------------------------------------------- */
+
+.font-display {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Ambient blooms behind every in-app screen (see components/AppBackground.tsx).
+   Full strength on the dark default; pulled back in light mode so text stays readable. */
+.light .years-ambient {
+  opacity: 0.4;
+}
+
+.logo-gradient-text {
+  background-image: linear-gradient(
+    100deg,
+    oklch(0.55 0.28 300) 0%,
+    oklch(0.72 0.19 310) 22%,
+    oklch(0.98 0.01 300) 50%,
+    oklch(0.90 0.14 95) 74%,
+    oklch(0.85 0.19 90) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter:
+    drop-shadow(0 0 10px oklch(0.55 0.28 300 / 0.22))
+    drop-shadow(0 0 24px oklch(0.60 0.25 300 / 0.14))
+    drop-shadow(0 0 16px oklch(0.88 0.18 92 / 0.15));
 }

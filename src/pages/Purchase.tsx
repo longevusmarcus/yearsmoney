@@ -191,7 +191,7 @@ const Purchase = () => {
 
   return (
     <MobileOnly>
-    <div className="min-h-screen bg-background text-foreground pb-28">
+    <div className="min-h-screen bg-transparent text-foreground pb-28">
       {/* Header */}
       <PageHeader 
         title="Purchase" 

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import ShareableWidget from "@/components/ShareableWidget";
+import { YearsWordmark } from "@/components/YearsWordmark";
 import bearMascot from "@/assets/bear-mascot.png";
 
 interface PageHeaderProps {
@@ -21,7 +22,7 @@ export const PageHeader = ({
   subtitle,
   showBackButton = false,
   showActions = true,
-  titleClassName = "text-2xl font-light tracking-tight",
+  titleClassName = "font-display text-2xl",
   children,
   rightAction,
 }: PageHeaderProps) => {
@@ -57,8 +58,11 @@ export const PageHeader = ({
           </motion.button>
         )}
         
+        {/* Same lockup as the onboarding header, so the funnel and the app read as one product */}
+        <YearsWordmark className="mb-3" />
+
         <div className="flex justify-between items-start">
-          <motion.div 
+          <motion.div
             className="flex-1"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

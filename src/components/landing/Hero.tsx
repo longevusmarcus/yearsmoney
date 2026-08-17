@@ -1,0 +1,396 @@
+import { useEffect, useState } from "react";
+import { ArrowRight, Menu, X, Smartphone } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import yearsLogo from "@/assets/years-logo.webp";
+import { APP_ENTRY } from "./appEntry";
+
+/* Typing effect: "Misura la tua libertà." */
+const PART_ONE = "Misura la tua libertà.";
+const PART_TWO = "";
+const FULL = PART_ONE + PART_TWO;
+const HL_START = PART_ONE.indexOf("libertà");
+const HL_END = HL_START + "libertà".length;
+
+function TypedHeadline() {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (n >= FULL.length) return;
+    const pause = n === PART_ONE.length ? 700 : 45;
+    const id = window.setTimeout(() => setN((v) => v + 1), pause);
+    return () => window.clearTimeout(id);
+  }, [n]);
+
+  const typed = FULL.slice(0, n);
+  const before = typed.slice(0, Math.min(n, HL_START));
+  const highlight = typed.slice(Math.min(n, HL_START), Math.min(n, HL_END));
+  const after = typed.slice(Math.min(n, HL_END));
+
+  return (
+    <span>
+      <span className="whitespace-pre-wrap">{before}</span>
+      <span className="logo-gradient-text whitespace-pre-wrap">{highlight}</span>
+      <span className="whitespace-pre-wrap">{after}</span>
+      <span
+        aria-hidden
+        className={`ml-1 inline-block h-[0.85em] w-[0.06em] translate-y-[0.06em] bg-white/70 align-middle ${
+          n >= FULL.length ? "animate-pulse" : ""
+        }`}
+      />
+    </span>
+  );
+}
+
+/* Precise anchor scroll: re-corrects while in-view animations change layout */
+function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+  e.preventDefault();
+  const el = document.getElementById(id);
+  if (!el) return;
+  const go = () =>
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY,
+      behavior: "smooth",
+    });
+  go();
+  // layout shifts from reveal animations → snap exactly on target
+  const t1 = window.setTimeout(go, 450);
+  const t2 = window.setTimeout(() => {
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY,
+      behavior: "auto",
+    });
+    window.clearTimeout(t1);
+  }, 950);
+  void t2;
+}
+
+const Hero = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.75);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <section id="top" className="relative min-h-screen w-full overflow-hidden bg-black text-foreground">
+      {/* Cinematic light-field background: soft diffuse blooms on pure black */}
+      <LightLeakBackdrop />
+
+      {/* Sticky glass pill navigation */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="fixed inset-x-0 top-2 z-50 px-4 md:top-3 md:px-8"
+      >
+        <nav
+          className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border transition-all duration-300 ${
+            scrolled
+              ? "border-white/10 bg-[oklch(0.12_0.01_260/0.92)] px-4 py-1 shadow-[0_18px_60px_-24px_oklch(0_0_0/0.6)] backdrop-blur-xl md:px-5 md:py-1.5"
+              : "border-transparent bg-transparent px-0 py-1.5 md:py-2"
+          }`}
+        >
+          {/* Logo */}
+          <a href="#top" className="flex items-center gap-0">
+            <img
+              src={yearsLogo}
+              alt="Logo YEARS"
+              className={`object-contain transition-all duration-300 ${
+                scrolled ? "h-9 w-9 md:h-10 md:w-10" : "h-10 w-10 md:h-11 md:w-11"
+              }`}
+            />
+            <span
+              className={`font-cormorant italic leading-none tracking-[0.02em] text-white transition-all duration-300 ${
+                scrolled
+                  ? "-ml-2.5 text-xl md:-ml-3 md:text-2xl"
+                  : "-ml-3 text-2xl md:-ml-3 md:text-[1.7rem]"
+              }`}
+            >
+              ears
+            </span>
+          </a>
+
+          {/* Desktop Navigation — all right-aligned next to CTA */}
+          <div className="hidden items-center gap-8 md:flex">
+            <Link
+              to={APP_ENTRY}
+              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-5 py-1.5 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95"
+            >
+              Calcola
+            </Link>
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            aria-label="Toggle menu"
+            className="text-white md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </nav>
+
+        {/* Mobile Navigation Menu with animation */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mx-auto mt-2 max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-black/70 backdrop-blur-xl md:hidden"
+            >
+              <div className="flex flex-col gap-1 p-4">
+                <Link
+                  to={APP_ENTRY}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mt-3 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-black"
+                >
+                  Calcola il tuo tempo
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Content container */}
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-4 pt-24 md:px-8 md:pt-28">
+        {/* Hero section */}
+        <div className="flex flex-1 flex-col items-center justify-center px-2 pt-6 pb-24 text-center md:pt-8">
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="mb-5 md:mb-6"
+          >
+            <Link
+              to="/filosofia"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1 pl-1 pr-3 text-xs text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
+            >
+              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.12em] text-white">
+                YEARS
+              </span>
+              Scopri la filosofia
+              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.3 }}
+            className="mx-auto max-w-5xl font-grotesk text-5xl font-medium leading-[1.08] tracking-[-0.02em] text-white md:text-7xl lg:text-[5rem]"
+          >
+            <TypedHeadline />
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="mt-8 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg"
+          >
+            YEARS ti fa vedere per quanto tempo puoi vivere con quello che hai oggi e ti aiuta a
+            progettare come avere più libertà domani.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.55 }}
+            className="mt-3 max-w-2xl text-sm leading-relaxed text-white/50"
+          >
+            Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.65 }}
+            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          >
+            <Link
+              to={APP_ENTRY}
+              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-8 py-3.5 text-sm font-medium text-black shadow-[0_10px_40px_-12px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95"
+            >
+              Prova il calcolatore
+            </Link>
+            <a
+              href="#scopri"
+              onClick={(e) => scrollToSection(e, "scopri")}
+              className="inline-flex items-center rounded-full border border-white/20 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
+            >
+              Guarda come funziona
+            </a>
+          </motion.div>
+        </div>
+      </div>
+      <QrModal open={qrOpen} onClose={() => setQrOpen(false)} />
+    </section>
+  );
+};
+
+/**
+ * LightLeakBackdrop
+ * Cinematic, diagonally-drifting light-field on pure black. A mixed palette
+ * of cool blue, violet, and warm orange/peach — echoing the sky section —
+ * fused with heavy blur. Central darkening keeps typography readable.
+ */
+function LightLeakBackdrop() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-black" />
+
+      {/* Diagonal drift wrapper — the whole light-field breathes gently */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, x: [0, 30, -10, 0], y: [0, -20, 10, 0] }}
+        transition={{
+          opacity: { duration: 1.8, ease: "easeOut" },
+          x: { duration: 24, repeat: Infinity, ease: "easeInOut" },
+          y: { duration: 28, repeat: Infinity, ease: "easeInOut" },
+        }}
+        className="absolute inset-[-10%]"
+      >
+        {/* Violet-warm cluster — left: soft violet → peach */}
+        <div
+          className="absolute left-[-10%] top-[8%] h-[70vh] w-[70vw] rotate-[-18deg] rounded-full blur-[160px]"
+          style={{
+            background:
+              "radial-gradient(closest-side, oklch(0.80 0.14 280 / 0.50), oklch(0.74 0.16 295 / 0.42) 38%, oklch(0.80 0.15 55 / 0.26) 64%, transparent 80%)",
+          }}
+        />
+        <div
+          className="absolute left-[2%] top-[35%] h-[46vh] w-[46vw] rotate-[-8deg] rounded-full blur-[150px]"
+          style={{
+            background:
+              "radial-gradient(closest-side, oklch(0.70 0.16 295 / 0.34), oklch(0.72 0.14 280 / 0.20) 55%, transparent 78%)",
+          }}
+        />
+
+        {/* Sunset-violet cluster — right: peach → coral → soft violet */}
+        <motion.div
+          animate={{ x: [0, -20, 15, 0], y: [0, 15, -8, 0] }}
+          transition={{
+            x: { duration: 30, repeat: Infinity, ease: "easeInOut" },
+            y: { duration: 34, repeat: Infinity, ease: "easeInOut" },
+          }}
+          className="absolute right-[-15%] top-[-10%] h-[95vh] w-[85vw] rotate-[12deg] rounded-full blur-[170px]"
+          style={{
+            background:
+              "radial-gradient(closest-side, oklch(0.90 0.13 55 / 0.52), oklch(0.78 0.16 45 / 0.38) 30%, oklch(0.60 0.17 300 / 0.28) 62%, oklch(0.55 0.18 30 / 0.20) 78%, transparent 90%)",
+          }}
+        />
+        {/* Soft peach highlight — the "hot" core of the leak */}
+        <div
+          className="absolute right-[10%] top-[22%] h-[36vh] w-[36vw] rounded-full blur-[110px]"
+          style={{
+            background:
+              "radial-gradient(closest-side, oklch(0.95 0.06 60 / 0.48), oklch(0.85 0.10 55 / 0.28) 45%, transparent 75%)",
+          }}
+        />
+        {/* Deep violet anchor bottom-right */}
+        <div
+          className="absolute right-[5%] bottom-[-15%] h-[70vh] w-[70vw] rotate-[6deg] rounded-full blur-[190px]"
+          style={{
+            background:
+              "radial-gradient(closest-side, oklch(0.40 0.18 300 / 0.44), oklch(0.55 0.15 290 / 0.24) 55%, transparent 78%)",
+          }}
+        />
+      </motion.div>
+
+      {/* Keep the center dark and clean for typography */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 55% at 50% 55%, oklch(0 0 0 / 0.75), oklch(0 0 0 / 0.35) 50%, transparent 80%)",
+        }}
+      />
+
+      {/* Fine grain — kills banding, adds analog feel */}
+      <div
+        className="absolute inset-0 opacity-[0.09] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>\")",
+        }}
+      />
+
+      {/* Edge vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,oklch(0_0_0/0.9))]" />
+    </div>
+  );
+}
+
+function QrModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const target =
+    typeof window !== "undefined" ? `${window.location.origin}${APP_ENTRY}` : APP_ENTRY;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data=${encodeURIComponent(
+    target,
+  )}`;
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 backdrop-blur-xl"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[oklch(0.12_0.01_260)] p-8 text-center shadow-[0_40px_120px_-20px_oklch(0.5_0.15_270/0.5)]"
+          >
+            <button
+              onClick={onClose}
+              aria-label="Chiudi"
+              className="absolute right-4 top-4 rounded-full p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/80">
+              <Smartphone className="h-3.5 w-3.5" />
+              Solo da mobile
+            </div>
+            <h3 className="mt-5 font-grotesk text-2xl font-medium leading-tight text-white">
+              Scansiona per calcolare
+            </h3>
+            <p className="mt-2 text-sm text-white/60">
+              Il simulatore è pensato per il tuo telefono. Inquadra il codice con la fotocamera per
+              aprirlo.
+            </p>
+            <div className="mt-6 flex items-center justify-center">
+              <div className="rounded-2xl bg-white p-4">
+                <img
+                  src={qrUrl}
+                  alt="QR code per aprire il calcolatore su mobile"
+                  width={280}
+                  height={280}
+                  className="h-[280px] w-[280px]"
+                />
+              </div>
+            </div>
+            <div className="mt-5 truncate text-xs text-white/40">{target}</div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+export { Hero };

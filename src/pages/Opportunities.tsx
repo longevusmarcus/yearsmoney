@@ -168,7 +168,7 @@ const Opportunities = () => {
 
   return (
     <MobileOnly>
-      <div className="min-h-screen bg-background text-foreground pb-28">
+      <div className="min-h-screen bg-transparent text-foreground pb-28">
         {/* Header */}
         <PageHeader title="Ideas" subtitle="See what your time could buy (optional life)" />
 

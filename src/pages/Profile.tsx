@@ -142,7 +142,7 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       <div className="p-6 space-y-6">
         {/* Profile Header */}
         <div className="text-center space-y-4">

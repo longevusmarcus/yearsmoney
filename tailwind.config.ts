@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
+        inter: ['Inter', 'system-ui', 'sans-serif'],
+        grotesk: ['Space Grotesk', 'Inter', 'sans-serif'],
         cursive: ['Playfair Display', 'serif'],
         italiana: ['Italiana', 'serif'],
         cormorant: ['Cormorant Garamond', 'serif'],

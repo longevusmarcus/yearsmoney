@@ -289,7 +289,7 @@ const Insights = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       <div className="p-6 space-y-6">
         <div className="space-y-2">
           <h1 className="text-4xl font-cursive text-foreground tracking-tight">Insights</h1>
