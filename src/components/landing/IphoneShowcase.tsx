@@ -41,7 +41,7 @@ function ScreenShell({
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-10 left-[-15%] h-48 w-48 rounded-full bg-[oklch(0.72_0.19_55/0.20)] blur-[55px]" />
         <div className="absolute top-1/2 right-[-20%] h-56 w-56 rounded-full bg-[oklch(0.55_0.24_295/0.20)] blur-[65px]" />
-        <div className="absolute bottom-[-8%] left-1/4 h-40 w-40 rounded-full bg-[oklch(0.70_0.16_180/0.14)] blur-[55px]" />
+        <div className="absolute bottom-[-8%] left-1/4 h-40 w-40 rounded-full bg-[oklch(0.55_0.24_295/0.18)] blur-[55px]" />
       </div>
       <div className="relative flex items-start justify-between px-4 pt-12">
         <div>
