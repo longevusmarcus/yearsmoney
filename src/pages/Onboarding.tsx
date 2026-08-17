@@ -154,6 +154,23 @@ export default function Onboarding() {
 
   const plan = usePlan(a);
 
+  // Persist onboarding results so the Home dashboard shows the same numbers.
+  const { updateFinances } = useUserFinances();
+  useEffect(() => {
+    if (i !== 10) return;
+    const income = incomeValue(a);
+    const savings = savingValue(a);
+    const expenses = Math.max(income - savings, 0);
+    const netWorth = Math.max(Number(a.wealth) || 0, 0);
+    localStorage.setItem("tc_onboarding_done", "1");
+    updateFinances({
+      monthlyIncome: income,
+      monthlyExpenses: expenses,
+      netWorth,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i]);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       <Blobs />
