@@ -27,6 +27,7 @@ const it = {
   nav: {
     calculate: "Calcola",
     calculateMobile: "Calcola il tuo tempo",
+    join: "Entra",
   },
 
   hero: {

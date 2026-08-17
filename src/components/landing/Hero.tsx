@@ -141,7 +141,7 @@ const Hero = () => {
               to="/auth"
               className="inline-flex items-center rounded-full border border-white/20 px-3.5 py-1.5 text-sm font-medium text-white/85 transition-colors hover:border-white/40 hover:text-white active:scale-95 md:px-4"
             >
-              Entra
+              {t("nav.join")}
             </Link>
             <Link
               to={APP_ENTRY}
