@@ -528,7 +528,7 @@ export function IphoneShowcase() {
           <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-16">
             {/* iPhone 18 mockup */}
             <div className="order-1 flex justify-center md:order-2">
-              <div className="relative h-[510px] w-[252px] md:h-[600px] md:w-[296px]">
+              <div className="relative h-[420px] w-[210px] md:h-[600px] md:w-[296px]">
                 <div
                   ref={phoneRef}
                   className="absolute left-1/2 top-1/2 h-[600px] w-[296px]"
