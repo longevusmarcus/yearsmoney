@@ -67,12 +67,17 @@ function AuthScreen() {
 
   const google = async () => {
     setErr(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/calcola` },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
-    if (error) setErr(error.message || t("calcola.googleError"));
+    if (result.error) {
+      setErr(result.error.message || t("calcola.googleError"));
+      return;
+    }
+    if (result.redirected) return;
+    window.location.href = "/calcola";
   };
+
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
