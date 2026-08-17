@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Route as RouteIcon, Scale, TrendingUp } from "lucide-react";
 
-import { Hero } from "@/components/landing/Hero";
 import { IphoneShowcase } from "@/components/landing/IphoneShowcase";
 import { BentoGridShowcase } from "@/components/landing/BentoGridShowcase";
 import { MorphingCardStack } from "@/components/landing/MorphingCardStack";
