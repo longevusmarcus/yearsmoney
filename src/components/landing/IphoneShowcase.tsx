@@ -596,10 +596,10 @@ export function IphoneShowcase() {
                   exit={{ opacity: 0, y: -18 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
                 >
-                  <h3 className="mt-4 font-grotesk text-2xl font-bold leading-[1.1] tracking-tight text-white md:mt-5 md:text-5xl">
+                  <h3 className="mt-4 font-grotesk text-xl font-bold leading-[1.1] tracking-tight text-white md:mt-5 md:text-5xl">
                     {current.title}
                   </h3>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-white/60 md:mt-4 md:text-lg">
+                  <p className="mt-2 max-w-md text-sm leading-snug text-white/60 md:mt-4 md:text-lg md:leading-relaxed">
                     {current.desc}
                   </p>
                 </motion.div>
