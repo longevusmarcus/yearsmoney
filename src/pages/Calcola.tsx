@@ -281,10 +281,10 @@ function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string 
 label={t("calcola.incomeLabel")}
             value={reddito}
             onChange={setReddito}
-            suffix="€"
+            suffix={t("common.currency")}
           />
-          <NumberField label={t("calcola.expensesLabel")} value={spese} onChange={setSpese} suffix="€" />
-          <NumberField label={t("calcola.savingsLabel")} value={risparmi} onChange={setRisparmi} suffix="€" />
+          <NumberField label={t("calcola.expensesLabel")} value={spese} onChange={setSpese} suffix={t("common.currency")} />
+          <NumberField label={t("calcola.savingsLabel")} value={risparmi} onChange={setRisparmi} suffix={t("common.currency")} />
         </section>
 
         <section className="mt-4 grid grid-cols-2 gap-3">
@@ -293,9 +293,9 @@ label={t("calcola.incomeLabel")}
             value={`${survY}${t("common.yearShort")} ${survM}${t("common.monthShort")}`}
             tone="cold"
           />
-          <Metric label={t("calcola.hourValue")} value={`€ ${valoreOra.toFixed(1)}`} tone="warm" />
-          <Metric label={t("calcola.savingPerMonth")} value={`€ ${risparmioMese}`} tone="warm" />
-          <Metric label={t("calcola.optionalPerYear")} value={`€ ${risparmioMese * 12}`} tone="cold" />
+          <Metric label={t("calcola.hourValue")} value={`${t("common.currency")} ${valoreOra.toFixed(1)}`} tone="warm" />
+          <Metric label={t("calcola.savingPerMonth")} value={`${t("common.currency")} ${risparmioMese}`} tone="warm" />
+          <Metric label={t("calcola.optionalPerYear")} value={`${t("common.currency")} ${risparmioMese * 12}`} tone="cold" />
         </section>
 
         <section className="mt-8">
@@ -328,7 +328,7 @@ placeholder={t("calcola.searchPlaceholder")}
                     <div>
                       <div className="text-sm text-white">{t(`calcola.items.${it.id}`)}</div>
                       <div className="text-[11px] uppercase tracking-widest text-white/40">
-                        {t(`calcola.categories.${it.category}`)} · €{" "}
+                        {t(`calcola.categories.${it.category}`)} · {t("common.currency")}{" "}
                         {it.price.toLocaleString(t("common.locale"))}
                       </div>
                     </div>

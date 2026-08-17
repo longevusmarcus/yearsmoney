@@ -462,10 +462,19 @@ const Home = () => {
 
       {/* Chat Modal */}
       {showChat && (
-        <div className="fixed inset-0 bg-background z-[60] flex flex-col">
-          <div className="p-4 flex items-center justify-between border-b border-border">
-            <h2 className="text-lg font-light">Time Advisor</h2>
-            <button onClick={() => setShowChat(false)} className="text-muted-foreground">
+        <div className="fixed inset-0 z-[60] flex flex-col bg-black/80 backdrop-blur-2xl">
+          {/* Ambient blooms, so the panel sits on the same field as the rest of the app */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute -top-24 left-[-10%] h-[420px] w-[420px] rounded-full bg-[oklch(0.72_0.19_55/0.18)] blur-[120px]" />
+            <div className="absolute bottom-[-10%] right-[-15%] h-[480px] w-[480px] rounded-full bg-[oklch(0.55_0.24_295/0.18)] blur-[140px]" />
+          </div>
+
+          <div className="flex items-center justify-between border-b border-border p-4">
+            <h2 className="font-display text-lg">Time Advisor</h2>
+            <button
+              onClick={() => setShowChat(false)}
+              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -473,13 +482,15 @@ const Home = () => {
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-muted-foreground font-light">Ask me anything about optimizing your time</p>
+                <p className="font-light text-muted-foreground">Ask me anything about optimizing your time</p>
               </div>
             )}
             {messages.map((msg, idx) => (
               <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
-                <div className={`inline-block px-4 py-2 rounded-2xl max-w-[85%] ${
-                  msg.role === "user" ? "bg-foreground text-background" : "bg-card text-foreground"
+                <div className={`inline-block max-w-[85%] rounded-2xl px-4 py-2 ${
+                  msg.role === "user"
+                    ? "bg-gradient-to-br from-white to-white/80 text-black"
+                    : "border border-border bg-card text-foreground backdrop-blur-xl"
                 }`}>
                   <p className="text-sm font-light whitespace-pre-wrap">{msg.content}</p>
                 </div>
@@ -487,7 +498,7 @@ const Home = () => {
             ))}
             {isLoading && (
               <div className="text-left">
-                <div className="inline-block px-4 py-2 rounded-2xl bg-card">
+                <div className="inline-block rounded-2xl border border-border bg-card px-4 py-2 backdrop-blur-xl">
                   <div className="flex space-x-1">
                     <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
                     <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -506,12 +517,12 @@ const Home = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && sendMessage(input)}
               placeholder="Ask about your time..."
-              className="flex-1 px-4 py-2 bg-card border-0 rounded-full text-sm font-light placeholder:text-muted-foreground focus:outline-none"
+              className="flex-1 rounded-full border border-border bg-input px-4 py-2.5 text-sm font-light backdrop-blur-md placeholder:text-muted-foreground focus:border-white/25 focus:outline-none"
             />
             <button
               onClick={() => sendMessage(input)}
               disabled={isLoading || !input.trim()}
-              className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center disabled:opacity-50"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[oklch(0.72_0.19_310)] to-[oklch(0.85_0.19_90)] text-black transition-transform hover:scale-105 disabled:opacity-40"
             >
               <Send className="w-4 h-4" />
             </button>

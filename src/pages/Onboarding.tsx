@@ -134,6 +134,9 @@ export default function Onboarding() {
   const back = () => setI((v) => Math.max(v - 1, 0));
 
   const stepLabels = tList("onboarding.steps");
+  const cur = t("common.currency");
+  // "€ / mese" -> "mese"; the unit word alone, for inline "450€/mese" style meta
+  const per = t("onboarding.perMonthSuffix").split("/").pop()?.trim() ?? "";
 
   const canNext = [
     a.desires.length === 2,
@@ -329,9 +332,9 @@ export default function Onboarding() {
                               ? undefined
                               : base > 0
                                 ? exactIncome
-                                  ? `${eur}€/${t("onboarding.perMonthSuffix").replace("€ / ", "")} ${t("onboarding.savingSetAside")} · ${spesa}€/${t("onboarding.perMonthSuffix").replace("€ / ", "")} ${t("onboarding.savingSpending")}`
+                                  ? `${eur}${cur}/${per} ${t("onboarding.savingSetAside")} · ${spesa}${cur}/${per} ${t("onboarding.savingSpending")}`
                                   : eur > 0
-                                    ? `${t("onboarding.savingUpTo")} ${eur}€`
+                                    ? `${t("onboarding.savingUpTo")} ${eur}${cur}`
                                     : undefined
                                 : undefined
                           }
@@ -352,7 +355,7 @@ export default function Onboarding() {
                   {a.income && (
                     <p className="mt-3 text-[11px] leading-relaxed text-white/40">
                       {a.income === EXACT
-                        ? `${t("onboarding.savingNoteExact")} (${incomeValue(a).toLocaleString(t("common.locale"))}€).`
+                        ? `${t("onboarding.savingNoteExact")} (${incomeValue(a).toLocaleString(t("common.locale"))}${cur}).`
                         : t("onboarding.savingNoteBand")}
                     </p>
                   )}
@@ -483,7 +486,7 @@ function AmountField({
         {suffix && <span className="shrink-0 text-sm text-white/45">{suffix}</span>}
       </div>
       {value !== "" && Number.isFinite(n) && (
-        <div className="mt-2 text-[11px] text-white/40">{n.toLocaleString(t("common.locale"))} €</div>
+        <div className="mt-2 text-[11px] text-white/40">{n.toLocaleString(t("common.locale"))} {t("common.currency")}</div>
       )}
     </div>
   );

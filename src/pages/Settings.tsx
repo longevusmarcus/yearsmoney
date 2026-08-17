@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, Trash2, Trophy } from "lucide-react";
+import { User, LogOut, LogIn, Trash2, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -147,9 +147,16 @@ const Settings = () => {
             </Card>
           ) : (
             <Card className="bg-card border-border p-4 rounded-2xl">
-              <p className="text-sm text-muted-foreground font-light text-center">
-                Not signed in
+              <p className="mb-4 text-center text-sm font-light text-muted-foreground">
+                Sign in to sync your numbers across devices
               </p>
+              <button
+                onClick={() => navigate("/auth")}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-white to-white/80 py-2.5 text-sm font-medium text-black transition-transform hover:-translate-y-0.5"
+              >
+                <LogIn className="h-4 w-4" />
+                Sign in
+              </button>
             </Card>
           )}
         </div>

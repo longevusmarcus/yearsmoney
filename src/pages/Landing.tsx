@@ -200,7 +200,7 @@ function MoneyReimagined() {
           value={t("sections.money.travelValue")}
           action={t("sections.money.freedomCost")}
           footLabel={t("sections.money.travelFootLabel")}
-          footValue="€ 3.500"
+          footValue={t("sections.money.travelFootValue")}
         />
         <PhotoTile
           featured
@@ -209,7 +209,7 @@ function MoneyReimagined() {
           value={t("sections.money.mobilityValue")}
           action={t("sections.money.freedomCost")}
           footLabel={t("sections.money.mobilityFootLabel")}
-          footValue="€ 42.990"
+          footValue={t("sections.money.mobilityFootValue")}
         />
         <PhotoTile
           img={fashionImg}
@@ -217,7 +217,7 @@ function MoneyReimagined() {
           value={t("sections.money.luxuryValue")}
           action={t("sections.money.freedomCost")}
           footLabel={t("sections.money.luxuryFootLabel")}
-          footValue="€ 8.500"
+          footValue={t("sections.money.luxuryFootValue")}
         />
       </div>
     </LightSection>
@@ -235,32 +235,32 @@ function FinalCTA() {
       sub={t("sections.final.sub")}
       cta={t("sections.final.cta")}
       cardLabel={t("sections.final.cardLabel")}
-      cardValue="3a 4m"
-      budgetTotal="6a 7m"
+      cardValue={t("sections.final.newGoalValue")}
+      budgetTotal={t("sections.final.budgetValue")}
       goals={[
         {
           label: t("sections.final.sabbatical"),
           img: peopleMountain,
           alt: t("sections.final.mountainAlt"),
           cardLabel: t("sections.final.sabbaticalCardLabel"),
-          cardValue: "1a 2m",
-          cardBudget: "6a 7m",
+          cardValue: t("sections.final.sabbaticalValue"),
+          cardBudget: t("sections.final.budgetValue"),
         },
         {
           label: t("sections.final.house"),
           img: peopleHome,
           alt: t("sections.final.homeAlt"),
           cardLabel: t("sections.final.houseCardLabel"),
-          cardValue: "6a 8m",
-          cardBudget: "6a 7m",
+          cardValue: t("sections.final.houseValue"),
+          cardBudget: t("sections.final.budgetValue"),
         },
         {
           label: t("sections.final.retire"),
           img: peopleRetire,
           alt: t("sections.final.retireAlt"),
           cardLabel: t("sections.final.retireCardLabel"),
-          cardValue: "12a 5m",
-          cardBudget: "6a 7m",
+          cardValue: t("sections.final.retireValue"),
+          cardBudget: t("sections.final.budgetValue"),
         },
       ]}
     />
@@ -593,9 +593,9 @@ function PurchaseCard({
 function FlowCard() {
   const { t } = useI18n();
   const steps = [
-    { k: t("sections.how.howMuchHave"), v: "€ 300.000" },
-    { k: t("sections.how.howMuchEarn"), v: `€ 5.000 ${t("sections.how.perMonth")}` },
-    { k: t("sections.how.howMuchSpend"), v: `€ 3.800 ${t("sections.how.perMonth")}` },
+    { k: t("sections.how.howMuchHave"), v: t("sections.how.haveValue") },
+    { k: t("sections.how.howMuchEarn"), v: `${t("sections.how.earnValue")} ${t("sections.how.perMonth")}` },
+    { k: t("sections.how.howMuchSpend"), v: `${t("sections.how.spendValue")} ${t("sections.how.perMonth")}` },
   ];
   return (
     <GlassCard className="flex h-full flex-col p-8">
@@ -719,8 +719,10 @@ function MiniYearsChart() {
       </div>
 
       <div className="mt-4 text-[11px] text-white/45">
-        {t("sections.how.chartFootBefore")} <span className="text-white/80">6a 7m</span>{" "}
-        {t("sections.how.chartFootMiddle")} <span className="text-white/80">9a 10m</span>{" "}
+        {t("sections.how.chartFootBefore")}{" "}
+        <span className="text-white/80">{t("sections.how.chartFootFrom")}</span>{" "}
+        {t("sections.how.chartFootMiddle")}{" "}
+        <span className="text-white/80">{t("sections.how.chartFootTo")}</span>{" "}
         {t("sections.how.chartFootAfter")}
       </div>
     </div>
@@ -744,7 +746,7 @@ function HowItWorks() {
             kicker={t("sections.how.purchase")}
             equals={t("sections.how.equals")}
             label={t("sections.how.phoneLabel")}
-            price="€ 1.200"
+            price={t("sections.how.phonePrice")}
             time={t("sections.how.phoneTime")}
             detail={t("sections.how.phoneDetail")}
           />
@@ -755,7 +757,7 @@ function HowItWorks() {
             kicker={t("sections.how.purchase")}
             equals={t("sections.how.equals")}
             label={t("sections.how.japanLabel")}
-            price="€ 3.500"
+            price={t("sections.how.japanPrice")}
             time={t("sections.how.japanTime")}
             detail={t("sections.how.japanDetail")}
           />
@@ -766,7 +768,7 @@ function HowItWorks() {
             kicker={t("sections.how.purchase")}
             equals={t("sections.how.equals")}
             label={t("sections.how.carLabel")}
-            price="€ 42.990"
+            price={t("sections.how.carPrice")}
             time={t("sections.how.carTime")}
             detail={t("sections.how.carDetail")}
           />
@@ -777,7 +779,7 @@ function HowItWorks() {
             kicker={t("sections.how.purchase")}
             equals={t("sections.how.equals")}
             label={t("sections.how.fashionLabel")}
-            price="€ 8.500"
+            price={t("sections.how.fashionPrice")}
             time={t("sections.how.fashionTime")}
             detail={t("sections.how.fashionDetail")}
           />

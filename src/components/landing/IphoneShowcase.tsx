@@ -35,8 +35,15 @@ function ScreenShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-full flex-col bg-[oklch(0.09_0.01_260)] text-white">
-      <div className="flex items-start justify-between px-4 pt-12">
+    // Same ground as the real app screens: pure black with the ambient blooms,
+    // scaled down to the phone viewport (see components/AppBackground.tsx).
+    <div className="relative flex h-full flex-col bg-black text-white">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-10 left-[-15%] h-48 w-48 rounded-full bg-[oklch(0.72_0.19_55/0.20)] blur-[55px]" />
+        <div className="absolute top-1/2 right-[-20%] h-56 w-56 rounded-full bg-[oklch(0.55_0.24_295/0.20)] blur-[65px]" />
+        <div className="absolute bottom-[-8%] left-1/4 h-40 w-40 rounded-full bg-[oklch(0.70_0.16_180/0.14)] blur-[55px]" />
+      </div>
+      <div className="relative flex items-start justify-between px-4 pt-12">
         <div>
           <h4 className="whitespace-nowrap font-grotesk text-[17px] font-bold leading-tight tracking-tight">
             {title}
@@ -48,7 +55,7 @@ function ScreenShell({
           <Settings className="h-3 w-3" />
         </div>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden px-4 pb-4 pt-3">
+      <div className="relative flex min-h-0 flex-1 flex-col gap-2 overflow-hidden px-4 pb-4 pt-3">
         {children}
       </div>
     </div>
@@ -121,7 +128,9 @@ function BufferScreen() {
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
             <TrendingDown className="h-2.5 w-2.5 shrink-0" /> {t("showcase.buffer.ifYouStop")}
           </p>
-          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">6a 7m</p>
+          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">
+            {t("showcase.buffer.ifYouStopValue")}
+          </p>
           <div className="mt-1.5 flex items-end justify-between">
             <span className="text-[8px] text-white/40">{t("showcase.buffer.now")}</span>
             <span className="text-[7px] uppercase tracking-widest text-white/25">YEARS</span>
@@ -131,7 +140,9 @@ function BufferScreen() {
           <p className="flex items-center gap-1 truncate text-[7px] uppercase tracking-[0.14em] text-white/35">
             <TrendingUp className="h-2.5 w-2.5 shrink-0" /> {t("showcase.buffer.keepGoing")}
           </p>
-          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">6a 11m</p>
+          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">
+            {t("showcase.buffer.keepGoingValue")}
+          </p>
           <div className="mt-1.5 flex items-end justify-between">
             <span className="text-[8px] text-white/40">{t("showcase.buffer.inOneYear")}</span>
             <span className="text-[7px] uppercase tracking-widest text-white/25">YEARS</span>
@@ -194,9 +205,9 @@ function BufferScreen() {
 function GoalsScreen() {
   const { t } = useI18n();
   const goals: [string, string, number][] = [
-    [t("showcase.goals.sabbatical"), `${t("showcase.goals.inTime")} 2a 3m`, 72],
-    [t("showcase.goals.houseDeposit"), `${t("showcase.goals.inTime")} 6a 1m`, 41],
-    [t("showcase.goals.masters"), `${t("showcase.goals.inTime")} 1a 8m`, 58],
+    [t("showcase.goals.sabbatical"), `${t("showcase.goals.inTime")} ${t("showcase.goals.sabbaticalEta")}`, 72],
+    [t("showcase.goals.houseDeposit"), `${t("showcase.goals.inTime")} ${t("showcase.goals.houseEta")}`, 41],
+    [t("showcase.goals.masters"), `${t("showcase.goals.inTime")} ${t("showcase.goals.mastersEta")}`, 58],
   ];
   const icons = [Plane, Home, GraduationCap];
   return (
@@ -204,7 +215,9 @@ function GoalsScreen() {
       <div className="grid grid-cols-2 gap-2">
         <Tile className="min-w-0 p-2.5">
           <p className="truncate text-[7px] uppercase tracking-[0.14em] text-white/35">{t("showcase.goals.today")}</p>
-          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">6a 7m</p>
+          <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight">
+            {t("showcase.goals.todayValue")}
+          </p>
           <p className="mt-1 text-[8px] text-white/40">{t("showcase.goals.ofFreedom")}</p>
         </Tile>
         <Tile className="min-w-0 p-2.5">
@@ -212,7 +225,7 @@ function GoalsScreen() {
             <Target className="h-2.5 w-2.5 shrink-0" /> {t("showcase.goals.scenario")}
           </p>
           <p className="mt-1.5 truncate font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
-            11a 2m
+            {t("showcase.goals.scenarioValue")}
           </p>
           <p className="mt-1 text-[8px] text-white/40">{t("showcase.goals.inFiveYears")}</p>
         </Tile>
@@ -492,7 +505,7 @@ export function IphoneShowcase() {
   const Screen = current.render;
 
   return (
-    <section id="scopri" className="relative bg-[oklch(0.09_0.01_260)]">
+    <section id="scopri" className="relative bg-black">
       <div ref={wrapperRef} style={{ height: `calc(${SCREEN_KEYS.length * 35}vh + 100vh)` }}>
         <div className="sticky top-0 flex h-screen items-center overflow-hidden px-4 pt-24 pb-16 md:px-8 md:pt-36 md:pb-32">
           <div className="pointer-events-none absolute inset-0 -z-10">
