@@ -4,6 +4,8 @@ import { Search, LogOut, Eye, EyeOff } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import yearsLogo from "@/assets/years-logo.webp";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
+
 import { useI18n } from "@/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
