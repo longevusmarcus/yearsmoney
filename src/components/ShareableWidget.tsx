@@ -70,45 +70,81 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
         transition={{ delay: 0.1, type: "spring", damping: 20 }}
         className="w-full max-w-sm"
       >
-        {/* The shareable widget card */}
-        <div 
+        {/* The shareable widget card.
+            Everything here is kept html2canvas-safe: sRGB hex instead of oklch, no
+            backdrop-filter, and no background-clip:text — html2canvas renders none of
+            those, and the download is the whole point of this card. The YEARS ramp is
+            carried by real gradient elements instead. */}
+        <div
           ref={widgetRef}
-          className="bg-gradient-to-br from-card via-card to-muted/30 rounded-3xl p-8 border border-border/50 shadow-2xl"
+          className="relative overflow-hidden rounded-3xl border border-white/10 p-8 shadow-2xl"
+          style={{ backgroundColor: "#08080b" }}
         >
-          {/* Top accent line */}
-          <div className="w-16 h-0.5 bg-gradient-to-r from-foreground/20 to-transparent mb-8" />
-          
-          {/* Main number */}
-          <div className="mb-8">
-            <p className="text-7xl font-extralight tracking-tight text-foreground leading-none">
-              {formatted.value}
-            </p>
-            <p className="text-lg font-light text-muted-foreground mt-2 tracking-wide">
-              {formatted.unit} of freedom
-            </p>
-          </div>
+          {/* Ambient blooms, echoing the app's background field */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full"
+            style={{ background: "radial-gradient(closest-side, rgba(251,124,0,0.22), transparent 70%)" }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-24 -right-12 h-64 w-64 rounded-full"
+            style={{ background: "radial-gradient(closest-side, rgba(130,63,235,0.26), transparent 70%)" }}
+          />
 
-          {/* Divider */}
-          <div className="h-px bg-border/50 mb-6" />
+          <div className="relative">
+            {/* Top accent line — the violet-to-gold ramp */}
+            <div
+              className="mb-8 h-0.5 w-16 rounded-full"
+              style={{ background: "linear-gradient(90deg, #823feb, #ff992b)" }}
+            />
 
-          {/* Monthly gain */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-light text-foreground">
-              +{monthlyFormatted.value}
-            </span>
-            <span className="text-sm text-muted-foreground font-light">
-              {monthlyFormatted.unit}/month
-            </span>
-          </div>
+            {/* Main number */}
+            <div className="mb-8">
+              {/* Explicit line-height: html2canvas lays out `leading-none` tighter than the
+                  browser does, which collapsed the gap to the label in the exported PNG. */}
+              <p
+                className="font-display text-7xl tracking-tight"
+                style={{ color: "#f9f7fe", lineHeight: 1.12 }}
+              >
+                {formatted.value}
+              </p>
+              <p
+                className="mt-3 text-lg font-light tracking-wide"
+                style={{ color: "#fbdd67", lineHeight: 1.4 }}
+              >
+                {formatted.unit} of freedom
+              </p>
+            </div>
 
-          {/* Bottom branding */}
-          <div className="mt-10 flex items-center justify-between">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
-              Time Wealth
-            </p>
-            <p className="text-xs font-cursive italic text-muted-foreground/60">
-              Years
-            </p>
+            {/* Divider */}
+            <div className="mb-6 h-px" style={{ backgroundColor: "rgba(255,255,255,0.10)" }} />
+
+            {/* Monthly gain */}
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-2xl" style={{ color: "#c97dfc" }}>
+                +{monthlyFormatted.value}
+              </span>
+              <span className="text-sm font-light" style={{ color: "rgba(255,255,255,0.45)" }}>
+                {monthlyFormatted.unit}/month
+              </span>
+            </div>
+
+            {/* Bottom branding */}
+            <div className="mt-10 flex items-center justify-between">
+              <p
+                className="text-[10px] uppercase tracking-[0.2em]"
+                style={{ color: "rgba(255,255,255,0.40)" }}
+              >
+                Time Wealth
+              </p>
+              <p
+                className="font-cormorant text-base italic"
+                style={{ color: "rgba(255,255,255,0.55)" }}
+              >
+                Years
+              </p>
+            </div>
           </div>
         </div>
 
