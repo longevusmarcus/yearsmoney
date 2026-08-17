@@ -232,7 +232,11 @@ IMPORTANT:
     }),
   });
 
-  if (!response.ok) throw new Error(`AI error: ${response.status}`);
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    console.error(`[AI] gateway error ${response.status}: ${detail.slice(0, 500)}`);
+    throw new Error(`AI error: ${response.status}`);
+  }
 
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content;
