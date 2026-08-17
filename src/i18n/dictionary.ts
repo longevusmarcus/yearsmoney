@@ -27,6 +27,7 @@ const it = {
   nav: {
     calculate: "Calcola",
     calculateMobile: "Calcola il tuo tempo",
+    join: "Entra",
   },
 
   hero: {
@@ -895,6 +896,7 @@ const en: typeof it = {
   nav: {
     calculate: "Calculate",
     calculateMobile: "Calculate your time",
+    join: "Join",
   },
 
   hero: {
