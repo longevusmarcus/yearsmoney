@@ -4,6 +4,8 @@ import { Search, LogOut, Eye, EyeOff } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import yearsLogo from "@/assets/years-logo.webp";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n } from "@/i18n/I18nProvider";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Calcola() {
   return <MobileApp />;
@@ -32,6 +34,7 @@ function MobileApp() {
 /* ================== AUTH ================== */
 
 function AuthScreen() {
+  const { t } = useI18n();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,7 +59,7 @@ function AuthScreen() {
         if (error) throw error;
       }
     } catch (e: any) {
-      setErr(e?.message ?? "Errore");
+      setErr(e?.message ?? t("calcola.genericError"));
     } finally {
       setBusy(false);
     }
@@ -68,25 +71,28 @@ function AuthScreen() {
       provider: "google",
       options: { redirectTo: `${window.location.origin}/calcola` },
     });
-    if (error) setErr(error.message || "Errore Google");
+    if (error) setErr(error.message || t("calcola.googleError"));
   };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       <BgBlobs />
       <div className="relative z-10 mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-10">
-        <div className="mb-8 flex items-center gap-2.5">
-          <img src={yearsLogo} alt="Logo YEARS" className="h-11 w-11 object-contain" />
-          <span className="font-grotesk text-xl tracking-[0.28em]">YEARS</span>
+        <div className="mb-8 flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5">
+            <img src={yearsLogo} alt={t("common.logoAlt")} className="h-11 w-11 object-contain" />
+            <span className="font-grotesk text-xl tracking-[0.28em]">YEARS</span>
+          </div>
+          <LanguageSwitcher />
         </div>
 
         <h1 className="font-grotesk text-3xl font-bold leading-tight">
-          {mode === "signin" ? "Bentornato." : "Crea il tuo profilo."}
+          {mode === "signin" ? t("calcola.welcomeBack") : t("calcola.createProfile")}
         </h1>
         <p className="mt-2 text-sm text-white/60">
           {mode === "signin"
-            ? "Accedi per aprire il tuo simulatore."
-            : "Un account per salvare i tuoi calcoli e scenari."}
+            ? t("calcola.signInSub")
+            : t("calcola.signUpSub")}
         </p>
 
         <button
@@ -94,12 +100,12 @@ function AuthScreen() {
           className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-full bg-white px-5 py-3.5 text-sm font-medium text-black transition-transform hover:-translate-y-0.5"
         >
           <GoogleIcon />
-          Continua con Google
+          {t("calcola.continueGoogle")}
         </button>
 
         <div className="my-6 flex items-center gap-3 text-[10px] uppercase tracking-widest text-white/40">
           <span className="h-px flex-1 bg-white/10" />
-          oppure
+          {t("calcola.or")}
           <span className="h-px flex-1 bg-white/10" />
         </div>
 
@@ -109,7 +115,7 @@ function AuthScreen() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+placeholder={t("calcola.email")}
             className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-sm text-white placeholder-white/40 outline-none focus:border-white/25"
           />
           <div className="relative">
@@ -119,7 +125,7 @@ function AuthScreen() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+placeholder={t("calcola.password")}
               className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 pr-11 text-sm text-white placeholder-white/40 outline-none focus:border-white/25"
             />
             <button
@@ -140,7 +146,7 @@ function AuthScreen() {
             disabled={busy}
             className="mt-2 inline-flex w-full items-center justify-center rounded-full border border-white/20 px-5 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/5 disabled:opacity-60"
           >
-            {busy ? "…" : mode === "signin" ? "Accedi" : "Crea account"}
+            {busy ? "…" : mode === "signin" ? t("calcola.signIn") : t("calcola.createAccount")}
           </button>
         </form>
 
@@ -151,7 +157,7 @@ function AuthScreen() {
           }}
           className="mt-6 text-center text-xs text-white/50 hover:text-white"
         >
-          {mode === "signin" ? "Non hai un account? Registrati" : "Hai già un account? Accedi"}
+          {mode === "signin" ? t("calcola.noAccount") : t("calcola.haveAccount")}
         </button>
       </div>
     </div>
@@ -183,25 +189,27 @@ function GoogleIcon() {
 
 /* ================== SIMULATOR ================== */
 
-type ItemCost = { label: string; price: number; category: string };
+/** Prices are data; the label and category are resolved per language at render time. */
+type ItemCost = { id: string; price: number; category: string };
 
 const CATALOG: ItemCost[] = [
-  { label: "Caffè al bar", price: 1.5, category: "Quotidiano" },
-  { label: "Cena fuori", price: 35, category: "Uscite" },
-  { label: "Netflix (mese)", price: 15, category: "Abbonamenti" },
-  { label: "Palestra (mese)", price: 45, category: "Abbonamenti" },
-  { label: "iPhone 15 Pro", price: 1200, category: "Elettronica" },
-  { label: "MacBook Air", price: 1500, category: "Elettronica" },
-  { label: "Weekend a Parigi", price: 600, category: "Viaggi" },
-  { label: "Vacanza in Grecia", price: 2000, category: "Viaggi" },
-  { label: "Auto usata", price: 8000, category: "Grandi" },
-  { label: "Auto nuova", price: 25000, category: "Grandi" },
-  { label: "Anticipo casa", price: 40000, category: "Grandi" },
-  { label: "Anno sabbatico", price: 20000, category: "Progetti" },
-  { label: "Master", price: 15000, category: "Progetti" },
+  { id: "coffee", price: 1.5, category: "daily" },
+  { id: "dinner", price: 35, category: "dining" },
+  { id: "netflix", price: 15, category: "subscriptions" },
+  { id: "gym", price: 45, category: "subscriptions" },
+  { id: "iphone", price: 1200, category: "electronics" },
+  { id: "macbook", price: 1500, category: "electronics" },
+  { id: "paris", price: 600, category: "travel" },
+  { id: "greece", price: 2000, category: "travel" },
+  { id: "usedCar", price: 8000, category: "big" },
+  { id: "newCar", price: 25000, category: "big" },
+  { id: "houseDeposit", price: 40000, category: "big" },
+  { id: "sabbatical", price: 20000, category: "projects" },
+  { id: "masters", price: 15000, category: "projects" },
 ];
 
 function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string }) {
+  const { t } = useI18n();
   const [reddito, setReddito] = useState(2200);
   const [spese, setSpese] = useState(1600);
   const [risparmi, setRisparmi] = useState(15000);
@@ -220,23 +228,25 @@ function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string 
     const s = q.trim().toLowerCase();
     if (!s) return CATALOG;
     return CATALOG.filter(
-      (i) => i.label.toLowerCase().includes(s) || i.category.toLowerCase().includes(s),
+      (i) =>
+        t(`calcola.items.${i.id}`).toLowerCase().includes(s) ||
+        t(`calcola.categories.${i.category}`).toLowerCase().includes(s),
     );
-  }, [q]);
+  }, [q, t]);
 
   const timeFor = (price: number) => {
     if (valoreOra <= 0) return { hours: 0, label: "—" };
     const hours = price / valoreOra;
-    if (hours < 1) return { hours, label: `${Math.round(hours * 60)} min` };
-    if (hours < 8) return { hours, label: `${hours.toFixed(1)} ore` };
+    if (hours < 1) return { hours, label: `${Math.round(hours * 60)} ${t("calcola.units.min")}` };
+    if (hours < 8) return { hours, label: `${hours.toFixed(1)} ${t("calcola.units.hours")}` };
     const days = hours / 8;
-    if (days < 5) return { hours, label: `${days.toFixed(1)} giornate` };
+    if (days < 5) return { hours, label: `${days.toFixed(1)} ${t("calcola.units.days")}` };
     const weeks = days / 5;
-    if (weeks < 8) return { hours, label: `${weeks.toFixed(1)} settimane` };
+    if (weeks < 8) return { hours, label: `${weeks.toFixed(1)} ${t("calcola.units.weeks")}` };
     const months = weeks / 4.33;
-    if (months < 18) return { hours, label: `${months.toFixed(1)} mesi` };
+    if (months < 18) return { hours, label: `${months.toFixed(1)} ${t("calcola.units.months")}` };
     const years = months / 12;
-    return { hours, label: `${years.toFixed(1)} anni` };
+    return { hours, label: `${years.toFixed(1)} ${t("calcola.units.years")}` };
   };
 
   return (
@@ -245,52 +255,59 @@ function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string 
       <div className="relative z-10 mx-auto max-w-md px-5 pb-24 pt-6">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src={yearsLogo} alt="Logo YEARS" className="h-9 w-9 object-contain" />
+            <img src={yearsLogo} alt={t("common.logoAlt")} className="h-9 w-9 object-contain" />
             <span className="font-grotesk text-sm tracking-[0.28em]">YEARS</span>
           </div>
-          <button
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <button
             onClick={onSignOut}
             className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/70 hover:text-white"
           >
             <LogOut className="h-3.5 w-3.5" />
-            Esci
-          </button>
+            {t("calcola.signOut")}
+            </button>
+          </div>
         </header>
 
         <div className="mt-1 text-[11px] text-white/40">{email}</div>
 
         <h1 className="mt-6 font-grotesk text-3xl font-bold leading-tight">
-          Quanto tempo comprano i tuoi soldi?
+          {t("calcola.title")}
         </h1>
 
         <section className="mt-6 space-y-4 rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl">
           <NumberField
-            label="Reddito mensile netto"
+label={t("calcola.incomeLabel")}
             value={reddito}
             onChange={setReddito}
             suffix="€"
           />
-          <NumberField label="Spese mensili" value={spese} onChange={setSpese} suffix="€" />
-          <NumberField label="Risparmi attuali" value={risparmi} onChange={setRisparmi} suffix="€" />
+          <NumberField label={t("calcola.expensesLabel")} value={spese} onChange={setSpese} suffix="€" />
+          <NumberField label={t("calcola.savingsLabel")} value={risparmi} onChange={setRisparmi} suffix="€" />
         </section>
 
         <section className="mt-4 grid grid-cols-2 gap-3">
-          <Metric label="Survival Time" value={`${survY}a ${survM}m`} tone="cold" />
-          <Metric label="Valore ora" value={`€ ${valoreOra.toFixed(1)}`} tone="warm" />
-          <Metric label="Risparmio/mese" value={`€ ${risparmioMese}`} tone="warm" />
-          <Metric label="Optional/anno" value={`€ ${risparmioMese * 12}`} tone="cold" />
+          <Metric
+            label={t("calcola.survivalTime")}
+            value={`${survY}${t("common.yearShort")} ${survM}${t("common.monthShort")}`}
+            tone="cold"
+          />
+          <Metric label={t("calcola.hourValue")} value={`€ ${valoreOra.toFixed(1)}`} tone="warm" />
+          <Metric label={t("calcola.savingPerMonth")} value={`€ ${risparmioMese}`} tone="warm" />
+          <Metric label={t("calcola.optionalPerYear")} value={`€ ${risparmioMese * 12}`} tone="cold" />
         </section>
 
         <section className="mt-8">
           <div className="mb-3 text-xs uppercase tracking-widest text-white/40">
-            Cosa vuoi comprare?
+            {t("calcola.whatToBuy")}
           </div>
           <div className="relative">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Cerca: caffè, iPhone, viaggio…"
+placeholder={t("calcola.searchPlaceholder")}
               className="w-full rounded-full border border-white/10 bg-white/[0.04] py-3.5 pl-11 pr-4 text-sm text-white placeholder-white/40 outline-none focus:border-white/25"
             />
           </div>
@@ -298,10 +315,10 @@ function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string 
           <div className="mt-4 space-y-2">
             <AnimatePresence initial={false}>
               {filtered.map((it) => {
-                const t = timeFor(it.price);
+                const cost = timeFor(it.price);
                 return (
                   <motion.div
-                    key={it.label}
+                    key={it.id}
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
@@ -309,13 +326,14 @@ function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string 
                     className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3"
                   >
                     <div>
-                      <div className="text-sm text-white">{it.label}</div>
+                      <div className="text-sm text-white">{t(`calcola.items.${it.id}`)}</div>
                       <div className="text-[11px] uppercase tracking-widest text-white/40">
-                        {it.category} · € {it.price.toLocaleString("it-IT")}
+                        {t(`calcola.categories.${it.category}`)} · €{" "}
+                        {it.price.toLocaleString(t("common.locale"))}
                       </div>
                     </div>
                     <div className="logo-gradient-text font-grotesk text-right text-lg font-bold">
-                      {t.label}
+                      {cost.label}
                     </div>
                   </motion.div>
                 );
@@ -323,7 +341,7 @@ function Simulator({ onSignOut, email }: { onSignOut: () => void; email: string 
             </AnimatePresence>
             {filtered.length === 0 && (
               <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-6 text-center text-sm text-white/50">
-                Nessun risultato per "{q}"
+                {t("calcola.noResults")} "{q}"
               </div>
             )}
           </div>
