@@ -6,7 +6,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import VoiceBubbleLogo from "@/components/VoiceBubbleLogo";
+import yearsLogo from "@/assets/years-logo.webp";
 import { Star } from "lucide-react";
 
 const Auth = () => {
@@ -169,10 +169,11 @@ const Auth = () => {
       </div>
 
       <div className="w-full max-w-md relative">
-        {/* Voice bubble logo and branding */}
+        {/* Brand logo type and tagline */}
         <div className="text-center mb-4">
-          <div className="mb-3 flex justify-center animate-in fade-in zoom-in duration-700">
-            <VoiceBubbleLogo size="sm" animated={true} />
+          <div className="mb-3 flex items-center justify-center animate-in fade-in zoom-in duration-700">
+            <img src={yearsLogo} alt="YEARS" className="h-14 w-14 md:h-16 md:w-16 object-contain" />
+            <span className="font-cormorant italic text-4xl text-white -ml-3">ears</span>
           </div>
           <h1
             className="text-2xl font-cursive text-foreground tracking-tight mb-1 animate-in fade-in slide-in-from-bottom-4 duration-700"
