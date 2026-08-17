@@ -383,7 +383,7 @@ function RisksScreen() {
       <div className="grid grid-cols-2 gap-2.5">
         <Tile className="p-3">
           <p className="text-[8px] text-white/40">{t("showcase.risks.ifUp")}</p>
-          <p className="mt-1 font-grotesk text-xl font-bold tracking-tight text-[oklch(0.75_0.19_150)]">
+          <p className="logo-gradient-text mt-1 font-grotesk text-xl font-bold tracking-tight">
             +8053
           </p>
           <p className="text-[8px] text-white/35">{t("showcase.risks.hoursGained")}</p>
