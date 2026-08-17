@@ -341,7 +341,7 @@ function FullBleedStory({
   return (
     <section
       id={id}
-      className="relative h-[100svh] min-h-[640px] w-full overflow-hidden md:min-h-[92vh]"
+      className="relative h-[100svh] w-full overflow-hidden md:min-h-[92vh]"
     >
       <picture>
         {shownImgDesktop && <source media="(min-width: 768px)" srcSet={shownImgDesktop} />}
@@ -364,7 +364,7 @@ function FullBleedStory({
       <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`} />
 
       <div
-        className={`relative mx-auto flex h-[100svh] min-h-[640px] max-w-6xl flex-col px-6 pt-20 pb-14 md:min-h-[92vh] md:pt-36 md:pb-20 ${
+        className={`relative mx-auto flex h-[100svh] max-w-6xl flex-col px-6 pt-12 pb-8 md:min-h-[92vh] md:pt-36 md:pb-20 ${
           align === "left" ? "items-start text-left" : "items-center text-center"
         }`}
       >
