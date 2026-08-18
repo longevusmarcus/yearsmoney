@@ -1477,6 +1477,9 @@ const en: typeof it = {
       errTooVague: "No price found — try being more specific",
       errGeneric: "Failed to find a price. Try a more specific search.",
       afterPurchase: "After purchase",
+      perHourEarned: "/hour earned",
+      eachSpentPre: "Each",
+      eachSpentPost: "spent = 1 working day to earn back",
     },
     risks: {
       title: "Risks",
