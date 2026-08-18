@@ -103,7 +103,8 @@ const Purchase = () => {
         },
         body: JSON.stringify({
           query,
-          type: "product"
+          type: "product",
+          lang
         }),
       });
 
@@ -232,7 +233,7 @@ const Purchase = () => {
         /* Search Form */
         <div className="px-6 space-y-4">
           <div>
-            <label className="text-xs text-muted-foreground uppercase tracking-wider">What do you want to buy?</label>
+            <label className="text-xs text-muted-foreground uppercase tracking-wider">{t("app.purchase.whatToBuy")}</label>
             <div className="relative mt-2">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input

@@ -156,6 +156,7 @@ const Home = () => {
           body: JSON.stringify({
             messages: newMessages,
             type: "chat",
+            lang,
             context
           }),
         }
