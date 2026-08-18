@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AuthModal from "@/components/AuthModal";
 import { useMsx } from "@/msx/MsxBootGate";
+import { useAuthUser } from "@/hooks/useAuthUser";
+
 
 interface Investment {
   id: string;
@@ -41,7 +43,9 @@ const Risks = () => {
   const { toast } = useToast();
   const { isMsx, entitled: msxEntitled } = useMsx();
   const suppressAuth = isMsx || msxEntitled;
-  const [user, setUser] = useState<any>(null);
+  const { user: authUser, isLoading: authLoading } = useAuthUser();
+  const user = authUser;
+
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
   const [isLoadingInvestments, setIsLoadingInvestments] = useState(true);
@@ -72,33 +76,17 @@ const Risks = () => {
   // Life buffer in months
   const lifeBufferMonths = expenses > 0 ? netWorth / expenses : 0;
 
-  // Check auth and load investments
+  // Load investments once the shared auth state settles
   useEffect(() => {
-    // Set up auth listener FIRST
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      if (session?.user) {
-        setTimeout(() => loadInvestments(), 0);
-      } else {
-        setInvestments([]);
-        setIsLoadingInvestments(false);
-      }
-    });
+    if (authLoading) return;
+    if (authUser) {
+      loadInvestments();
+    } else {
+      setInvestments([]);
+      setIsLoadingInvestments(false);
+    }
+  }, [authUser, authLoading]);
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-      if (session?.user) {
-        loadInvestments();
-      } else {
-        setIsLoadingInvestments(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const loadInvestments = async () => {
     setIsLoadingInvestments(true);

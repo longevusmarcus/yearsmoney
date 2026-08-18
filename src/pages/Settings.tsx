@@ -8,36 +8,26 @@ import { PageHeader } from "@/components/PageHeader";
 import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useAuthUser } from "@/hooks/useAuthUser";
+
 
 const Settings = () => {
   const navigate = useNavigate();
   const { t } = useI18n();
   const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
+  const { user, isLoading: authLoading } = useAuthUser();
   const [leaderboardPublic, setLeaderboardPublic] = useState(false);
   const [loadingPreference, setLoadingPreference] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchLeaderboardPreference(session.user.id);
-      } else {
-        setLoadingPreference(false);
-      }
-    });
+    if (authLoading) return;
+    if (user) {
+      fetchLeaderboardPreference(user.id);
+    } else {
+      setLoadingPreference(false);
+    }
+  }, [user, authLoading]);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchLeaderboardPreference(session.user.id);
-      } else {
-        setLoadingPreference(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const fetchLeaderboardPreference = async (userId: string) => {
     const { data, error } = await supabase
