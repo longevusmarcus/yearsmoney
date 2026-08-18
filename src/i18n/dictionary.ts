@@ -571,6 +571,9 @@ const it = {
       dayShort: "g",
       monthAbbr: "mesi",
       advisorPlaceholder: "Chiedi sul tuo tempo…",
+      insightSavePre: "Ogni mese che risparmi",
+      insightSaveMid: "guadagni",
+      insightSaveSuffix: "di vita opzionale.",
     },
     purchase: {
       title: "Acquisto",
@@ -587,6 +590,9 @@ const it = {
       errTooVague: "Nessun prezzo trovato: prova a essere più specifico",
       errGeneric: "Ricerca del prezzo non riuscita. Prova una ricerca più specifica.",
       afterPurchase: "Dopo l'acquisto",
+      perHourEarned: "/ora guadagnati",
+      eachSpentPre: "Ogni",
+      eachSpentPost: "spesi = 1 giornata di lavoro per recuperarli",
     },
     risks: {
       title: "Rischi",
@@ -1452,6 +1458,9 @@ const en: typeof it = {
       dayShort: "d",
       monthAbbr: "mo",
       advisorPlaceholder: "Ask about your time…",
+      insightSavePre: "Every month you save",
+      insightSaveMid: "you gain",
+      insightSaveSuffix: "of optional life.",
     },
     purchase: {
       title: "Purchase",
@@ -1468,6 +1477,9 @@ const en: typeof it = {
       errTooVague: "No price found — try being more specific",
       errGeneric: "Failed to find a price. Try a more specific search.",
       afterPurchase: "After purchase",
+      perHourEarned: "/hour earned",
+      eachSpentPre: "Each",
+      eachSpentPost: "spent = 1 working day to earn back",
     },
     risks: {
       title: "Risks",

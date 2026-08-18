@@ -220,10 +220,10 @@ const Purchase = () => {
           <div className="bg-card border border-border rounded-2xl p-4">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("app.purchase.rate")}</p>
             <p className="text-lg font-light text-foreground">
-              ${dollarPerHour.toFixed(2)}/hour earned
+              ${dollarPerHour.toFixed(2)}{t("app.purchase.perHourEarned")}
             </p>
             <p className="text-xs text-muted-foreground font-light mt-1">
-              Each ${Math.round(freeCash / WORKING_DAYS_PER_MONTH)} spent = 1 working day to earn back
+              {t("app.purchase.eachSpentPre")} ${Math.round(freeCash / WORKING_DAYS_PER_MONTH)} {t("app.purchase.eachSpentPost")}
             </p>
           </div>
         </div>
