@@ -146,7 +146,7 @@ const it = {
 
   sections: {
     sky: {
-      title: "Il tempo, prima del denaro",
+      title: "Il tempo,\nprima del denaro",
       sub: "YEARS traduce quello che hai, guadagni e spendi in anni di libertà. Una misura umana, non un saldo.",
       cta: "Prova il calcolatore",
       cardLabel: "I tuoi anni",
