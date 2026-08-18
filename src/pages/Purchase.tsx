@@ -360,7 +360,6 @@ const Purchase = () => {
               {categoryIcons[result.category || "product"]}
               {result.category?.replace("_", " ") || "product"}
             </span>
-            <span className="text-xs text-muted-foreground">via {result.searchMethod}</span>
           </div>
 
           {/* Gallery of listings */}
