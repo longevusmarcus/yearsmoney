@@ -571,6 +571,9 @@ const it = {
       dayShort: "g",
       monthAbbr: "mesi",
       advisorPlaceholder: "Chiedi sul tuo tempo…",
+      insightSavePre: "Ogni mese che risparmi",
+      insightSaveMid: "guadagni",
+      insightSaveSuffix: "di vita opzionale.",
     },
     purchase: {
       title: "Acquisto",
