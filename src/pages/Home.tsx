@@ -442,11 +442,11 @@ const Home = () => {
               <TrendingUp className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div>
                 <p className="text-sm font-light text-foreground">
-                  Every month you save ${monthlySavings.toLocaleString()}, you gain{" "}
+                  {t("app.home.insightSavePre")} ${monthlySavings.toLocaleString()}, {t("app.home.insightSaveMid")}{" "}
                   <span className="font-medium">
                     {Math.round((monthlySavings / monthlyExpenses) * 30 * 24).toLocaleString()} {t("app.home.hours")}
                   </span>{" "}
-                  of optional life.
+                  {t("app.home.insightSaveSuffix")}
                 </p>
               </div>
             </div>
