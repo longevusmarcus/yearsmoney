@@ -271,7 +271,6 @@ function SkyStory() {
     <FullBleedStory
       id="il-tempo-e-tuo"
       img={womanSky}
-      imgDesktop={womanSkyDesktop}
       alt={t("sections.sky.imgAlt")}
       title={t("sections.sky.title")}
       sub={t("sections.sky.sub")}
