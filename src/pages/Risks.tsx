@@ -41,7 +41,9 @@ const Risks = () => {
   const { toast } = useToast();
   const { isMsx, entitled: msxEntitled } = useMsx();
   const suppressAuth = isMsx || msxEntitled;
-  const [user, setUser] = useState<any>(null);
+  const { user: authUser, isLoading: authLoading } = useAuthUser();
+  const user = authUser;
+
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
   const [isLoadingInvestments, setIsLoadingInvestments] = useState(true);
