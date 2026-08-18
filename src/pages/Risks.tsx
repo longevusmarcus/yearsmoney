@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AuthModal from "@/components/AuthModal";
 import { useMsx } from "@/msx/MsxBootGate";
+import { useAuthUser } from "@/hooks/useAuthUser";
+
 
 interface Investment {
   id: string;
