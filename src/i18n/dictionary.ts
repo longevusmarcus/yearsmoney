@@ -590,6 +590,9 @@ const it = {
       errTooVague: "Nessun prezzo trovato: prova a essere più specifico",
       errGeneric: "Ricerca del prezzo non riuscita. Prova una ricerca più specifica.",
       afterPurchase: "Dopo l'acquisto",
+      perHourEarned: "/ora guadagnati",
+      eachSpentPre: "Ogni",
+      eachSpentPost: "spesi = 1 giornata di lavoro per recuperarli",
     },
     risks: {
       title: "Rischi",
