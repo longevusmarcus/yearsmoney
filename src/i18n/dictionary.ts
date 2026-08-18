@@ -40,7 +40,7 @@ const it = {
     subSecondary:
       "Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.",
     ctaPrimary: "Prova il calcolatore",
-    ctaSecondary: "Guarda come funziona",
+    ctaSecondary: "Guarda la demo",
     qrBadge: "Solo da mobile",
     qrTitle: "Scansiona per calcolare",
     qrSub: "Il simulatore è pensato per il tuo telefono. Inquadra il codice con la fotocamera per aprirlo.",
@@ -931,7 +931,7 @@ const en: typeof it = {
     sub: "YEARS shows you how long you could live on what you have today, and helps you plan for more freedom tomorrow.",
     subSecondary: "So you can handle your money better and feel calmer about your choices.",
     ctaPrimary: "Try the calculator",
-    ctaSecondary: "See how it works",
+    ctaSecondary: "Watch the demo",
     qrBadge: "Mobile only",
     qrTitle: "Scan to calculate",
     qrSub: "The simulator is built for your phone. Point your camera at the code to open it.",
