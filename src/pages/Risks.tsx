@@ -72,33 +72,17 @@ const Risks = () => {
   // Life buffer in months
   const lifeBufferMonths = expenses > 0 ? netWorth / expenses : 0;
 
-  // Check auth and load investments
+  // Load investments once the shared auth state settles
   useEffect(() => {
-    // Set up auth listener FIRST
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      if (session?.user) {
-        setTimeout(() => loadInvestments(), 0);
-      } else {
-        setInvestments([]);
-        setIsLoadingInvestments(false);
-      }
-    });
+    if (authLoading) return;
+    if (authUser) {
+      loadInvestments();
+    } else {
+      setInvestments([]);
+      setIsLoadingInvestments(false);
+    }
+  }, [authUser, authLoading]);
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-      if (session?.user) {
-        loadInvestments();
-      } else {
-        setIsLoadingInvestments(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const loadInvestments = async () => {
     setIsLoadingInvestments(true);
