@@ -374,7 +374,7 @@ function FullBleedStory({
           {title}
         </h2>
         <p
-          className="mt-3 max-w-xl text-lg leading-relaxed text-white/90 md:mt-6 md:text-xl"
+          className="mt-6 max-w-xl text-lg leading-relaxed text-white/90 md:text-xl"
           style={{ textShadow: "0 1px 18px rgba(0,0,0,0.5)" }}
         >
           {sub}
