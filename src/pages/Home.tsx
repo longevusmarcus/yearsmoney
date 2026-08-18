@@ -16,7 +16,7 @@ interface Message {
 }
 
 const Home = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   // Use the synced finances hook
   const { finances, updateFinances, isLoading: financesLoading, isSyncing, user } = useUserFinances();
   const [showAuthModal, setShowAuthModal] = useState(false);

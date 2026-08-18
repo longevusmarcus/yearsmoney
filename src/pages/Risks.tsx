@@ -37,7 +37,7 @@ interface RiskAnalysis {
 }
 
 const Risks = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { toast } = useToast();
   const { isMsx, entitled: msxEntitled } = useMsx();
   const suppressAuth = isMsx || msxEntitled;

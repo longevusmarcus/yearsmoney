@@ -40,7 +40,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const Purchase = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [query, setQuery] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
