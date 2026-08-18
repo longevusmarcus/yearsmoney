@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthUser } from "./useAuthUser";
 
 interface UserFinances {
   monthlyIncome: number;
@@ -15,95 +16,64 @@ export const useUserFinances = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const { user, isLoading: authLoading } = useAuthUser();
 
-  // Check auth state and load data
+  // Load (or migrate) the numbers whenever the shared auth state settles
   useEffect(() => {
-    const loadFinances = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
+    if (authLoading) return;
 
-      if (session?.user) {
-        // Try to load from database
-        const { data, error } = await supabase
-          .from("user_finances")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .single();
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
 
-        if (data && !error) {
-          const dbFinances = {
-            monthlyIncome: Number(data.monthly_income),
-            monthlyExpenses: Number(data.monthly_expenses),
-            netWorth: Number(data.net_worth),
-          };
-          setFinances(dbFinances);
-          // Sync to localStorage as fallback
-          localStorage.setItem("tc_income", String(dbFinances.monthlyIncome));
-          localStorage.setItem("tc_expenses", String(dbFinances.monthlyExpenses));
-          localStorage.setItem("tc_networth", String(dbFinances.netWorth));
-        } else {
-          // If no DB data, check if there's localStorage data to migrate
-          const localIncome = Number(localStorage.getItem("tc_income")) || 0;
-          const localExpenses = Number(localStorage.getItem("tc_expenses")) || 0;
-          const localNetWorth = Number(localStorage.getItem("tc_networth")) || 0;
-          
-          if (localIncome > 0 || localExpenses > 0 || localNetWorth > 0) {
-            // Migrate localStorage data to database
-            await supabase.from("user_finances").upsert({
-              user_id: session.user.id,
-              monthly_income: localIncome,
-              monthly_expenses: localExpenses,
-              net_worth: localNetWorth,
-            });
-          }
+    let cancelled = false;
+
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("user_finances")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (data && !error) {
+        const dbFinances = {
+          monthlyIncome: Number(data.monthly_income),
+          monthlyExpenses: Number(data.monthly_expenses),
+          netWorth: Number(data.net_worth),
+        };
+        setFinances(dbFinances);
+        localStorage.setItem("tc_income", String(dbFinances.monthlyIncome));
+        localStorage.setItem("tc_expenses", String(dbFinances.monthlyExpenses));
+        localStorage.setItem("tc_networth", String(dbFinances.netWorth));
+      } else {
+        // Fresh account: carry over the numbers computed during onboarding.
+        const localIncome = Number(localStorage.getItem("tc_income")) || 0;
+        const localExpenses = Number(localStorage.getItem("tc_expenses")) || 0;
+        const localNetWorth = Number(localStorage.getItem("tc_networth")) || 0;
+
+        if (localIncome > 0 || localExpenses > 0 || localNetWorth > 0) {
+          setFinances({ monthlyIncome: localIncome, monthlyExpenses: localExpenses, netWorth: localNetWorth });
+          await supabase.from("user_finances").upsert({
+            user_id: user.id,
+            monthly_income: localIncome,
+            monthly_expenses: localExpenses,
+            net_worth: localNetWorth,
+          });
         }
       }
-      setIsLoading(false);
+      if (!cancelled) setIsLoading(false);
     };
 
-    loadFinances();
+    void load();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user && event === "SIGNED_IN") {
-        // Reload finances when user signs in
-        const { data } = await supabase
-          .from("user_finances")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .single();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, authLoading]);
 
-        if (data) {
-          const dbFinances = {
-            monthlyIncome: Number(data.monthly_income),
-            monthlyExpenses: Number(data.monthly_expenses),
-            netWorth: Number(data.net_worth),
-          };
-          setFinances(dbFinances);
-          localStorage.setItem("tc_income", String(dbFinances.monthlyIncome));
-          localStorage.setItem("tc_expenses", String(dbFinances.monthlyExpenses));
-          localStorage.setItem("tc_networth", String(dbFinances.netWorth));
-        } else {
-          // Fresh account: carry over the numbers computed during onboarding.
-          const localIncome = Number(localStorage.getItem("tc_income")) || 0;
-          const localExpenses = Number(localStorage.getItem("tc_expenses")) || 0;
-          const localNetWorth = Number(localStorage.getItem("tc_networth")) || 0;
-          if (localIncome > 0 || localExpenses > 0 || localNetWorth > 0) {
-            setFinances({ monthlyIncome: localIncome, monthlyExpenses: localExpenses, netWorth: localNetWorth });
-            await supabase.from("user_finances").upsert({
-              user_id: session.user.id,
-              monthly_income: localIncome,
-              monthly_expenses: localExpenses,
-              net_worth: localNetWorth,
-            });
-          }
-        }
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const updateFinances = async (newFinances: Partial<UserFinances>) => {
     const updated = { ...finances, ...newFinances };
