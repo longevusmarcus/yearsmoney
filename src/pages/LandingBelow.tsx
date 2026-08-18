@@ -369,7 +369,7 @@ function FullBleedStory({
         }`}
       >
         <h2
-          className="font-display text-[2.6rem] leading-[1.02] whitespace-nowrap text-white md:whitespace-pre-line md:text-[4.25rem]"
+          className="font-display text-[2.6rem] leading-[1.02] text-white md:whitespace-pre-line md:text-[4.25rem]"
           style={{ textShadow: "0 2px 30px rgba(0,0,0,0.55)" }}
         >
           {title}
