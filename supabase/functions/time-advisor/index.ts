@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { type, messages, context, query, price, asset, amount, hourlyLifeCost, yearlyOptionalHours, income, expenses } = await req.json();
+    const { type, messages, lang = "it", context, query, price, asset, amount, hourlyLifeCost, yearlyOptionalHours, income, expenses } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -93,6 +93,11 @@ Consider the user has ${yearlyOptionalHours} optional hours per year and each ho
       default:
         throw new Error("Invalid type");
     }
+
+    const langName = lang === "en" ? "English" : "Italian";
+    systemPrompt += `
+
+IMPORTANT: Write ALL user-facing text (including any JSON string values such as recommendations, titles, descriptions) in ${langName}. Never answer in another language.`;
 
     if (shouldStream) {
       // Streaming response for chat

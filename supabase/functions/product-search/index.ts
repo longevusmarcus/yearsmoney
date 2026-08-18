@@ -169,7 +169,7 @@ async function searchWithSerpAPI(query: string, category: string): Promise<any[]
 }
 
 // Use AI to extract listings - more lenient, get more results
-async function extractListings(query: string, exaResults: any[], serpResults: any[], category: string): Promise<any[]> {
+async function extractListings(query: string, exaResults: any[], serpResults: any[], category: string, lang: string = "it"): Promise<any[]> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
@@ -213,7 +213,8 @@ IMPORTANT:
 - Include a RANGE of prices (luxury to affordable options)
 - Use realistic prices for the category and location
 - If exact price not found, estimate based on similar listings
-- Sort from expensive to cheaper`;
+- Sort from expensive to cheaper
+- Write every "title" and "description" in ${lang === "en" ? "English" : "Italian"}, regardless of the source language`;
 
   console.log(`[AI] Extracting listings...`);
 
@@ -320,7 +321,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query, type } = await req.json();
+    const { query, type, lang = "it" } = await req.json();
     console.log(`\n=== Product Search: ${query} ===`);
 
     if (type === "product") {
@@ -341,7 +342,7 @@ serve(async (req) => {
       
       // Extract from search results
       if (exaResults.length > 0 || serpResults.length > 0) {
-        listings = await extractListings(query, exaResults, serpResults, category);
+        listings = await extractListings(query, exaResults, serpResults, category, lang);
       }
       
       // Fallback if not enough listings

@@ -37,7 +37,7 @@ interface RiskAnalysis {
 }
 
 const Risks = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { toast } = useToast();
   const { isMsx, entitled: msxEntitled } = useMsx();
   const suppressAuth = isMsx || msxEntitled;
@@ -189,6 +189,7 @@ const Risks = () => {
         },
         body: JSON.stringify({
           type: "risk",
+          lang,
           asset: investment.asset_name,
           amount: investment.amount_invested,
           hourlyLifeCost,
@@ -229,7 +230,7 @@ const Risks = () => {
           hours: (investment.amount_invested * lossPercent) / 100 / hourlyLifeCost,
         },
         volatilityLevel: "medium",
-        recommendation: "This investment carries moderate risk. Make sure you can afford to lose this time.",
+        recommendation: t("app.risks.defaultRecommendationFallback"),
       });
     }
 
@@ -422,14 +423,14 @@ const Risks = () => {
                   <div className="flex items-center gap-4 mt-2">
                     <p className="text-xs text-muted-foreground">~{getTotalHoursAtRisk().toFixed(0)}h at risk</p>
                     <p className="text-xs text-muted-foreground">
-                      {(getTotalHoursAtRisk() / (24 * 365)).toFixed(2)} years
+                      {(getTotalHoursAtRisk() / (24 * 365)).toFixed(2)} {t("app.risks.unitYearsLong")}
                     </p>
                   </div>
                   <button
                     onClick={() => fetchPrices(investments.map((inv) => inv.asset_name))}
                     className="mt-3 text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors"
                   >
-                    <RefreshCw className="w-3 h-3" /> {isLoadingPrices ? "Loading..." : "Refresh"}
+                    <RefreshCw className="w-3 h-3" /> {isLoadingPrices ? t("app.risks.loading") : t("app.risks.refresh")}
                   </button>
                 </div>
               </div>

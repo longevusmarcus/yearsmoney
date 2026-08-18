@@ -64,16 +64,16 @@ const Settings = () => {
     if (error) {
       setLeaderboardPublic(!checked);
       toast({
-        title: "Error",
-        description: "Failed to update preference",
+        title: t("app.settings.errorTitle"),
+        description: t("app.settings.errUpdatePreference"),
         variant: "destructive",
       });
     } else {
       toast({
-        title: checked ? "Public name" : "Anonymous",
-        description: checked 
-          ? "Your full name will show on leaderboard" 
-          : "Only 3 letters will show on leaderboard",
+        title: checked ? t("app.settings.publicNameTitle") : t("app.settings.anonymousTitle"),
+        description: checked
+          ? t("app.settings.publicNameDesc")
+          : t("app.settings.anonymousDesc"),
       });
     }
   };
@@ -82,7 +82,7 @@ const Settings = () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast({
-        title: "Error",
+        title: t("app.settings.errorTitle"),
         description: error.message,
         variant: "destructive",
       });
@@ -91,21 +91,21 @@ const Settings = () => {
       localStorage.removeItem("tc_expenses");
       localStorage.removeItem("tc_networth");
       toast({
-        title: "Signed out",
-        description: "You've been signed out successfully",
+        title: t("app.settings.signedOutTitle"),
+        description: t("app.settings.signedOutDesc"),
       });
       navigate("/home");
     }
   };
 
   const handleClearData = () => {
-    if (confirm("Are you sure? This will clear all your saved data.")) {
+    if (confirm(t("app.settings.clearConfirm"))) {
       localStorage.removeItem("tc_income");
       localStorage.removeItem("tc_expenses");
       localStorage.removeItem("tc_networth");
       toast({
-        title: "Data cleared",
-        description: "All your data has been cleared",
+        title: t("app.settings.clearedTitle"),
+        description: t("app.settings.clearedDesc"),
       });
     }
   };
@@ -177,9 +177,9 @@ const Settings = () => {
                     <Trophy className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-light text-foreground">Show full name</p>
+                    <p className="text-sm font-light text-foreground">{t("app.settings.showFullName")}</p>
                     <p className="text-xs text-muted-foreground font-light">
-                      {leaderboardPublic ? "Public" : "Anonymous (3 letters)"}
+                      {leaderboardPublic ? t("app.settings.public") : t("app.settings.anonymousShort")}
                     </p>
                   </div>
                 </div>
