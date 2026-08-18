@@ -23,7 +23,7 @@ const BottomNav = () => {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <div className="max-w-xs mx-auto">
-        <div className="flex justify-between items-center px-4 py-3 bg-card/70 backdrop-blur-xl border border-border/60 rounded-full shadow-[0_18px_60px_-24px_rgba(0,0,0,0.6)]">
+        <div className="flex justify-between items-center px-4 py-3 bg-black/85 backdrop-blur-xl border border-border/60 rounded-full shadow-[0_18px_60px_-24px_rgba(0,0,0,0.6)]">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
