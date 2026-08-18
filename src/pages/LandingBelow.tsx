@@ -14,14 +14,13 @@ import japanImg from "@/assets/example-japan.jpg";
 import phoneImg from "@/assets/example-phone.jpg";
 import fashionImg from "@/assets/example-fashion.jpg";
 import yearsLogo from "@/assets/years-logo.webp";
-import womanSkyAsset from "@/assets/woman-sky.jpg.asset.json";
+import womanSky from "@/assets/woman-sky.jpg";
 import peopleMountain from "@/assets/people-mountain.jpg";
 import peopleHome from "@/assets/people-home.jpg";
 import peopleRetire from "@/assets/people-retire.jpg";
 import { APP_ENTRY } from "@/components/landing/appEntry";
 import { useI18n } from "@/i18n/I18nProvider";
 
-const womanSky = womanSkyAsset.url;
 
 export default function LandingBelow() {
   return (
