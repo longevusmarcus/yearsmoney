@@ -1458,6 +1458,9 @@ const en: typeof it = {
       dayShort: "d",
       monthAbbr: "mo",
       advisorPlaceholder: "Ask about your time…",
+      insightSavePre: "Every month you save",
+      insightSaveMid: "you gain",
+      insightSaveSuffix: "of optional life.",
     },
     purchase: {
       title: "Purchase",
