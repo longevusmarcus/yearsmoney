@@ -38,6 +38,26 @@ interface RiskAnalysis {
   recommendation: string;
 }
 
+const INVESTMENTS_CACHE = "tc_investments_cache";
+const PRICES_CACHE = "tc_prices_cache";
+
+function readCache<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
 const Risks = () => {
   const { t, lang } = useI18n();
   const { toast } = useToast();
@@ -46,9 +66,15 @@ const Risks = () => {
   const { user: authUser, isLoading: authLoading } = useAuthUser();
   const user = authUser;
 
-  const [investments, setInvestments] = useState<Investment[]>([]);
-  const [prices, setPrices] = useState<Record<string, PriceData>>({});
-  const [isLoadingInvestments, setIsLoadingInvestments] = useState(true);
+  // Hydrate instantly from the last known snapshot so the page never blocks on
+  // the network (edge cold starts made the first visit feel very slow).
+  const [investments, setInvestments] = useState<Investment[]>(() => readCache<Investment[]>(INVESTMENTS_CACHE) ?? []);
+  const [prices, setPrices] = useState<Record<string, PriceData>>(
+    () => readCache<Record<string, PriceData>>(PRICES_CACHE) ?? {}
+  );
+  const [isLoadingInvestments, setIsLoadingInvestments] = useState(
+    () => !readCache<Investment[]>(INVESTMENTS_CACHE)
+  );
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -83,22 +109,33 @@ const Risks = () => {
       loadInvestments();
     } else {
       setInvestments([]);
+      setPrices({});
+      sessionStorage.removeItem(INVESTMENTS_CACHE);
+      sessionStorage.removeItem(PRICES_CACHE);
       setIsLoadingInvestments(false);
     }
   }, [authUser, authLoading]);
 
 
   const loadInvestments = async () => {
-    setIsLoadingInvestments(true);
-    const { data, error } = await supabase.from("investments").select("*").order("created_at", { ascending: false });
+    // Only show the blocking spinner when we have nothing cached to render.
+    if (investments.length === 0) setIsLoadingInvestments(true);
+    const { data, error } = await supabase
+      .from("investments")
+      .select("id, asset_name, asset_symbol, amount_invested, quantity, purchase_price")
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error("Error loading investments:", error);
       toast({ title: t("app.risks.errLoading"), variant: "destructive" });
     } else {
       setInvestments(data || []);
+      writeCache(INVESTMENTS_CACHE, data || []);
       if (data && data.length > 0) {
         fetchPrices(data.map((inv) => inv.asset_name));
+      } else {
+        setPrices({});
+        writeCache(PRICES_CACHE, {});
       }
     }
     setIsLoadingInvestments(false);
@@ -107,7 +144,9 @@ const Risks = () => {
   const fetchPrices = async (assetNames: string[]) => {
     if (assetNames.length === 0) return;
 
-    setIsLoadingPrices(true);
+    // With cached prices on screen we refresh silently in the background.
+    const hasCachedPrices = Object.keys(prices).length > 0;
+    if (!hasCachedPrices) setIsLoadingPrices(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
         method: "POST",
@@ -128,6 +167,7 @@ const Risks = () => {
         });
 
         setPrices(priceMap);
+        writeCache(PRICES_CACHE, priceMap);
       }
     } catch (error) {
       console.error("Error fetching prices:", error);

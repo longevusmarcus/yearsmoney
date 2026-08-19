@@ -14,18 +14,38 @@ interface PriceData {
   changePercent24h: number;
 }
 
+// Warm-instance cache: repeated visits to the Risks page answer instantly
+// instead of waiting on a fresh AI round-trip every time.
+const priceCache = new Map<string, { at: number; payload: unknown }>();
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { assets } = await req.json();
-    
+    const { assets, warmup } = await req.json().catch(() => ({ assets: null }));
+
+    // Cheap ping used by the app to boot the function before it is needed.
+    if (warmup) {
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (!assets || !Array.isArray(assets) || assets.length === 0) {
       return new Response(JSON.stringify({ error: "No assets provided" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const cacheKey = assets.map((a: string) => String(a).trim().toLowerCase()).join("|");
+    const cached = priceCache.get(cacheKey);
+    if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
+      return new Response(JSON.stringify(cached.payload), {
+        headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "hit" },
       });
     }
 
@@ -134,8 +154,9 @@ Rules:
           query: typeof assets[i] === "string" ? assets[i] : p.query,
         }));
       }
+      priceCache.set(cacheKey, { at: Date.now(), payload: parsed });
       return new Response(JSON.stringify(parsed), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "miss" },
       });
     } catch {
       return new Response(JSON.stringify({ error: "Failed to parse price data" }), {
