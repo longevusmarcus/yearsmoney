@@ -153,7 +153,8 @@ async function searchImages(query: string): Promise<Record<string, string>> {
     url.searchParams.set("engine", "google_images");
     url.searchParams.set("q", query);
     url.searchParams.set("api_key", SERPAPI_KEY);
-    url.searchParams.set("num", "10");
+    url.searchParams.set("num", "8");
+
 
     const response = await fetch(url.toString());
     if (!response.ok) return {};
