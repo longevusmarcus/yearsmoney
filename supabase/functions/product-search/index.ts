@@ -14,25 +14,79 @@ const categoryMinPrices: Record<string, number> = {
   product: 5                   
 };
 
+// ---- Query normalization: short/ambiguous inputs get expanded so the
+// ---- shopping engine understands them immediately ("mac" -> MacBook laptop).
+const queryAliases: Record<string, string> = {
+  mac: "Apple MacBook laptop",
+  macbook: "Apple MacBook laptop",
+  imac: "Apple iMac desktop computer",
+  ipad: "Apple iPad tablet",
+  iphone: "Apple iPhone smartphone",
+  airpods: "Apple AirPods wireless earbuds",
+  watch: "smartwatch",
+  ps5: "Sony PlayStation 5 console",
+  ps4: "Sony PlayStation 4 console",
+  xbox: "Xbox Series X console",
+  switch: "Nintendo Switch console",
+  tesla: "Tesla electric car",
+  rolex: "Rolex watch",
+  vespa: "Vespa scooter",
+  bici: "bicicletta bike",
+  moto: "motorcycle motorbike",
+  auto: "car automobile",
+  casa: "house property for sale",
+  pc: "desktop computer PC",
+  laptop: "laptop notebook computer",
+  tv: "television TV smart tv",
+  drone: "drone camera",
+  camera: "digital camera",
+  cuffie: "headphones",
+  telefono: "smartphone",
+  computer: "laptop computer",
+};
+
+function normalizeQuery(raw: string): string {
+  const q = (raw || "").trim();
+  const lower = q.toLowerCase();
+  if (queryAliases[lower]) return queryAliases[lower];
+  // single short token: expand if we know it as a prefix alias
+  const words = lower.split(/\s+/);
+  if (words.length <= 2) {
+    const hit = words.map((w) => queryAliases[w]).find(Boolean);
+    if (hit) return `${q} ${hit}`;
+  }
+  return q;
+}
+
+// Simple in-memory cache (per isolate) so repeated searches are instant
+const cache = new Map<string, { at: number; payload: string }>();
+const CACHE_TTL = 10 * 60 * 1000;
+
+function fetchWithTimeout(url: string, init: RequestInit = {}, ms = 6000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
 // Categories with detection
 const categoryPatterns: { keywords: string[]; category: string }[] = [
   { 
-    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "home"],
+    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "home", "casa", "appartamento"],
     category: "real_estate_sale"
   },
   { 
-    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort"],
+    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort", "viaggio", "vacanza", "volo"],
     category: "travel"
   },
   {
-    keywords: ["tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini", "car", "vehicle", "suv"],
+    keywords: ["tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini", "car", "vehicle", "suv", "auto", "automobile"],
     category: "automotive"
   }
 ];
 
 function detectCategory(query: string): { category: string; isRental: boolean } {
   const lowerQuery = query.toLowerCase();
-  const isRental = ["rent", "rental", "for rent", "monthly", "per month"].some(k => lowerQuery.includes(k));
+  const isRental = ["rent", "rental", "for rent", "monthly", "per month", "affitto"].some(k => lowerQuery.includes(k));
   
   for (const pattern of categoryPatterns) {
     if (pattern.keywords.some(keyword => lowerQuery.includes(keyword))) {
@@ -45,6 +99,7 @@ function detectCategory(query: string): { category: string; isRental: boolean } 
   
   return { category: "product", isRental: false };
 }
+
 
 // Search with Exa - now includes image extraction
 async function searchWithExa(query: string, category: string): Promise<any[]> {
