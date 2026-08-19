@@ -211,9 +211,11 @@ async function searchWithSerpAPI(query: string, category: string): Promise<any[]
         title: item.title,
         price: item.extracted_price || parseFloat(item.price?.replace(/[^0-9.]/g, "")) || 0,
         source: item.source,
-        link: item.link,
-        image: item.thumbnail
+        link: item.product_link || item.link,
+        image: item.thumbnail,
+        description: item.snippet || item.source || ""
       }));
+
     } else {
       const results = data.organic_results || [];
       console.log(`[SerpAPI] Found ${results.length} organic results`);
