@@ -112,6 +112,50 @@ const Settings = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("no session");
+
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("request failed");
+
+      await supabase.auth.signOut();
+      localStorage.removeItem("tc_income");
+      localStorage.removeItem("tc_expenses");
+      localStorage.removeItem("tc_networth");
+      localStorage.removeItem("tc_onboarding_done");
+      setDeleteOpen(false);
+      toast({
+        title: t("app.settings.deletedTitle"),
+        description: t("app.settings.deletedDesc"),
+      });
+      navigate("/");
+    } catch (e) {
+      toast({
+        title: t("app.settings.errorTitle"),
+        description: t("app.settings.errDeleteAccount"),
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+
+
   return (
     <MobileOnly>
     <div className="min-h-screen bg-transparent pb-24">
