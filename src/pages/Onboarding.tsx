@@ -159,7 +159,7 @@ export default function Onboarding() {
     !!a.income && (a.income !== EXACT || Number(a.incomeExact) > 0),
     Number(a.wealth) >= 0 && a.wealth.trim() !== "",
     !!a.saving && (a.saving !== EXACT || Number(a.savingExact) > 0),
-    !!a.risk,
+    a.risk >= 0 && a.risk <= 2,
     true,
   ][i];
 
