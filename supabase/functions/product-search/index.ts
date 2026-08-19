@@ -378,53 +378,67 @@ serve(async (req) => {
   }
 
   try {
-    const { query, type, lang = "it" } = await req.json();
-    console.log(`\n=== Product Search: ${query} ===`);
+    const { query: rawQuery, type, lang = "it" } = await req.json();
+    const query = normalizeQuery(rawQuery);
+    console.log(`\n=== Product Search: ${rawQuery} -> ${query} ===`);
 
     if (type === "product") {
+      const cacheKey = `${query.toLowerCase()}|${lang}`;
+      const cached = cache.get(cacheKey);
+      if (cached && Date.now() - cached.at < CACHE_TTL) {
+        console.log("[cache] hit");
+        return new Response(cached.payload, {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const { category, isRental } = detectCategory(query);
       console.log(`Category: ${category}`);
 
-      // Search all sources in parallel - including images
-      const [exaResults, serpResults, imageResults] = await Promise.all([
-        searchWithExa(query, category),
-        searchWithSerpAPI(query, category),
-        searchImages(query)
-      ]);
-      
-      // Get array of image URLs
-      const imageUrls = Object.values(imageResults);
-      
       let listings: any[] = [];
-      
-      // Extract from search results
-      if (exaResults.length > 0 || serpResults.length > 0) {
-        listings = await extractListings(query, exaResults, serpResults, category, lang);
+
+      if (category === "product") {
+        // FAST PATH: Google Shopping already returns structured products
+        // (title, price, image, link) — no AI round-trip needed.
+        const serpResults = await searchWithSerpAPI(query, category);
+        listings = serpResults
+          .filter((r: any) => r.price > 0 && r.title)
+          .slice(0, 10);
       }
-      
-      // Fallback if not enough listings
+
       if (listings.length < 3) {
-        console.log("Not enough listings, generating fallback...");
-        const fallback = await generateListings(query, category);
-        listings = [...listings, ...fallback].slice(0, 10);
+        // Slow path: enrich with Exa + AI extraction only when needed
+        const [exaResults, serpResults, imageResults] = await Promise.all([
+          searchWithExa(query, category),
+          listings.length > 0 ? Promise.resolve(listings) : searchWithSerpAPI(query, category),
+          searchImages(query)
+        ]);
+
+        const imageUrls = Object.values(imageResults);
+
+        if (exaResults.length > 0 || serpResults.length > 0) {
+          listings = await extractListings(query, exaResults, serpResults, category, lang);
+        }
+
+        if (listings.length < 3) {
+          console.log("Not enough listings, generating fallback...");
+          const fallback = await generateListings(query, category);
+          listings = [...listings, ...fallback].slice(0, 10);
+        }
+
+        listings = listings.map((listing, index) =>
+          !listing.image && imageUrls[index] ? { ...listing, image: imageUrls[index] } : listing
+        );
       }
-      
+
       if (listings.length === 0) {
         throw new Error("Could not find listings for this search");
       }
 
       // Ensure sorted by price descending
       listings.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
-      
-      // Add images to listings that don't have them
-      listings = listings.map((listing, index) => {
-        if (!listing.image && imageUrls[index]) {
-          return { ...listing, image: imageUrls[index] };
-        }
-        return listing;
-      });
 
-      return new Response(JSON.stringify({
+      const payload = JSON.stringify({
         success: true,
         productName: query,
         price: listings[0].price,
@@ -437,10 +451,15 @@ serve(async (req) => {
         isRental,
         allListings: listings,
         alternatives: listings.slice(1)
-      }), {
+      });
+
+      cache.set(cacheKey, { at: Date.now(), payload });
+
+      return new Response(payload, {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     return new Response(JSON.stringify({ error: "Invalid type" }), {
       status: 400,
