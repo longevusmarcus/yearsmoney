@@ -218,7 +218,7 @@ const Hero = () => {
             <a
               href="#scopri"
               onClick={(e) => scrollToSection(e, "scopri")}
-              className="inline-flex items-center rounded-full border border-white/20 px-7 py-3 text-sm font-medium text-white transition-colors hover:bg-white/5 md:px-8 md:py-3.5"
+              className="inline-flex items-center text-sm font-medium text-white/80 underline underline-offset-4 transition-colors hover:text-white"
             >
               {t("hero.ctaSecondary")}
             </a>
