@@ -180,7 +180,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur(0.9), delay: d(0.3) }}
-            className="mx-auto max-w-5xl font-grotesk text-[2.4rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
+            className="mx-auto max-w-5xl font-grotesk text-[2.85rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
           >
             <TypedHeadline />
           </motion.h1>
