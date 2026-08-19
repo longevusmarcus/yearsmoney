@@ -198,7 +198,7 @@ async function searchWithSerpAPI(query: string, category: string): Promise<any[]
     url.searchParams.set("api_key", SERPAPI_KEY);
     url.searchParams.set("num", "12");
 
-    const response = await fetchWithTimeout(url.toString(), {}, 7000);
+    const response = await fetchWithTimeout(url.toString(), {}, 15000);
 
     if (!response.ok) return [];
 
