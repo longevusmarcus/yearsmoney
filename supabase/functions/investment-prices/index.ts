@@ -154,8 +154,9 @@ Rules:
           query: typeof assets[i] === "string" ? assets[i] : p.query,
         }));
       }
+      priceCache.set(cacheKey, { at: Date.now(), payload: parsed });
       return new Response(JSON.stringify(parsed), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "miss" },
       });
     } catch {
       return new Response(JSON.stringify({ error: "Failed to parse price data" }), {
