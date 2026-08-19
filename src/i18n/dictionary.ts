@@ -562,6 +562,8 @@ const it = {
       withoutIncome: "Senza entrate",
       advisorTitle: "Time Advisor",
       advisorEmpty: "Chiedimi qualsiasi cosa su come ottimizzare il tuo tempo",
+      advisorGreeting: "Bentornato/a, {name}",
+      advisorGreetingAnon: "Bentornato/a",
       axisNow: "ora",
       axis1y: "1 anno",
       axis5y: "5 anni",
