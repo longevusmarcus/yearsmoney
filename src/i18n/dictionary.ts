@@ -1451,6 +1451,8 @@ const en: typeof it = {
       withoutIncome: "Without income",
       advisorTitle: "Time Advisor",
       advisorEmpty: "Ask me anything about optimizing your time",
+      advisorGreeting: "Welcome back, {name}",
+      advisorGreetingAnon: "Welcome back",
       axisNow: "Now",
       axis1y: "1 yr",
       axis5y: "5 yrs",
