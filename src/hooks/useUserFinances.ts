@@ -96,12 +96,15 @@ export const useUserFinances = () => {
     // Sync to database if logged in
     if (user) {
       setIsSyncing(true);
-      const { error } = await supabase.from("user_finances").upsert({
-        user_id: user.id,
-        monthly_income: updated.monthlyIncome,
-        monthly_expenses: updated.monthlyExpenses,
-        net_worth: updated.netWorth,
-      });
+      const { error } = await supabase.from("user_finances").upsert(
+        {
+          user_id: user.id,
+          monthly_income: updated.monthlyIncome,
+          monthly_expenses: updated.monthlyExpenses,
+          net_worth: updated.netWorth,
+        },
+        { onConflict: "user_id" }
+      );
       
       if (error) {
         console.error("Failed to sync finances:", error);
