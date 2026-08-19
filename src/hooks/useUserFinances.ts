@@ -44,10 +44,31 @@ export const useUserFinances = () => {
           monthlyExpenses: Number(data.monthly_expenses),
           netWorth: Number(data.net_worth),
         };
-        setFinances(dbFinances);
-        localStorage.setItem("tc_income", String(dbFinances.monthlyIncome));
-        localStorage.setItem("tc_expenses", String(dbFinances.monthlyExpenses));
-        localStorage.setItem("tc_networth", String(dbFinances.netWorth));
+        const dbEmpty =
+          !dbFinances.monthlyIncome && !dbFinances.monthlyExpenses && !dbFinances.netWorth;
+        const localIncome = Number(localStorage.getItem("tc_income")) || 0;
+        const localExpenses = Number(localStorage.getItem("tc_expenses")) || 0;
+        const localNetWorth = Number(localStorage.getItem("tc_networth")) || 0;
+        const localHasData = localIncome > 0 || localExpenses > 0 || localNetWorth > 0;
+
+        if (dbEmpty && localHasData) {
+          // Never wipe local numbers with an empty remote row: push them up instead.
+          setFinances({ monthlyIncome: localIncome, monthlyExpenses: localExpenses, netWorth: localNetWorth });
+          await supabase.from("user_finances").upsert(
+            {
+              user_id: user.id,
+              monthly_income: localIncome,
+              monthly_expenses: localExpenses,
+              net_worth: localNetWorth,
+            },
+            { onConflict: "user_id" }
+          );
+        } else {
+          setFinances(dbFinances);
+          localStorage.setItem("tc_income", String(dbFinances.monthlyIncome));
+          localStorage.setItem("tc_expenses", String(dbFinances.monthlyExpenses));
+          localStorage.setItem("tc_networth", String(dbFinances.netWorth));
+        }
       } else {
         // Fresh account: carry over the numbers computed during onboarding.
         const localIncome = Number(localStorage.getItem("tc_income")) || 0;
