@@ -673,7 +673,7 @@ function usePlan(a: Answers): PlanData {
     const income = incomeValue(a);
     const monthly = savingValue(a);
     const wealth = Math.max(Number(a.wealth) || 0, 0);
-    const r = RISK_RETURN[a.risk] ?? 0.045;
+    const r = interpolateRisk(a.risk);
     const m = r / 12;
     const n = 120; // 10 anni
     const spend = Math.max(income - monthly, income * 0.1, 1) * 12;
