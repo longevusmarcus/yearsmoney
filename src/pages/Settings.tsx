@@ -26,7 +26,9 @@ const Settings = () => {
   const { t } = useI18n();
   const { toast } = useToast();
   const { user, isLoading: authLoading } = useAuthUser();
-  const [leaderboardPublic, setLeaderboardPublic] = useState(false);
+  const [leaderboardPublic, setLeaderboardPublic] = useState(
+    () => localStorage.getItem("tc_leaderboard_display") === "public"
+  );
   const [loadingPreference, setLoadingPreference] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -46,25 +48,31 @@ const Settings = () => {
       .from("profiles")
       .select("leaderboard_display")
       .eq("id", userId)
-      .single();
-    
-    if (!error && data) {
-      setLeaderboardPublic(data.leaderboard_display === "public");
+      .maybeSingle();
+
+    if (!error && data?.leaderboard_display) {
+      const isPublic = data.leaderboard_display === "public";
+      setLeaderboardPublic(isPublic);
+      localStorage.setItem("tc_leaderboard_display", isPublic ? "public" : "anonymous");
     }
     setLoadingPreference(false);
   };
 
   const handleLeaderboardToggle = async (checked: boolean) => {
     if (!user) return;
-    
+
+    const value = checked ? "public" : "anonymous";
     setLeaderboardPublic(checked);
+    localStorage.setItem("tc_leaderboard_display", value);
+
+    // upsert so the preference persists even if the profile row is missing
     const { error } = await supabase
       .from("profiles")
-      .update({ leaderboard_display: checked ? "public" : "anonymous" })
-      .eq("id", user.id);
-    
+      .upsert({ id: user.id, leaderboard_display: value }, { onConflict: "id" });
+
     if (error) {
       setLeaderboardPublic(!checked);
+      localStorage.setItem("tc_leaderboard_display", checked ? "anonymous" : "public");
       toast({
         title: t("app.settings.errorTitle"),
         description: t("app.settings.errUpdatePreference"),
