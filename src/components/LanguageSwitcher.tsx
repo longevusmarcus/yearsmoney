@@ -76,7 +76,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       role="group"
       aria-label={t("common.language")}
       className={cn(
-        "inline-flex h-10 shrink-0 items-center gap-0.5 rounded-full border border-white/15 bg-white/5 p-0.5 backdrop-blur-md",
+        "inline-flex h-10 shrink-0 items-center rounded-full border border-white/15 bg-white/5 p-0.5 backdrop-blur-md",
         className,
       )}
     >
@@ -87,8 +87,10 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
           onClick={() => setLang(code)}
           aria-pressed={lang === code}
           className={cn(
-            "rounded-full px-2 py-0.5 text-[10px] font-medium tracking-[0.08em] transition-colors",
-            lang === code ? "bg-white text-black" : "text-white/60 hover:text-white",
+            "h-full rounded-full px-3 text-sm font-medium tracking-[0.08em] transition-colors",
+            lang === code
+              ? "bg-white text-black"
+              : "text-white/60 hover:text-white",
           )}
         >
           {label}
