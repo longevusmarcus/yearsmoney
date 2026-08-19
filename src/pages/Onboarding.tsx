@@ -84,11 +84,22 @@ const AGE_START: Record<AgeId, number> = {
   undisclosed: 35,
 };
 
-const RISK_RETURN: Record<RiskId, number> = {
-  safety: 0.02,
-  balance: 0.045,
-  growth: 0.07,
+const RISK_RETURN: Record<number, number> = {
+  0: 0.02,
+  1: 0.045,
+  2: 0.07,
 };
+
+function interpolateRisk(value: number): number {
+  const clamped = Math.max(0, Math.min(2, value));
+  const lower = Math.floor(clamped);
+  const upper = Math.ceil(clamped);
+  if (lower === upper) return RISK_RETURN[lower] ?? 0.045;
+  const t = clamped - lower;
+  const rLower = RISK_RETURN[lower] ?? 0.045;
+  const rUpper = RISK_RETURN[upper] ?? 0.045;
+  return rLower + (rUpper - rLower) * t;
+}
 
 type Answers = {
   desires: string[];
