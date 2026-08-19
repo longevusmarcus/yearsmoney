@@ -109,22 +109,33 @@ const Risks = () => {
       loadInvestments();
     } else {
       setInvestments([]);
+      setPrices({});
+      sessionStorage.removeItem(INVESTMENTS_CACHE);
+      sessionStorage.removeItem(PRICES_CACHE);
       setIsLoadingInvestments(false);
     }
   }, [authUser, authLoading]);
 
 
   const loadInvestments = async () => {
-    setIsLoadingInvestments(true);
-    const { data, error } = await supabase.from("investments").select("*").order("created_at", { ascending: false });
+    // Only show the blocking spinner when we have nothing cached to render.
+    if (investments.length === 0) setIsLoadingInvestments(true);
+    const { data, error } = await supabase
+      .from("investments")
+      .select("id, asset_name, asset_symbol, amount_invested, quantity, purchase_price")
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error("Error loading investments:", error);
       toast({ title: t("app.risks.errLoading"), variant: "destructive" });
     } else {
       setInvestments(data || []);
+      writeCache(INVESTMENTS_CACHE, data || []);
       if (data && data.length > 0) {
         fetchPrices(data.map((inv) => inv.asset_name));
+      } else {
+        setPrices({});
+        writeCache(PRICES_CACHE, {});
       }
     }
     setIsLoadingInvestments(false);
@@ -133,7 +144,9 @@ const Risks = () => {
   const fetchPrices = async (assetNames: string[]) => {
     if (assetNames.length === 0) return;
 
-    setIsLoadingPrices(true);
+    // With cached prices on screen we refresh silently in the background.
+    const hasCachedPrices = Object.keys(prices).length > 0;
+    if (!hasCachedPrices) setIsLoadingPrices(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
         method: "POST",
@@ -154,6 +167,7 @@ const Risks = () => {
         });
 
         setPrices(priceMap);
+        writeCache(PRICES_CACHE, priceMap);
       }
     } catch (error) {
       console.error("Error fetching prices:", error);
