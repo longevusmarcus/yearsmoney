@@ -15,6 +15,35 @@ interface Message {
   content: string;
 }
 
+/** Minimal markdown renderer: **bold**, *italic* and `code`. */
+function renderRichText(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\n]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (/^\*\*[^*]+\*\*$/.test(part)) {
+      return (
+        <strong key={i} className="font-semibold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (/^\*[^*\n]+\*$/.test(part)) {
+      return (
+        <em key={i} className="italic">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+    if (/^`[^`]+`$/.test(part)) {
+      return (
+        <code key={i} className="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 const Home = () => {
   const { t, lang } = useI18n();
   // Use the synced finances hook
