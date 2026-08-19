@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, LogIn, Trash2, Trophy } from "lucide-react";
+import { User, LogOut, LogIn, Trash2, Trophy, ShieldAlert } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,16 @@ import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 const Settings = () => {
@@ -18,6 +28,8 @@ const Settings = () => {
   const { user, isLoading: authLoading } = useAuthUser();
   const [leaderboardPublic, setLeaderboardPublic] = useState(false);
   const [loadingPreference, setLoadingPreference] = useState(true);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
