@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Home, Search, AlertTriangle, Trophy } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -7,6 +8,29 @@ const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useI18n();
+  const warmed = useRef(false);
+
+  // Preload the Risks screen and wake its pricing backend while the user is
+  // still on another page, so the first visit is not stuck on a cold start.
+  useEffect(() => {
+    if (warmed.current || location.pathname === "/risks") return;
+    warmed.current = true;
+    const run = () => {
+      void import("@/pages/Risks");
+      void fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ warmup: true }),
+      }).catch(() => {});
+    };
+    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void) => number })
+      .requestIdleCallback;
+    if (idle) idle(run);
+    else setTimeout(run, 1200);
+  }, [location.pathname]);
 
   const navItems = [
     { icon: Home, label: t("app.nav.home"), path: "/home" },
