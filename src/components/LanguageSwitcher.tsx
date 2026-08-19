@@ -38,7 +38,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={t("common.language")}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm font-medium tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 text-sm font-medium tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/10"
         >
           <Globe className="h-3.5 w-3.5" />
           {lang === "it" ? "IT" : "EN"}
@@ -76,7 +76,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       role="group"
       aria-label={t("common.language")}
       className={cn(
-        "inline-flex shrink-0 items-center gap-0.5 rounded-full border border-white/15 bg-white/5 p-0.5 backdrop-blur-md",
+        "inline-flex h-10 shrink-0 items-center gap-0.5 rounded-full border border-white/15 bg-white/5 p-0.5 backdrop-blur-md",
         className,
       )}
     >
