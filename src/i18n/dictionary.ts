@@ -1187,7 +1187,7 @@ const en: typeof it = {
       saving: "How much can you set aside each month?",
       savingHint: "Choice + $ equivalent",
       risk: "How much of the present do you want to invest in the future?",
-      riskHint: "Three-point slider",
+      riskHint: "Drag the dot between two profiles too",
     },
     desires: {
       freedom: "More freedom in my choices",
