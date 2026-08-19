@@ -616,9 +616,18 @@ function Trust() {
   );
 }
 
-function RiskSlider({ value, onChange }: { value: RiskId; onChange: (v: RiskId) => void }) {
+function RiskSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const { t } = useI18n();
-  const idx = Math.max(RISK_IDS.indexOf(value), 0);
+  const clamped = Math.max(0, Math.min(2, value));
+  const nearest = Math.round(clamped);
+  const label = t(`onboarding.risks.${RISK_IDS[nearest]}`);
+  const mixed =
+    clamped === 0 || clamped === 1 || clamped === 2
+      ? null
+      : clamped < 1
+      ? `${t("onboarding.risks.safety")} + ${t("onboarding.risks.balance")}`
+      : `${t("onboarding.risks.balance")} + ${t("onboarding.risks.growth")}`;
+
   return (
     <div>
       <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur">
@@ -630,18 +639,23 @@ function RiskSlider({ value, onChange }: { value: RiskId; onChange: (v: RiskId) 
           type="range"
           min={0}
           max={2}
-          step={1}
-          value={idx}
-          onChange={(e) => onChange(RISK_IDS[Number(e.target.value)])}
+          step={0.5}
+          value={clamped}
+          onChange={(e) => onChange(Number(e.target.value))}
           className="mt-4 w-full accent-white"
         />
+        <div className="mt-2 flex justify-center">
+          <span className="text-xs font-medium text-white/80">
+            {mixed || label}
+          </span>
+        </div>
         <div className="mt-3 grid grid-cols-3 gap-2">
-          {RISK_IDS.map((id) => (
+          {RISK_IDS.map((id, i) => (
             <button
               key={id}
-              onClick={() => onChange(id)}
+              onClick={() => onChange(i)}
               className={`rounded-full border px-2 py-2 text-[11px] transition-colors ${
-                value === id
+                nearest === i
                   ? "border-white/40 bg-white/10 text-white"
                   : "border-white/10 text-white/50 hover:text-white"
               }`}
