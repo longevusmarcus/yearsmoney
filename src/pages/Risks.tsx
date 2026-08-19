@@ -38,6 +38,26 @@ interface RiskAnalysis {
   recommendation: string;
 }
 
+const INVESTMENTS_CACHE = "tc_investments_cache";
+const PRICES_CACHE = "tc_prices_cache";
+
+function readCache<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
 const Risks = () => {
   const { t, lang } = useI18n();
   const { toast } = useToast();
