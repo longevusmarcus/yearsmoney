@@ -14,25 +14,79 @@ const categoryMinPrices: Record<string, number> = {
   product: 5                   
 };
 
+// ---- Query normalization: short/ambiguous inputs get expanded so the
+// ---- shopping engine understands them immediately ("mac" -> MacBook laptop).
+const queryAliases: Record<string, string> = {
+  mac: "Apple MacBook laptop",
+  macbook: "Apple MacBook laptop",
+  imac: "Apple iMac desktop computer",
+  ipad: "Apple iPad tablet",
+  iphone: "Apple iPhone smartphone",
+  airpods: "Apple AirPods wireless earbuds",
+  watch: "smartwatch",
+  ps5: "Sony PlayStation 5 console",
+  ps4: "Sony PlayStation 4 console",
+  xbox: "Xbox Series X console",
+  switch: "Nintendo Switch console",
+  tesla: "Tesla electric car",
+  rolex: "Rolex watch",
+  vespa: "Vespa scooter",
+  bici: "bicicletta bike",
+  moto: "motorcycle motorbike",
+  auto: "car automobile",
+  casa: "house property for sale",
+  pc: "desktop computer PC",
+  laptop: "laptop notebook computer",
+  tv: "television TV smart tv",
+  drone: "drone camera",
+  camera: "digital camera",
+  cuffie: "headphones",
+  telefono: "smartphone",
+  computer: "laptop computer",
+};
+
+function normalizeQuery(raw: string): string {
+  const q = (raw || "").trim();
+  const lower = q.toLowerCase();
+  if (queryAliases[lower]) return queryAliases[lower];
+  // single short token: expand if we know it as a prefix alias
+  const words = lower.split(/\s+/);
+  if (words.length <= 2) {
+    const hit = words.map((w) => queryAliases[w]).find(Boolean);
+    if (hit) return `${q} ${hit}`;
+  }
+  return q;
+}
+
+// Simple in-memory cache (per isolate) so repeated searches are instant
+const cache = new Map<string, { at: number; payload: string }>();
+const CACHE_TTL = 10 * 60 * 1000;
+
+function fetchWithTimeout(url: string, init: RequestInit = {}, ms = 6000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
 // Categories with detection
 const categoryPatterns: { keywords: string[]; category: string }[] = [
   { 
-    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "home"],
+    keywords: ["house", "apartment", "flat", "villa", "condo", "property", "home", "casa", "appartamento"],
     category: "real_estate_sale"
   },
   { 
-    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort"],
+    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort", "viaggio", "vacanza", "volo"],
     category: "travel"
   },
   {
-    keywords: ["tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini", "car", "vehicle", "suv"],
+    keywords: ["tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini", "car", "vehicle", "suv", "auto", "automobile"],
     category: "automotive"
   }
 ];
 
 function detectCategory(query: string): { category: string; isRental: boolean } {
   const lowerQuery = query.toLowerCase();
-  const isRental = ["rent", "rental", "for rent", "monthly", "per month"].some(k => lowerQuery.includes(k));
+  const isRental = ["rent", "rental", "for rent", "monthly", "per month", "affitto"].some(k => lowerQuery.includes(k));
   
   for (const pattern of categoryPatterns) {
     if (pattern.keywords.some(keyword => lowerQuery.includes(keyword))) {
@@ -45,6 +99,7 @@ function detectCategory(query: string): { category: string; isRental: boolean } 
   
   return { category: "product", isRental: false };
 }
+
 
 // Search with Exa - now includes image extraction
 async function searchWithExa(query: string, category: string): Promise<any[]> {
@@ -61,7 +116,7 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
   }
 
   try {
-    const response = await fetch("https://api.exa.ai/search", {
+    const response = await fetchWithTimeout("https://api.exa.ai/search", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${EXA_API_KEY}`,
@@ -69,15 +124,14 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
       },
       body: JSON.stringify({
         query: searchQuery,
-        type: "neural",
-        useAutoprompt: true,
-        numResults: 15,
-        contents: { 
-          text: { maxCharacters: 2500 },
-          highlights: true
+        type: "auto",
+        numResults: 6,
+        contents: {
+          text: { maxCharacters: 700 }
         }
       }),
-    });
+    }, 6000);
+
 
     if (!response.ok) return [];
     const data = await response.json();
@@ -99,9 +153,11 @@ async function searchImages(query: string): Promise<Record<string, string>> {
     url.searchParams.set("engine", "google_images");
     url.searchParams.set("q", query);
     url.searchParams.set("api_key", SERPAPI_KEY);
-    url.searchParams.set("num", "10");
+    url.searchParams.set("num", "8");
 
-    const response = await fetch(url.toString());
+
+    const response = await fetchWithTimeout(url.toString(), {}, 5000);
+
     if (!response.ok) return {};
 
     const data = await response.json();
@@ -140,9 +196,10 @@ async function searchWithSerpAPI(query: string, category: string): Promise<any[]
     }
     
     url.searchParams.set("api_key", SERPAPI_KEY);
-    url.searchParams.set("num", "15");
+    url.searchParams.set("num", "12");
 
-    const response = await fetch(url.toString());
+    const response = await fetchWithTimeout(url.toString(), {}, 15000);
+
     if (!response.ok) return [];
 
     const data = await response.json();
@@ -154,9 +211,11 @@ async function searchWithSerpAPI(query: string, category: string): Promise<any[]
         title: item.title,
         price: item.extracted_price || parseFloat(item.price?.replace(/[^0-9.]/g, "")) || 0,
         source: item.source,
-        link: item.link,
-        image: item.thumbnail
+        link: item.product_link || item.link,
+        image: item.thumbnail,
+        description: item.snippet || item.source || ""
       }));
+
     } else {
       const results = data.organic_results || [];
       console.log(`[SerpAPI] Found ${results.length} organic results`);
@@ -321,53 +380,67 @@ serve(async (req) => {
   }
 
   try {
-    const { query, type, lang = "it" } = await req.json();
-    console.log(`\n=== Product Search: ${query} ===`);
+    const { query: rawQuery, type, lang = "it" } = await req.json();
+    const query = normalizeQuery(rawQuery);
+    console.log(`\n=== Product Search: ${rawQuery} -> ${query} ===`);
 
     if (type === "product") {
+      const cacheKey = `${query.toLowerCase()}|${lang}`;
+      const cached = cache.get(cacheKey);
+      if (cached && Date.now() - cached.at < CACHE_TTL) {
+        console.log("[cache] hit");
+        return new Response(cached.payload, {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const { category, isRental } = detectCategory(query);
       console.log(`Category: ${category}`);
 
-      // Search all sources in parallel - including images
-      const [exaResults, serpResults, imageResults] = await Promise.all([
-        searchWithExa(query, category),
-        searchWithSerpAPI(query, category),
-        searchImages(query)
-      ]);
-      
-      // Get array of image URLs
-      const imageUrls = Object.values(imageResults);
-      
       let listings: any[] = [];
-      
-      // Extract from search results
-      if (exaResults.length > 0 || serpResults.length > 0) {
-        listings = await extractListings(query, exaResults, serpResults, category, lang);
+
+      if (category === "product") {
+        // FAST PATH: Google Shopping already returns structured products
+        // (title, price, image, link) — no AI round-trip needed.
+        const serpResults = await searchWithSerpAPI(query, category);
+        listings = serpResults
+          .filter((r: any) => r.price > 0 && r.title)
+          .slice(0, 10);
       }
-      
-      // Fallback if not enough listings
+
       if (listings.length < 3) {
-        console.log("Not enough listings, generating fallback...");
-        const fallback = await generateListings(query, category);
-        listings = [...listings, ...fallback].slice(0, 10);
+        // Slow path: enrich with Exa + AI extraction only when needed
+        const [exaResults, serpResults, imageResults] = await Promise.all([
+          searchWithExa(query, category),
+          listings.length > 0 ? Promise.resolve(listings) : searchWithSerpAPI(query, category),
+          searchImages(query)
+        ]);
+
+        const imageUrls = Object.values(imageResults);
+
+        if (exaResults.length > 0 || serpResults.length > 0) {
+          listings = await extractListings(query, exaResults, serpResults, category, lang);
+        }
+
+        if (listings.length < 3) {
+          console.log("Not enough listings, generating fallback...");
+          const fallback = await generateListings(query, category);
+          listings = [...listings, ...fallback].slice(0, 10);
+        }
+
+        listings = listings.map((listing, index) =>
+          !listing.image && imageUrls[index] ? { ...listing, image: imageUrls[index] } : listing
+        );
       }
-      
+
       if (listings.length === 0) {
         throw new Error("Could not find listings for this search");
       }
 
       // Ensure sorted by price descending
       listings.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
-      
-      // Add images to listings that don't have them
-      listings = listings.map((listing, index) => {
-        if (!listing.image && imageUrls[index]) {
-          return { ...listing, image: imageUrls[index] };
-        }
-        return listing;
-      });
 
-      return new Response(JSON.stringify({
+      const payload = JSON.stringify({
         success: true,
         productName: query,
         price: listings[0].price,
@@ -380,10 +453,15 @@ serve(async (req) => {
         isRental,
         allListings: listings,
         alternatives: listings.slice(1)
-      }), {
+      });
+
+      cache.set(cacheKey, { at: Date.now(), payload });
+
+      return new Response(payload, {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     return new Response(JSON.stringify({ error: "Invalid type" }), {
       status: 400,
