@@ -84,11 +84,22 @@ const AGE_START: Record<AgeId, number> = {
   undisclosed: 35,
 };
 
-const RISK_RETURN: Record<RiskId, number> = {
-  safety: 0.02,
-  balance: 0.045,
-  growth: 0.07,
+const RISK_RETURN: Record<number, number> = {
+  0: 0.02,
+  1: 0.045,
+  2: 0.07,
 };
+
+function interpolateRisk(value: number): number {
+  const clamped = Math.max(0, Math.min(2, value));
+  const lower = Math.floor(clamped);
+  const upper = Math.ceil(clamped);
+  if (lower === upper) return RISK_RETURN[lower] ?? 0.045;
+  const t = clamped - lower;
+  const rLower = RISK_RETURN[lower] ?? 0.045;
+  const rUpper = RISK_RETURN[upper] ?? 0.045;
+  return rLower + (rUpper - rLower) * t;
+}
 
 type Answers = {
   desires: string[];
@@ -101,7 +112,7 @@ type Answers = {
   wealth: string;
   saving: string;
   savingExact: string;
-  risk: RiskId;
+  risk: number;
 };
 
 const EMPTY: Answers = {
@@ -115,7 +126,7 @@ const EMPTY: Answers = {
   wealth: "",
   saving: "",
   savingExact: "",
-  risk: "balance",
+  risk: 1,
 };
 
 /* screens: 0..4 = steps 1-5, 5 = trust, 6..9 = steps 6-9, 10 = plan */
@@ -148,7 +159,7 @@ export default function Onboarding() {
     !!a.income && (a.income !== EXACT || Number(a.incomeExact) > 0),
     Number(a.wealth) >= 0 && a.wealth.trim() !== "",
     !!a.saving && (a.saving !== EXACT || Number(a.savingExact) > 0),
-    !!a.risk,
+    a.risk >= 0 && a.risk <= 2,
     true,
   ][i];
 
@@ -605,9 +616,18 @@ function Trust() {
   );
 }
 
-function RiskSlider({ value, onChange }: { value: RiskId; onChange: (v: RiskId) => void }) {
+function RiskSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const { t } = useI18n();
-  const idx = Math.max(RISK_IDS.indexOf(value), 0);
+  const clamped = Math.max(0, Math.min(2, value));
+  const nearest = Math.round(clamped);
+  const label = t(`onboarding.risks.${RISK_IDS[nearest]}`);
+  const mixed =
+    clamped === 0 || clamped === 1 || clamped === 2
+      ? null
+      : clamped < 1
+      ? `${t("onboarding.risks.safety")} + ${t("onboarding.risks.balance")}`
+      : `${t("onboarding.risks.balance")} + ${t("onboarding.risks.growth")}`;
+
   return (
     <div>
       <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur">
@@ -619,18 +639,23 @@ function RiskSlider({ value, onChange }: { value: RiskId; onChange: (v: RiskId) 
           type="range"
           min={0}
           max={2}
-          step={1}
-          value={idx}
-          onChange={(e) => onChange(RISK_IDS[Number(e.target.value)])}
+          step={0.5}
+          value={clamped}
+          onChange={(e) => onChange(Number(e.target.value))}
           className="mt-4 w-full accent-white"
         />
+        <div className="mt-2 flex justify-center">
+          <span className="text-xs font-medium text-white/80">
+            {mixed || label}
+          </span>
+        </div>
         <div className="mt-3 grid grid-cols-3 gap-2">
-          {RISK_IDS.map((id) => (
+          {RISK_IDS.map((id, i) => (
             <button
               key={id}
-              onClick={() => onChange(id)}
+              onClick={() => onChange(i)}
               className={`rounded-full border px-2 py-2 text-[11px] transition-colors ${
-                value === id
+                nearest === i
                   ? "border-white/40 bg-white/10 text-white"
                   : "border-white/10 text-white/50 hover:text-white"
               }`}
@@ -662,7 +687,7 @@ function usePlan(a: Answers): PlanData {
     const income = incomeValue(a);
     const monthly = savingValue(a);
     const wealth = Math.max(Number(a.wealth) || 0, 0);
-    const r = RISK_RETURN[a.risk] ?? 0.045;
+    const r = interpolateRisk(a.risk);
     const m = r / 12;
     const n = 120; // 10 anni
     const spend = Math.max(income - monthly, income * 0.1, 1) * 12;
