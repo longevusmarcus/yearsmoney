@@ -101,7 +101,7 @@ type Answers = {
   wealth: string;
   saving: string;
   savingExact: string;
-  risk: RiskId;
+  risk: number;
 };
 
 const EMPTY: Answers = {
@@ -115,7 +115,7 @@ const EMPTY: Answers = {
   wealth: "",
   saving: "",
   savingExact: "",
-  risk: "balance",
+  risk: 1,
 };
 
 /* screens: 0..4 = steps 1-5, 5 = trust, 6..9 = steps 6-9, 10 = plan */
