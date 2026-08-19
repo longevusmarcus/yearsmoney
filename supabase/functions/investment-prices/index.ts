@@ -127,6 +127,13 @@ Rules:
     
     try {
       const parsed = JSON.parse(content);
+      // Ensure "query" always matches the original user input (by index)
+      if (Array.isArray(parsed?.prices)) {
+        parsed.prices = parsed.prices.map((p: Record<string, unknown>, i: number) => ({
+          ...p,
+          query: typeof assets[i] === "string" ? assets[i] : p.query,
+        }));
+      }
       return new Response(JSON.stringify(parsed), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
