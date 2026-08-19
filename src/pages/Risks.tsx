@@ -46,9 +46,15 @@ const Risks = () => {
   const { user: authUser, isLoading: authLoading } = useAuthUser();
   const user = authUser;
 
-  const [investments, setInvestments] = useState<Investment[]>([]);
-  const [prices, setPrices] = useState<Record<string, PriceData>>({});
-  const [isLoadingInvestments, setIsLoadingInvestments] = useState(true);
+  // Hydrate instantly from the last known snapshot so the page never blocks on
+  // the network (edge cold starts made the first visit feel very slow).
+  const [investments, setInvestments] = useState<Investment[]>(() => readCache<Investment[]>(INVESTMENTS_CACHE) ?? []);
+  const [prices, setPrices] = useState<Record<string, PriceData>>(
+    () => readCache<Record<string, PriceData>>(PRICES_CACHE) ?? {}
+  );
+  const [isLoadingInvestments, setIsLoadingInvestments] = useState(
+    () => !readCache<Investment[]>(INVESTMENTS_CACHE)
+  );
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
