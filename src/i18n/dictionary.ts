@@ -297,7 +297,7 @@ const it = {
       saving: "Quanto riesci a mettere da parte ogni mese?",
       savingHint: "Scelta + equivalente €",
       risk: "Quanto del presente vuoi investire nel futuro?",
-      riskHint: "Slider a tre punti",
+      riskHint: "Sposta il pallino anche tra due profili",
     },
     desires: {
       freedom: "Più libertà nelle mie scelte",
