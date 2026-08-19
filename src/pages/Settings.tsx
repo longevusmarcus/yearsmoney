@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, LogIn, Trash2, Trophy } from "lucide-react";
+import { User, LogOut, LogIn, Trash2, Trophy, ShieldAlert } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,16 @@ import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 const Settings = () => {
@@ -18,6 +28,8 @@ const Settings = () => {
   const { user, isLoading: authLoading } = useAuthUser();
   const [leaderboardPublic, setLeaderboardPublic] = useState(false);
   const [loadingPreference, setLoadingPreference] = useState(true);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -99,6 +111,50 @@ const Settings = () => {
       });
     }
   };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("no session");
+
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("request failed");
+
+      await supabase.auth.signOut();
+      localStorage.removeItem("tc_income");
+      localStorage.removeItem("tc_expenses");
+      localStorage.removeItem("tc_networth");
+      localStorage.removeItem("tc_onboarding_done");
+      setDeleteOpen(false);
+      toast({
+        title: t("app.settings.deletedTitle"),
+        description: t("app.settings.deletedDesc"),
+      });
+      navigate("/");
+    } catch (e) {
+      toast({
+        title: t("app.settings.errorTitle"),
+        description: t("app.settings.errDeleteAccount"),
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+
 
   return (
     <MobileOnly>
@@ -202,6 +258,60 @@ const Settings = () => {
             </div>
           </Card>
         </div>
+
+        {/* Danger zone */}
+        {user && (
+          <div className="space-y-3">
+            <h2 className="text-[10px] uppercase tracking-wider text-destructive/70 font-light">
+              {t("app.settings.dangerZone")}
+            </h2>
+
+            <Card
+              onClick={() => setDeleteOpen(true)}
+              className="flex cursor-pointer items-center gap-3 rounded-2xl border-destructive/30 bg-destructive/5 p-4 transition-colors hover:bg-destructive/10"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/15">
+                <ShieldAlert className="h-4 w-4 text-destructive" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-light text-destructive">{t("app.settings.deleteAccount")}</p>
+                <p className="text-xs font-light text-muted-foreground">
+                  {t("app.settings.deleteAccountSub")}
+                </p>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <AlertDialogContent className="max-w-[92vw] rounded-3xl border-border bg-card sm:max-w-[420px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-display text-lg">
+                {t("app.settings.deleteAccountConfirmTitle")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-light">
+                {t("app.settings.deleteAccountConfirmDesc")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting} className="rounded-full">
+                {t("app.settings.deleteAccountCancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteAccount();
+                }}
+                disabled={deleting}
+                className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleting ? t("app.settings.deleting") : t("app.settings.deleteAccountConfirm")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+
 
         {/* App Info */}
         <div className="pt-6 text-center">
