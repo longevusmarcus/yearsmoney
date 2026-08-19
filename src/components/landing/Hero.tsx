@@ -17,24 +17,17 @@ function TypedHeadline() {
   const hlStart = full.indexOf(highlight);
   const hlEnd = hlStart >= 0 ? hlStart + highlight.length : -1;
 
-  // Phones show the headline instantly — a typing effect there just reads as
-  // "the hero is empty" while the animation catches up.
-  const isMobile = useIsMobile();
   const [n, setN] = useState(0);
 
   // Restart the animation when the language changes
   useEffect(() => setN(0), [full]);
 
   useEffect(() => {
-    if (isMobile) {
-      setN(full.length);
-      return;
-    }
     if (n >= full.length) return;
     const pause = n === full.length ? 700 : 45;
     const id = window.setTimeout(() => setN((v) => v + 1), pause);
     return () => window.clearTimeout(id);
-  }, [n, full.length, isMobile]);
+  }, [n, full.length]);
 
   const typed = full.slice(0, n);
   const before = hlStart < 0 ? typed : typed.slice(0, Math.min(n, hlStart));
