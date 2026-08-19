@@ -472,63 +472,72 @@ const Home = () => {
             <div className="absolute bottom-[-10%] right-[-15%] h-[480px] w-[480px] rounded-full bg-[oklch(0.55_0.24_295/0.18)] blur-[140px]" />
           </div>
 
-          <div className="flex items-center justify-between border-b border-border p-4">
-            <h2 className="font-display text-lg">{t("app.home.advisorTitle")}</h2>
-            <button
-              onClick={() => setShowChat(false)}
-              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <div className="mx-auto flex h-full w-full max-w-[560px] flex-col">
+            <div className="flex items-center justify-between border-b border-border p-4">
+              <h2 className="font-display text-lg">{t("app.home.advisorTitle")}</h2>
+              <button
+                onClick={() => setShowChat(false)}
+                className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.length === 0 && (
-              <div className="text-center py-12">
-                <p className="font-light text-muted-foreground">{t("app.home.advisorEmpty")}</p>
-              </div>
-            )}
-            {messages.map((msg, idx) => (
-              <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
-                <div className={`inline-block max-w-[85%] rounded-2xl px-4 py-2 ${
-                  msg.role === "user"
-                    ? "bg-gradient-to-br from-white to-white/80 text-black"
-                    : "border border-border bg-card text-foreground backdrop-blur-xl"
-                }`}>
-                  <p className="text-sm font-light whitespace-pre-wrap">{msg.content}</p>
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messages.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="font-display text-xl">
+                    {firstName
+                      ? t("app.home.advisorGreeting").replace("{name}", firstName)
+                      : t("app.home.advisorGreetingAnon")}
+                  </p>
+                  <p className="mt-2 font-light text-muted-foreground">{t("app.home.advisorEmpty")}</p>
                 </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="text-left">
-                <div className="inline-block rounded-2xl border border-border bg-card px-4 py-2 backdrop-blur-xl">
-                  <div className="flex space-x-1">
-                    <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
-                    <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              )}
+              {messages.map((msg, idx) => (
+                <div key={idx} className={msg.role === "user" ? "text-right" : "text-left"}>
+                  <div className={`inline-block max-w-[85%] rounded-2xl px-4 py-2 ${
+                    msg.role === "user"
+                      ? "bg-gradient-to-br from-white to-white/80 text-black"
+                      : "border border-border bg-card text-foreground backdrop-blur-xl"
+                  }`}>
+                    <p className="text-sm font-light whitespace-pre-wrap text-left">
+                      {renderRichText(msg.content)}
+                    </p>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              {isLoading && (
+                <div className="text-left">
+                  <div className="inline-block rounded-2xl border border-border bg-card px-4 py-2 backdrop-blur-xl">
+                    <div className="flex space-x-1">
+                      <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
+                      <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-          <div className="p-4 border-t border-border flex gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage(input)}
-              placeholder={t("app.home.advisorPlaceholder")}
-              className="flex-1 rounded-full border border-border bg-input px-4 py-2.5 text-sm font-light backdrop-blur-md placeholder:text-muted-foreground focus:border-white/25 focus:outline-none"
-            />
-            <button
-              onClick={() => sendMessage(input)}
-              disabled={isLoading || !input.trim()}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[oklch(0.72_0.19_310)] to-[oklch(0.85_0.19_90)] text-black transition-transform hover:scale-105 disabled:opacity-40"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+            <div className="p-4 border-t border-border flex gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage(input)}
+                placeholder={t("app.home.advisorPlaceholder")}
+                className="flex-1 rounded-full border border-border bg-input px-4 py-2.5 text-sm font-light backdrop-blur-md placeholder:text-muted-foreground focus:border-white/25 focus:outline-none"
+              />
+              <button
+                onClick={() => sendMessage(input)}
+                disabled={isLoading || !input.trim()}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[oklch(0.72_0.19_310)] to-[oklch(0.85_0.19_90)] text-black transition-transform hover:scale-105 disabled:opacity-40"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}
