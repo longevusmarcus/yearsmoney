@@ -121,10 +121,12 @@ const Risks = () => {
       if (response.ok) {
         const data = await response.json();
         const priceMap: Record<string, PriceData> = {};
-        data.prices?.forEach((p: PriceData) => {
-          priceMap[p.symbol.toLowerCase()] = p;
-          priceMap[p.name.toLowerCase()] = p;
+        data.prices?.forEach((p: PriceData & { query?: string }) => {
+          if (p.query) priceMap[p.query.toLowerCase()] = p;
+          if (p.symbol) priceMap[p.symbol.toLowerCase()] = p;
+          if (p.name) priceMap[p.name.toLowerCase()] = p;
         });
+
         setPrices(priceMap);
       }
     } catch (error) {
