@@ -61,6 +61,37 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [displayMode, setDisplayMode] = useState<'years' | 'months' | 'days'>('years');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [firstName, setFirstName] = useState<string>("");
+
+  // Load the user's name for the advisor greeting
+  useEffect(() => {
+    if (!user) {
+      setFirstName("");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase
+        .from("profiles")
+        .select("first_name, nickname")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+      const metaName =
+        typeof meta.full_name === "string"
+          ? meta.full_name.split(" ")[0]
+          : typeof meta.name === "string"
+          ? meta.name.split(" ")[0]
+          : "";
+      setFirstName(data?.first_name || data?.nickname || metaName || "");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
 
   // Handle input focus - show auth modal if not logged in (skip in MSX shell)
   const handleInputFocus = () => {
