@@ -156,7 +156,8 @@ async function searchImages(query: string): Promise<Record<string, string>> {
     url.searchParams.set("num", "8");
 
 
-    const response = await fetch(url.toString());
+    const response = await fetchWithTimeout(url.toString(), {}, 5000);
+
     if (!response.ok) return {};
 
     const data = await response.json();
