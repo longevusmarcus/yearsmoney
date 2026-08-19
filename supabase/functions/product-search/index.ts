@@ -116,7 +116,7 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
   }
 
   try {
-    const response = await fetch("https://api.exa.ai/search", {
+    const response = await fetchWithTimeout("https://api.exa.ai/search", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${EXA_API_KEY}`,
@@ -124,15 +124,14 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
       },
       body: JSON.stringify({
         query: searchQuery,
-        type: "neural",
-        useAutoprompt: true,
-        numResults: 15,
-        contents: { 
-          text: { maxCharacters: 2500 },
-          highlights: true
+        type: "auto",
+        numResults: 6,
+        contents: {
+          text: { maxCharacters: 700 }
         }
       }),
-    });
+    }, 6000);
+
 
     if (!response.ok) return [];
     const data = await response.json();
