@@ -56,12 +56,15 @@ export const useUserFinances = () => {
 
         if (localIncome > 0 || localExpenses > 0 || localNetWorth > 0) {
           setFinances({ monthlyIncome: localIncome, monthlyExpenses: localExpenses, netWorth: localNetWorth });
-          await supabase.from("user_finances").upsert({
-            user_id: user.id,
-            monthly_income: localIncome,
-            monthly_expenses: localExpenses,
-            net_worth: localNetWorth,
-          });
+          await supabase.from("user_finances").upsert(
+            {
+              user_id: user.id,
+              monthly_income: localIncome,
+              monthly_expenses: localExpenses,
+              net_worth: localNetWorth,
+            },
+            { onConflict: "user_id" }
+          );
         }
       }
       if (!cancelled) setIsLoading(false);
