@@ -259,6 +259,60 @@ const Settings = () => {
           </Card>
         </div>
 
+        {/* Danger zone */}
+        {user && (
+          <div className="space-y-3">
+            <h2 className="text-[10px] uppercase tracking-wider text-destructive/70 font-light">
+              {t("app.settings.dangerZone")}
+            </h2>
+
+            <Card
+              onClick={() => setDeleteOpen(true)}
+              className="flex cursor-pointer items-center gap-3 rounded-2xl border-destructive/30 bg-destructive/5 p-4 transition-colors hover:bg-destructive/10"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/15">
+                <ShieldAlert className="h-4 w-4 text-destructive" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-light text-destructive">{t("app.settings.deleteAccount")}</p>
+                <p className="text-xs font-light text-muted-foreground">
+                  {t("app.settings.deleteAccountSub")}
+                </p>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <AlertDialogContent className="max-w-[92vw] rounded-3xl border-border bg-card sm:max-w-[420px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-display text-lg">
+                {t("app.settings.deleteAccountConfirmTitle")}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-light">
+                {t("app.settings.deleteAccountConfirmDesc")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting} className="rounded-full">
+                {t("app.settings.deleteAccountCancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteAccount();
+                }}
+                disabled={deleting}
+                className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleting ? t("app.settings.deleting") : t("app.settings.deleteAccountConfirm")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+
+
         {/* App Info */}
         <div className="pt-6 text-center">
           <p className="text-xs text-muted-foreground font-light">{t("app.settings.version")}</p>
