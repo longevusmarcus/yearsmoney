@@ -86,6 +86,22 @@ const Leaderboard = () => {
       });
     }
 
+    // Real users from the database, mixed into the same ranking.
+    for (const r of realRows) {
+      if (r.is_me) continue; // the visitor gets their own "You" row below
+      const nw = Number(r.net_worth) || 0;
+      const inc = Number(r.monthly_income) || 0;
+      const exp = Number(r.monthly_expenses) || 0;
+      if (nw <= 0 || inc <= 0) continue;
+      users.push({
+        rank: 0,
+        name: r.display_name || "Anon...",
+        buffer0Years: nw / (inc * 12),
+        buffer1Years: exp > 0 ? nw / (exp * 12) : 0,
+        isCurrentUser: false,
+      });
+    }
+
     // Signed in and with real numbers entered → slot the visitor into the ranking.
     // Same buffer formulas as above so the comparison is apples to apples.
     if (user && finances.netWorth > 0 && finances.monthlyIncome > 0) {
@@ -106,7 +122,8 @@ const Leaderboard = () => {
       ...u,
       rank: i + 1
     }));
-  }, [user, finances.netWorth, finances.monthlyIncome, finances.monthlyExpenses, t]);
+  }, [user, finances.netWorth, finances.monthlyIncome, finances.monthlyExpenses, realRows, t]);
+
 
   const formatYears = (years: number) => {
     if (years >= 1) {
