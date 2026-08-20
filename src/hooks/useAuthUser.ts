@@ -76,8 +76,11 @@ const init = () => {
   return initPromise;
 };
 
-// Coming back to the app after a long time away (tab restored, PWA resumed):
-// force a token refresh so every page sees the same signed-in state.
+// Coming back to the app (tab restored after visiting an external link, PWA
+// resumed): re-validate gently. We must NOT force refreshSession() here —
+// refresh tokens are single-use, so racing the client's own auto-refresh can
+// invalidate the session and log the user out. Validate with getUser() and only
+// refresh if that fails; never clear a known-good user on failure.
 if (typeof document !== "undefined") {
   let lastCheck = Date.now();
   document.addEventListener("visibilitychange", () => {
@@ -87,11 +90,21 @@ if (typeof document !== "undefined") {
     void (async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session) return;
+
+      const { data: userData, error } = await supabase.auth.getUser();
+      if (!error && userData.user) {
+        publish(userData.user);
+        return;
+      }
+
       const { data: refreshed } = await supabase.auth.refreshSession();
       if (refreshed.session?.user) publish(refreshed.session.user);
+      // Otherwise keep the current user as-is: a transient failure must never
+      // half-sign-out the app.
     })();
   });
 }
+
 
 
 
