@@ -1,15 +1,38 @@
 import { Trophy } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import PageHeader from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
 import { useUserFinances } from "@/hooks/useUserFinances";
 import { useI18n } from "@/i18n/I18nProvider";
+import { supabase } from "@/integrations/supabase/client";
+
+type RealRow = {
+  display_name: string | null;
+  net_worth: number | null;
+  monthly_income: number | null;
+  monthly_expenses: number | null;
+  is_me: boolean | null;
+};
 
 const Leaderboard = () => {
   // Signed-in visitors get their own ranked row; signed-out ones see the list as-is.
   const { finances, user } = useUserFinances();
   const { t } = useI18n();
+  const [realRows, setRealRows] = useState<RealRow[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data, error } = await supabase.rpc("get_leaderboard");
+      if (!active || error || !data) return;
+      setRealRows(data as RealRow[]);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
   // Realistic human names
   const names = [
     "Marcus Chen", "Sofia Rodriguez", "James O'Brien", "Aisha Patel", "Lucas Andersen",
