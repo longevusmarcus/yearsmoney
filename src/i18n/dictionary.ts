@@ -660,6 +660,12 @@ const it = {
       showFullName: "Mostra nome completo",
       public: "Pubblico",
       anonymousShort: "Anonimo (3 lettere)",
+      displayNameLabel: "Nome visualizzato",
+      displayNamePlaceholder: "Nome, cognome o nickname",
+      displayNameHint: "Usato in classifica quando il nome è pubblico",
+      save: "Salva",
+      saved: "Nome salvato",
+
       errorTitle: "Errore",
       errUpdatePreference: "Aggiornamento della preferenza non riuscito",
       publicNameTitle: "Nome pubblico",
