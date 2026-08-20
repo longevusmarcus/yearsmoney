@@ -76,6 +76,24 @@ const init = () => {
   return initPromise;
 };
 
+// Coming back to the app after a long time away (tab restored, PWA resumed):
+// force a token refresh so every page sees the same signed-in state.
+if (typeof document !== "undefined") {
+  let lastCheck = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    if (Date.now() - lastCheck < 60_000) return;
+    lastCheck = Date.now();
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) return;
+      const { data: refreshed } = await supabase.auth.refreshSession();
+      if (refreshed.session?.user) publish(refreshed.session.user);
+    })();
+  });
+}
+
+
 
 export const useAuthUser = () => {
   const [user, setUser] = useState<User | null>(cachedUser);
