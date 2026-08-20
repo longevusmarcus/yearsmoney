@@ -1567,6 +1567,12 @@ const en: typeof it = {
       showFullName: "Show full name",
       public: "Public",
       anonymousShort: "Anonymous (3 letters)",
+      displayNameLabel: "Display name",
+      displayNamePlaceholder: "Name, surname or nickname",
+      displayNameHint: "Used on the leaderboard when your name is public",
+      save: "Save",
+      saved: "Name saved",
+
       errorTitle: "Error",
       errUpdatePreference: "Failed to update preference",
       publicNameTitle: "Public name",
