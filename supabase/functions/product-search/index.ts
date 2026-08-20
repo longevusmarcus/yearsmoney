@@ -442,7 +442,9 @@ serve(async (req) => {
       listings = listings.map((listing: any) => ({
         ...listing,
         link:
-          listing.link && /^https?:\/\//i.test(listing.link)
+          listing.link &&
+          /^https?:\/\//i.test(listing.link) &&
+          !/example\.(com|org|net)|placeholder|localhost/i.test(listing.link)
             ? listing.link
             : `https://www.google.com/search?q=${encodeURIComponent(`${listing.title || query}`)}`,
       }));
