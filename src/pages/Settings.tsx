@@ -276,7 +276,34 @@ const Settings = () => {
                   disabled={loadingPreference}
                 />
               </div>
+
+              <div className="mt-4 space-y-2 border-t border-border pt-4">
+                <label className="text-xs font-light text-muted-foreground" htmlFor="display-name">
+                  {t("app.settings.displayNameLabel")}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="display-name"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={t("app.settings.displayNamePlaceholder")}
+                    maxLength={40}
+                    className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm font-light text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-ring"
+                  />
+                  <button
+                    onClick={handleSaveDisplayName}
+                    disabled={savingName}
+                    className="rounded-xl border border-border px-4 text-sm font-light text-foreground transition-colors hover:bg-muted/50 disabled:opacity-50"
+                  >
+                    {t("app.settings.save")}
+                  </button>
+                </div>
+                <p className="text-xs font-light text-muted-foreground">
+                  {t("app.settings.displayNameHint")}
+                </p>
+              </div>
             </Card>
+
           </div>
         )}
 
