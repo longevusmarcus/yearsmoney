@@ -25,28 +25,57 @@ const init = () => {
   if (initPromise) return initPromise;
 
   supabase.auth.onAuthStateChange((_event, session) => {
+    // Never downgrade a known-good user to null on a transient event while a
+    // refresh is still in flight — only explicit sign-out clears the user.
+    if (!session?.user && _event !== "SIGNED_OUT" && cachedUser) return;
     publish(session?.user ?? null);
   });
 
   initPromise = (async () => {
     const { data } = await supabase.auth.getSession();
+    const storedUser = data.session?.user ?? null;
     if (!data.session) {
       publish(null);
       return;
     }
-    // Re-validate with the auth server: a locally stored but expired/revoked
-    // session would otherwise look valid while every table read fails.
+
+    // Optimistically trust the stored session so pages render as signed in
+    // while we re-validate against the auth server.
+    publish(storedUser);
+
     const { data: userData, error } = await supabase.auth.getUser();
-    if (error || !userData.user) {
-      const { data: refreshed } = await supabase.auth.refreshSession();
-      publish(refreshed.session?.user ?? null);
+    if (!error && userData.user) {
+      publish(userData.user);
       return;
     }
-    publish(userData.user);
+
+    // Access token expired (typical after >24h away). Retry the refresh a few
+    // times: a single failure is often a race with the client's own auto
+    // refresh or a flaky network, not a revoked session.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshed.session?.user) {
+        publish(refreshed.session.user);
+        return;
+      }
+      const message = refreshError?.message?.toLowerCase() ?? "";
+      // Definitively dead session — stop retrying and sign out cleanly.
+      if (message.includes("refresh token not found") || message.includes("invalid refresh token")) {
+        await supabase.auth.signOut().catch(() => {});
+        publish(null);
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+    }
+
+    // Could not validate (offline?). Keep the stored user rather than showing
+    // a half-signed-in app; a later auth event will correct it.
+    publish(storedUser);
   })();
 
   return initPromise;
 };
+
 
 export const useAuthUser = () => {
   const [user, setUser] = useState<User | null>(cachedUser);
