@@ -410,13 +410,10 @@ serve(async (req) => {
 
       if (listings.length < 3) {
         // Slow path: enrich with Exa + AI extraction only when needed
-        const [exaResults, serpResults, imageResults] = await Promise.all([
+        const [exaResults, serpResults] = await Promise.all([
           searchWithExa(query, category),
           listings.length > 0 ? Promise.resolve(listings) : searchWithSerpAPI(query, category),
-          searchImages(query)
         ]);
-
-        const imageUrls = Object.values(imageResults);
 
         if (exaResults.length > 0 || serpResults.length > 0) {
           listings = await extractListings(query, exaResults, serpResults, category, lang);
@@ -428,14 +425,32 @@ serve(async (req) => {
           listings = [...listings, ...fallback].slice(0, 10);
         }
 
-        listings = listings.map((listing, index) =>
-          !listing.image && imageUrls[index] ? { ...listing, image: imageUrls[index] } : listing
-        );
+        // Attach real images from Google Images for listings missing one
+        const missingImages = listings.filter((l: any) => !l.image).length;
+        if (missingImages > 0) {
+          const imageUrls = Object.values(await searchImages(query));
+          let imgIdx = 0;
+          listings = listings.map((listing: any) =>
+            listing.image
+              ? listing
+              : { ...listing, image: imageUrls[imgIdx++] ?? null }
+          );
+        }
       }
+
+      // Always guarantee a working link so users can reach the real listing
+      listings = listings.map((listing: any) => ({
+        ...listing,
+        link:
+          listing.link && /^https?:\/\//i.test(listing.link)
+            ? listing.link
+            : `https://www.google.com/search?q=${encodeURIComponent(`${listing.title || query}`)}`,
+      }));
 
       if (listings.length === 0) {
         throw new Error("Could not find listings for this search");
       }
+
 
       // Ensure sorted by price descending
       listings.sort((a: any, b: any) => (b.price || 0) - (a.price || 0));
