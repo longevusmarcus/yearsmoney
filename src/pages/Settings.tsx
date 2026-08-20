@@ -29,6 +29,8 @@ const Settings = () => {
   const [leaderboardPublic, setLeaderboardPublic] = useState(
     () => localStorage.getItem("tc_leaderboard_display") === "public"
   );
+  const [displayName, setDisplayName] = useState(() => localStorage.getItem("tc_display_name") ?? "");
+  const [savingName, setSavingName] = useState(false);
   const [loadingPreference, setLoadingPreference] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -46,17 +48,48 @@ const Settings = () => {
   const fetchLeaderboardPreference = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("leaderboard_display")
+      .select("leaderboard_display, nickname, first_name, last_name")
       .eq("id", userId)
       .maybeSingle();
 
-    if (!error && data?.leaderboard_display) {
-      const isPublic = data.leaderboard_display === "public";
-      setLeaderboardPublic(isPublic);
-      localStorage.setItem("tc_leaderboard_display", isPublic ? "public" : "anonymous");
+    if (!error && data) {
+      if (data.leaderboard_display) {
+        const isPublic = data.leaderboard_display === "public";
+        setLeaderboardPublic(isPublic);
+        localStorage.setItem("tc_leaderboard_display", isPublic ? "public" : "anonymous");
+      }
+      const name =
+        data.nickname?.trim() ||
+        [data.first_name, data.last_name].filter(Boolean).join(" ").trim();
+      if (name) {
+        setDisplayName(name);
+        localStorage.setItem("tc_display_name", name);
+      }
     }
     setLoadingPreference(false);
   };
+
+  const handleSaveDisplayName = async () => {
+    if (!user) return;
+    const value = displayName.trim();
+    setSavingName(true);
+    const { error } = await supabase
+      .from("profiles")
+      .upsert({ id: user.id, nickname: value || null }, { onConflict: "id" });
+    setSavingName(false);
+
+    if (error) {
+      toast({
+        title: t("app.settings.errorTitle"),
+        description: t("app.settings.errUpdatePreference"),
+        variant: "destructive",
+      });
+      return;
+    }
+    localStorage.setItem("tc_display_name", value);
+    toast({ title: t("app.settings.saved") });
+  };
+
 
   const handleLeaderboardToggle = async (checked: boolean) => {
     if (!user) return;
