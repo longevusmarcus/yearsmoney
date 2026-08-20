@@ -130,7 +130,7 @@ async function searchWithExa(query: string, category: string): Promise<any[]> {
           text: { maxCharacters: 700 }
         }
       }),
-    }, 6000);
+    }, 12000);
 
 
     if (!response.ok) return [];
@@ -156,7 +156,7 @@ async function searchImages(query: string): Promise<Record<string, string>> {
     url.searchParams.set("num", "8");
 
 
-    const response = await fetchWithTimeout(url.toString(), {}, 5000);
+    const response = await fetchWithTimeout(url.toString(), {}, 12000);
 
     if (!response.ok) return {};
 
