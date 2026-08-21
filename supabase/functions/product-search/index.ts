@@ -553,6 +553,11 @@ serve(async (req) => {
 
       let listings: any[] = [];
 
+      if (category === "travel" || category === "lifestyle") {
+        // Full experience breakdown with real booking deep links
+        listings = await buildExperienceBundle(query, category, lang);
+      }
+
       if (category === "product") {
         // FAST PATH: Google Shopping already returns structured products
         // (title, price, image, link) — no AI round-trip needed.
@@ -563,6 +568,7 @@ serve(async (req) => {
       }
 
       if (listings.length < 3) {
+
         // Slow path: enrich with Exa + AI extraction only when needed
         const [exaResults, serpResults] = await Promise.all([
           searchWithExa(query, category),
