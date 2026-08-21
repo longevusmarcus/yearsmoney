@@ -415,7 +415,17 @@ function bundleLink(type: string, dest: string, query: string, aiLink?: string):
   const trusted =
     /booking\.com|airbnb\.|skyscanner|kayak|expedia|getyourguide|viator|tripadvisor|rentalcars|omio|trainline|thefork|hostelworld|agoda|ryanair|easyjet|ita\.|marriott|hilton|klook|ticketmaster|amazon\.|decathlon|zalando/i;
   if (aiLink && /^https?:\/\//i.test(aiLink) && trusted.test(aiLink)) return aiLink;
-  const builder = bookingLinks[type] || bookingLinks.service;
+  const typeAliases: Record<string, string> = {
+    hotel: "stay", accommodation: "stay", alloggio: "stay", lodging: "stay", resort: "stay",
+    airbnb: "apartment", rental: "apartment", flights: "flight", volo: "flight", voli: "flight",
+    car: "transport", "car rental": "transport", train: "transport", trasporti: "transport",
+    excursion: "activity", activities: "activity", tour: "activity", attivita: "activity",
+    meals: "food", restaurant: "food", dining: "food", cibo: "food",
+    tickets: "ticket", equipment: "gear", assicurazione: "insurance",
+  };
+  const key = typeAliases[(type || "").toLowerCase()] || (type || "").toLowerCase();
+  const builder = bookingLinks[key] || bookingLinks.service;
+
   return builder(dest || query, `${query} ${type}`);
 }
 
