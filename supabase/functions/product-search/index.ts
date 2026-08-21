@@ -389,6 +389,145 @@ Return JSON array sorted HIGH to LOW price:
   }
 }
 
+// ============================================================
+// TRAVEL / LIFESTYLE BUNDLE
+// Instead of random blog posts, build the full "cost of the
+// experience": flights, stay, transport, activities, food...
+// Each item links to a real booking/marketplace deep link.
+// ============================================================
+
+type BookingBuilder = (dest: string, q: string) => string;
+
+const bookingLinks: Record<string, BookingBuilder> = {
+  flight: (d) => `https://www.skyscanner.net/transport/flights-to/${encodeURIComponent(d)}/`,
+  stay: (d) => `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(d)}`,
+  apartment: (d) => `https://www.airbnb.com/s/${encodeURIComponent(d)}/homes`,
+  transport: (d) => `https://www.rentalcars.com/SearchResults.do?locationName=${encodeURIComponent(d)}`,
+  activity: (d) => `https://www.getyourguide.com/s/?q=${encodeURIComponent(d)}`,
+  food: (d) => `https://www.thefork.com/search?cityName=${encodeURIComponent(d)}`,
+  insurance: () => `https://www.worldnomads.com/travel-insurance`,
+  gear: (_d, q) => `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(q)}`,
+  ticket: (_d, q) => `https://www.ticketmaster.com/search?q=${encodeURIComponent(q)}`,
+  service: (_d, q) => `https://www.google.com/search?q=${encodeURIComponent(q)}`,
+};
+
+function bundleLink(type: string, dest: string, query: string, aiLink?: string): string {
+  const trusted =
+    /booking\.com|airbnb\.|skyscanner|kayak|expedia|getyourguide|viator|tripadvisor|rentalcars|omio|trainline|thefork|hostelworld|agoda|ryanair|easyjet|ita\.|marriott|hilton|klook|ticketmaster|amazon\.|decathlon|zalando/i;
+  if (aiLink && /^https?:\/\//i.test(aiLink) && trusted.test(aiLink)) return aiLink;
+  const builder = bookingLinks[type] || bookingLinks.service;
+  return builder(dest || query, `${query} ${type}`);
+}
+
+async function buildExperienceBundle(query: string, category: string, lang: string): Promise<any[]> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+  // Real web context so prices/names aren't invented out of thin air
+  const serpResults = await searchWithSerpAPI(query, category).catch(() => []);
+  const serpContext = serpResults
+    .slice(0, 8)
+    .map((r: any, i: number) => `[S${i}] ${r.title} | ${r.snippet || ""} | ${r.link || r.source || ""}`)
+    .join("\n");
+
+  const isTravel = category === "travel";
+  const allowedTypes = isTravel
+    ? `"flight", "stay", "apartment", "transport", "activity", "food", "insurance", "gear"`
+    : `"ticket", "service", "gear", "food", "stay", "transport", "activity"`;
+
+  const systemPrompt = `You are a travel & lifestyle cost planner for "${query}".
+
+Break the experience down into the REAL components someone must actually pay for.
+${isTravel
+  ? `For a trip include (when relevant): return flights, accommodation (hotel AND apartment option), local transport / car rental, 2-3 signature activities or excursions, food budget, travel insurance, and any needed gear.`
+  : `For a lifestyle purchase/experience include tickets or booking fees, the main service, add-on services, gear/equipment, food & drinks, and travel/stay if the event requires it.`}
+
+WEB CONTEXT (use for real names, seasons and price anchors):
+${serpContext || "None"}
+
+Rules:
+- 7 to 9 items, each a DIFFERENT component (never two generic "blog" items).
+- Prices in USD, total cost for the whole experience for 2 people unless the query says otherwise.
+- "destination" = the city/region/place of the experience (empty string if none).
+- Never invent a URL: leave "link" empty unless it is a real booking site URL you saw in the web context.
+- Write "title" and "description" in ${lang === "en" ? "English" : "Italian"}.
+
+Return ONLY JSON:
+{"destination":"...","items":[{"type":one of ${allowedTypes},"title":"...","price":number,"description":"what it covers, 1-2 sentences","link":"","source":"Booking.com|Skyscanner|GetYourGuide|..."}]}`;
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: query },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    console.error(`[Bundle] AI error ${response.status}: ${detail.slice(0, 300)}`);
+    return [];
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content || "";
+  let parsed: any = null;
+  try {
+    let jsonStr = content;
+    const fenced = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (fenced) jsonStr = fenced[1].trim();
+    const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (objMatch) jsonStr = objMatch[0];
+    parsed = JSON.parse(jsonStr);
+  } catch (e) {
+    console.error("[Bundle] parse error", e);
+    return [];
+  }
+
+  const destination: string = parsed?.destination || "";
+  const items: any[] = Array.isArray(parsed?.items) ? parsed.items : [];
+  if (items.length === 0) return [];
+
+  // Real photos per component
+  const imageMap = await searchImages(`${destination || query} ${isTravel ? "travel" : ""}`.trim()).catch(() => ({}));
+  const imageUrls = Object.values(imageMap);
+
+  const listings = items.map((item: any, i: number) => ({
+    title: item.title,
+    price: Number(item.price) || 0,
+    description: item.description || "",
+    link: bundleLink(item.type, destination, `${destination || query} ${item.title || ""}`.trim(), item.link),
+    source: item.source || destination || "Booking",
+    component: item.type,
+    image: imageUrls[i] ?? imageUrls[0] ?? null,
+  }));
+
+  // Total cost of the whole experience as the headline item
+  const total = listings.reduce((sum, l) => sum + (l.price || 0), 0);
+  if (total > 0) {
+    listings.unshift({
+      title: lang === "en" ? `Full experience: ${query}` : `Esperienza completa: ${query}`,
+      price: total,
+      description:
+        lang === "en"
+          ? `Estimated total of all ${listings.length} components below (flights, stay, transport, activities, food).`
+          : `Totale stimato di tutte le ${listings.length} voci qui sotto (voli, alloggio, trasporti, attività, cibo).`,
+      link: bundleLink("stay", destination, query),
+      source: destination || "Years",
+      component: "total",
+      image: imageUrls[0] ?? null,
+    });
+  }
+
+  console.log(`[Bundle] ${listings.length} components for ${category} / ${destination}`);
+  return listings;
+}
+
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
