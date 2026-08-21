@@ -68,21 +68,36 @@ function fetchWithTimeout(url: string, init: RequestInit = {}, ms = 6000) {
   return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(t));
 }
 
-// Categories with detection
+// Categories with detection (travel is checked first: "casa vacanza" is a trip, not a property)
 const categoryPatterns: { keywords: string[]; category: string }[] = [
+  {
+    keywords: [
+      "vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort",
+      "cruise", "safari", "honeymoon", "weekend", "city break", "island",
+      "viaggio", "viaggi", "vacanza", "vacanze", "volo", "voli", "crociera", "soggiorno",
+      "escursione", "ferie", "ponte", "luna di miele", "isola",
+    ],
+    category: "travel",
+  },
   { 
     keywords: ["house", "apartment", "flat", "villa", "condo", "property", "home", "casa", "appartamento"],
     category: "real_estate_sale"
   },
-  { 
-    keywords: ["vacation", "trip", "travel", "holiday", "getaway", "tour", "flight", "hotel", "resort", "viaggio", "vacanza", "volo"],
-    category: "travel"
+  {
+    keywords: [
+      "spa", "wedding", "matrimonio", "concert", "concerto", "festival", "gym", "palestra",
+      "ristorante", "restaurant", "cena", "party", "evento", "event", "lifestyle",
+      "arredare", "arredamento", "furniture", "kitchen renovation", "ristrutturare",
+      "corso", "course", "abbonamento", "subscription", "membership",
+    ],
+    category: "lifestyle",
   },
   {
     keywords: ["tesla", "bmw", "mercedes", "porsche", "ferrari", "lamborghini", "car", "vehicle", "suv", "auto", "automobile"],
     category: "automotive"
   }
 ];
+
 
 function detectCategory(query: string): { category: string; isRental: boolean } {
   const lowerQuery = query.toLowerCase();
