@@ -36,8 +36,10 @@ const categoryIcons: Record<string, React.ReactNode> = {
   real_estate: <Home className="w-4 h-4" />,
   automotive: <Car className="w-4 h-4" />,
   travel: <Plane className="w-4 h-4" />,
+  lifestyle: <ShoppingBag className="w-4 h-4" />,
   product: <ShoppingBag className="w-4 h-4" />
 };
+
 
 const Purchase = () => {
   const { t, lang } = useI18n();
