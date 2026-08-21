@@ -117,7 +117,7 @@ const Risks = () => {
   }, [authUser, authLoading]);
 
 
-  const loadInvestments = async () => {
+  const loadInvestments = async (attempt = 0) => {
     // Only show the blocking spinner when we have nothing cached to render.
     if (investments.length === 0) setIsLoadingInvestments(true);
     const { data, error } = await supabase
@@ -127,6 +127,17 @@ const Risks = () => {
 
     if (error) {
       console.error("Error loading investments:", error);
+      // Stale token after a long absence: refresh the session and retry silently
+      // instead of surfacing an error the user can only fix with a hard refresh.
+      if (attempt < 2) {
+        try {
+          await supabase.auth.refreshSession();
+        } catch {
+          /* ignore */
+        }
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+        return loadInvestments(attempt + 1);
+      }
       toast({ title: t("app.risks.errLoading"), variant: "destructive" });
     } else {
       setInvestments(data || []);
@@ -141,12 +152,14 @@ const Risks = () => {
     setIsLoadingInvestments(false);
   };
 
-  const fetchPrices = async (assetNames: string[]) => {
+  const fetchPrices = async (assetNames: string[], attempt = 0) => {
     if (assetNames.length === 0) return;
 
     // With cached prices on screen we refresh silently in the background.
     const hasCachedPrices = Object.keys(prices).length > 0;
     if (!hasCachedPrices) setIsLoadingPrices(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
     try {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
         method: "POST",
@@ -155,6 +168,7 @@ const Risks = () => {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ assets: assetNames }),
+        signal: controller.signal,
       });
 
       if (response.ok) {
@@ -168,12 +182,22 @@ const Risks = () => {
 
         setPrices(priceMap);
         writeCache(PRICES_CACHE, priceMap);
+      } else if (attempt < 1) {
+        clearTimeout(timer);
+        return fetchPrices(assetNames, attempt + 1);
       }
     } catch (error) {
       console.error("Error fetching prices:", error);
+      // Cold-start / abort: give it one more shot before giving up.
+      if (attempt < 1) {
+        clearTimeout(timer);
+        return fetchPrices(assetNames, attempt + 1);
+      }
     }
+    clearTimeout(timer);
     setIsLoadingPrices(false);
   };
+
 
   const addInvestment = async () => {
     if (!asset || !amount || !user) return;
