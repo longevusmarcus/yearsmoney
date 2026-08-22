@@ -660,6 +660,11 @@ const it = {
       showFullName: "Visibilità in classifica",
       public: "Pubblico — nickname o iniziali email",
       anonymousShort: "Privato — mostrato come “Anon...”",
+      modeAnon: "Anonimo",
+      modePublic: "Pubblico",
+      modeAnonDesc: "Apparirai come “Anon...”",
+      modePublicDesc: "Apparirai col nickname o le iniziali email",
+
       displayNameLabel: "Nome visualizzato",
       displayNamePlaceholder: "Nome, cognome o nickname",
       displayNameHint: "Usato in classifica quando sei pubblico. Senza nickname mostriamo le prime lettere della tua email.",
