@@ -660,6 +660,11 @@ const it = {
       showFullName: "Visibilità in classifica",
       public: "Pubblico — nickname o iniziali email",
       anonymousShort: "Privato — mostrato come “Anon...”",
+      modeAnon: "Anonimo",
+      modePublic: "Pubblico",
+      modeAnonDesc: "Apparirai come “Anon...”",
+      modePublicDesc: "Apparirai col nickname o le iniziali email",
+
       displayNameLabel: "Nome visualizzato",
       displayNamePlaceholder: "Nome, cognome o nickname",
       displayNameHint: "Usato in classifica quando sei pubblico. Senza nickname mostriamo le prime lettere della tua email.",
@@ -1567,6 +1572,11 @@ const en: typeof it = {
       showFullName: "Leaderboard visibility",
       public: "Public — nickname or email initials",
       anonymousShort: "Private — shown as “Anon...”",
+      modeAnon: "Anonymous",
+      modePublic: "Public",
+      modeAnonDesc: "You'll appear as “Anon...”",
+      modePublicDesc: "You'll appear with your nickname or email initials",
+
       displayNameLabel: "Display name",
       displayNamePlaceholder: "Name, surname or nickname",
       displayNameHint: "Used on the leaderboard when public. Without a nickname we show the first letters of your email.",
