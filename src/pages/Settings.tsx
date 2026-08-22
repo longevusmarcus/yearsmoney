@@ -258,24 +258,39 @@ const Settings = () => {
             </h2>
             
             <Card className="bg-card border-border p-4 rounded-2xl">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <Trophy className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-light text-foreground">{t("app.settings.showFullName")}</p>
-                    <p className="text-xs text-muted-foreground font-light">
-                      {leaderboardPublic ? t("app.settings.public") : t("app.settings.anonymousShort")}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                  <Trophy className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <Switch
-                  checked={leaderboardPublic}
-                  onCheckedChange={handleLeaderboardToggle}
-                  disabled={loadingPreference}
-                />
+                <div>
+                  <p className="text-sm font-light text-foreground">{t("app.settings.showFullName")}</p>
+                  <p className="text-xs text-muted-foreground font-light">
+                    {leaderboardPublic ? t("app.settings.modePublicDesc") : t("app.settings.modeAnonDesc")}
+                  </p>
+                </div>
               </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {([
+                  { isPublic: false, label: t("app.settings.modeAnon") },
+                  { isPublic: true, label: t("app.settings.modePublic") },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.label}
+                    type="button"
+                    disabled={loadingPreference}
+                    onClick={() => handleLeaderboardToggle(opt.isPublic)}
+                    className={`rounded-xl border px-3 py-2 text-sm font-light transition-colors disabled:opacity-50 ${
+                      leaderboardPublic === opt.isPublic
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border text-muted-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
 
               <div className="mt-4 space-y-2 border-t border-border pt-4">
                 <label className="text-xs font-light text-muted-foreground" htmlFor="display-name">
