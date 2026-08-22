@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/PageHeader";
-import { Switch } from "@/components/ui/switch";
 import MobileOnly from "@/components/MobileOnly";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useAuthUser } from "@/hooks/useAuthUser";
