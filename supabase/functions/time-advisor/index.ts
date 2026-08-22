@@ -90,8 +90,33 @@ Consider the user has ${yearlyOptionalHours} optional hours per year and each ho
         userPrompt = `Suggest 6 meaningful opportunities for someone with ${yearlyOptionalHours} optional hours/year, earning $${income}/month with $${expenses}/month expenses. Include a mix of categories: travel, tech, learning, fitness, experiences.`;
         break;
 
+      case "scenarios": {
+        const g = Number(goalYears) || 10;
+        systemPrompt = `You are a financial freedom planner. The user measures wealth in "years of freedom" = net worth / yearly expenses.
+Create 3 DIFFERENT, concrete and realistic scenarios that would let the user reach their goal of ${g} years of freedom.
+Each scenario changes the ratio between income, expenses and net worth with a distinct lever (earn more, spend less, invest/grow assets, or a mix).
+Return JSON only with this structure:
+{
+  "scenarios": [
+    {
+      "title": "Short scenario name",
+      "lever": "income" | "expenses" | "assets" | "mix",
+      "monthlyIncome": number,
+      "monthlyExpenses": number,
+      "netWorth": number,
+      "yearsToGoal": number,
+      "description": "1-2 sentences explaining the trade-off in terms of time, concrete and actionable"
+    }
+  ]
+}
+Rules: numbers must be plausible deltas from the current situation (no more than ~2.5x income, no expenses below ~45% of current), and yearsToGoal is how many years of effort before reaching ${g} years of freedom. Vary the scenarios each time (variation seed: ${seed ?? Math.random()}).`;
+        userPrompt = `Current situation: monthly income ${income}, monthly expenses ${expenses}, net worth ${netWorth}. Goal: ${g} years of freedom. Give 3 fresh scenarios.`;
+        break;
+      }
+
       default:
         throw new Error("Invalid type");
+
     }
 
     const langName = lang === "en" ? "English" : "Italian";
