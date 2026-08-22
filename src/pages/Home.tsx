@@ -113,12 +113,25 @@ const Home = () => {
     ? netWorth / monthlyExpenses 
     : 0;
 
-  // Calculate projections for both scenarios
+  // Projection WITH the current cash flow. When income is lower than expenses
+  // the buffer still shrinks — just more slowly than with no income at all.
   const calculateProjectionWithIncome = (years: number) => {
     if (monthlyExpenses <= 0) return 0;
-    const futureNetWorth = netWorth + (monthlySavings * years * 12);
+    const futureNetWorth = Math.max(0, netWorth + freeCash * years * 12);
     return futureNetWorth / monthlyExpenses;
   };
+
+  // Projection with ZERO income: net worth burns at the full expense rate.
+  const calculateProjectionNoIncome = (years: number) => {
+    if (monthlyExpenses <= 0) return 0;
+    const futureNetWorth = Math.max(0, netWorth - monthlyExpenses * years * 12);
+    return futureNetWorth / monthlyExpenses;
+  };
+
+  // Runway in months: with the current (possibly partial) income vs no income
+  const runwayWithPartialIncome =
+    freeCash >= 0 ? Infinity : netWorth / Math.abs(freeCash);
+  const runwayNoIncome = lifeBufferWithoutIncome;
 
   // Monthly buffer gain in months
   const monthlyBufferGain = monthlyExpenses > 0 ? monthlySavings / monthlyExpenses : 0;
@@ -132,19 +145,20 @@ const Home = () => {
     { 
       label: t("app.home.axis1y"), 
       withIncome: Math.round(calculateProjectionWithIncome(1)),
-      withoutIncome: Math.round(lifeBufferWithoutIncome),
+      withoutIncome: Math.round(calculateProjectionNoIncome(1)),
     },
     { 
       label: t("app.home.axis5y"), 
       withIncome: Math.round(calculateProjectionWithIncome(5)),
-      withoutIncome: Math.round(lifeBufferWithoutIncome),
+      withoutIncome: Math.round(calculateProjectionNoIncome(5)),
     },
     { 
       label: t("app.home.axis20y"), 
       withIncome: Math.round(calculateProjectionWithIncome(20)),
-      withoutIncome: Math.round(lifeBufferWithoutIncome),
+      withoutIncome: Math.round(calculateProjectionNoIncome(20)),
     },
   ];
+
 
   // Format display based on mode
   const formatLifeBuffer = (months: number) => {
