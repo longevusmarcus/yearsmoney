@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { type, messages, lang = "it", context, query, price, asset, amount, hourlyLifeCost, yearlyOptionalHours, income, expenses } = await req.json();
+    const { type, messages, lang = "it", context, query, price, asset, amount, hourlyLifeCost, yearlyOptionalHours, income, expenses, netWorth, goalYears, seed } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
