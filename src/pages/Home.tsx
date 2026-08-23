@@ -577,7 +577,30 @@ const Home = () => {
             </p>
           )}
         </div>
+
+        {/* Partial income still stretches the runway */}
+        {isNegative && monthlyIncome > 0 && monthlyExpenses > 0 && netWorth > 0 && (
+          <div className="mt-3 rounded-2xl border border-border bg-card p-4">
+            <p className="text-xs font-light text-muted-foreground">{t("app.home.burnTitle")}</p>
+            <div className="mt-2 grid grid-cols-2 gap-3">
+              <div>
+                <p className="logo-gradient-text inline-block font-display text-2xl tracking-tight">
+                  {formatLifeBuffer(runwayWithPartialIncome)}
+                </p>
+                <p className="text-[10px] font-light text-muted-foreground">{t("app.home.burnWithIncome")}</p>
+              </div>
+              <div>
+                <p className="font-display text-2xl tracking-tight text-muted-foreground">
+                  {formatLifeBuffer(runwayNoIncome)}
+                </p>
+                <p className="text-[10px] font-light text-muted-foreground">{t("app.home.burnNoIncome")}</p>
+              </div>
+            </div>
+            <p className="mt-2 text-[11px] font-light text-muted-foreground/80">{t("app.home.burnHint")}</p>
+          </div>
+        )}
       </div>
+
 
       {/* Projection Chart */}
       <div className="px-6 mb-6">
