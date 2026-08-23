@@ -407,7 +407,86 @@ const Home = () => {
             />
           </div>
         </div>
+
+        {/* Freedom goal + AI scenarios */}
+        <div className="bg-card border border-border rounded-2xl p-4">
+          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+            {t("app.home.goalTitle")}
+          </h2>
+          <label className="text-[10px] text-muted-foreground font-light" htmlFor="goal-years">
+            {t("app.home.goalLabel")}
+          </label>
+          <div className="mt-1 flex gap-2">
+            <input
+              id="goal-years"
+              type="number"
+              min={1}
+              value={goalYears}
+              onChange={(e) => {
+                setGoalYears(e.target.value);
+                localStorage.setItem("tc_goal_years", e.target.value);
+              }}
+              placeholder={t("app.home.goalPlaceholder")}
+              className="w-24 bg-background border border-border rounded-xl px-3 py-2.5 text-sm font-light focus:outline-none focus:ring-1 focus:ring-foreground/20"
+            />
+            <button
+              onClick={generateScenarios}
+              disabled={scenariosLoading || !canGenerateScenarios}
+              className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-light text-foreground transition-colors hover:bg-muted/50 disabled:opacity-40"
+            >
+              {scenariosLoading
+                ? t("app.home.goalLoading")
+                : scenarios.length > 0
+                ? t("app.home.goalRefresh")
+                : t("app.home.goalGenerate")}
+            </button>
+          </div>
+
+          {!canGenerateScenarios && (
+            <p className="mt-2 text-[11px] font-light text-muted-foreground">{t("app.home.goalNeedData")}</p>
+          )}
+          {scenariosError && (
+            <p className="mt-2 text-[11px] font-light text-destructive">{scenariosError}</p>
+          )}
+
+          {scenarios.length > 0 && (
+            <div className="mt-4 space-y-3">
+              {scenarios.map((s, i) => (
+                <div key={i} className="rounded-xl border border-border/70 bg-background/40 p-3">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-sm font-light text-foreground">{s.title}</p>
+                    <span className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {t("app.home.scenarioReach")} {Math.round(s.yearsToGoal)} {t("app.home.goalYears")}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs font-light text-muted-foreground">{renderRichText(s.description)}</p>
+                  <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                    {[
+                      { label: t("app.home.scenarioIncome"), value: s.monthlyIncome },
+                      { label: t("app.home.scenarioExpenses"), value: s.monthlyExpenses },
+                      { label: t("app.home.scenarioNetWorth"), value: s.netWorth },
+                    ].map((cell) => (
+                      <div key={cell.label}>
+                        <p className="text-sm font-light text-foreground">
+                          {Math.round(cell.value).toLocaleString()}
+                        </p>
+                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{cell.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => applyScenario(s)}
+                    className="mt-3 w-full rounded-lg border border-border px-3 py-1.5 text-[11px] font-light text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                  >
+                    {t("app.home.scenarioApply")}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
 
       {/* Connect Accounts - Coming Soon */}
       <div className="px-6 mb-6">
