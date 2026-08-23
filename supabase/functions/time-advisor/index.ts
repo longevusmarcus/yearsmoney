@@ -156,48 +156,129 @@ IMPORTANT: Write ALL user-facing text (including any JSON string values such as 
         headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
       });
     } else {
-      // Non-streaming JSON response
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
-          ],
-          response_format: { type: "json_object" },
-        }),
-      });
+      // Deterministic fallback for scenarios so the UI never dead-ends on AI hiccups
+      const fallbackScenarios = () => {
+        const g = Number(goalYears) || 10;
+        const inc = Number(income) || 0;
+        const exp = Number(expenses) || 0;
+        const nw = Number(netWorth) || 0;
+        const it = lang !== "en";
+        const build = (
+          title: string,
+          lever: string,
+          mi: number,
+          me: number,
+          description: string,
+        ) => {
+          const target = me * 12 * g;
+          const monthlySave = mi - me;
+          const yearsToGoal = monthlySave > 0 ? Math.max(0, (target - nw) / (monthlySave * 12)) : 99;
+          return {
+            title,
+            lever,
+            monthlyIncome: Math.round(mi),
+            monthlyExpenses: Math.round(me),
+            netWorth: Math.round(Math.max(nw, target)),
+            yearsToGoal: Math.round(yearsToGoal * 10) / 10,
+            description,
+          };
+        };
+        return [
+          build(
+            it ? "Spendi meno" : "Spend less",
+            "expenses",
+            inc,
+            Math.max(1, exp * 0.7),
+            it
+              ? "Taglia il 30% delle spese: abbassi il capitale necessario e liberi risparmio ogni mese."
+              : "Cut 30% of expenses: you lower the capital needed and free up monthly savings.",
+          ),
+          build(
+            it ? "Guadagna di più" : "Earn more",
+            "income",
+            inc * 1.6,
+            exp,
+            it
+              ? "Aumenta le entrate del 60% mantenendo lo stesso stile di vita."
+              : "Grow income by 60% while keeping the same lifestyle.",
+          ),
+          build(
+            it ? "Equilibrio" : "Balanced",
+            "mix",
+            inc * 1.3,
+            Math.max(1, exp * 0.85),
+            it
+              ? "Un mix realistico: +30% entrate e -15% spese."
+              : "A realistic mix: +30% income and -15% expenses.",
+          ),
+        ];
+      };
 
-      if (!response.ok) {
-        if (response.status === 429) {
+      // Non-streaming JSON response
+      let response: Response | null = null;
+      try {
+        response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-3-flash-preview",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            response_format: { type: "json_object" },
+          }),
+        });
+      } catch (fetchErr) {
+        console.error("gateway fetch failed:", fetchErr);
+      }
+
+      if (!response || !response.ok) {
+        const status = response?.status ?? 0;
+        console.error("gateway error status:", status, response ? await response.text() : "no response");
+        if (type === "scenarios") {
+          return new Response(JSON.stringify({ scenarios: fallbackScenarios(), fallback: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (status === 429) {
           return new Response(JSON.stringify({ error: "Rate limit exceeded" }), {
             status: 429,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        throw new Error(`AI gateway error: ${response.status}`);
+        throw new Error(`AI gateway error: ${status}`);
       }
 
       const data = await response.json();
       const content = data.choices?.[0]?.message?.content;
-      
+
       try {
         const parsed = JSON.parse(content);
+        if (type === "scenarios" && !Array.isArray(parsed?.scenarios)) {
+          return new Response(JSON.stringify({ scenarios: fallbackScenarios(), fallback: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         return new Response(JSON.stringify(parsed), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       } catch {
+        if (type === "scenarios") {
+          return new Response(JSON.stringify({ scenarios: fallbackScenarios(), fallback: true }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
+
   } catch (error) {
     console.error("time-advisor error:", error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), {
