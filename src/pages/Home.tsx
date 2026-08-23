@@ -202,6 +202,68 @@ const Home = () => {
     setDisplayMode(prev => prev === 'years' ? 'months' : prev === 'months' ? 'days' : 'years');
   };
 
+  // ---- Freedom goal scenarios (AI) ----
+  const canGenerateScenarios = monthlyIncome > 0 && monthlyExpenses > 0;
+
+  const generateScenarios = async () => {
+    if (!canGenerateScenarios) return;
+    setScenariosLoading(true);
+    setScenariosError(null);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/time-advisor`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          type: "scenarios",
+          lang,
+          income: monthlyIncome,
+          expenses: monthlyExpenses,
+          netWorth,
+          goalYears: Number(goalYears) || 10,
+          seed: Math.random().toString(36).slice(2),
+        }),
+      });
+      if (!response.ok) throw new Error("scenarios failed");
+      const data = await response.json();
+      const list: Scenario[] = Array.isArray(data.scenarios) ? data.scenarios : [];
+      if (list.length === 0) throw new Error("empty");
+      setScenarios(list);
+    } catch (e) {
+      console.error("scenarios error:", e);
+      setScenariosError(t("app.home.goalError"));
+    } finally {
+      setScenariosLoading(false);
+    }
+  };
+
+  const applyScenario = (s: Scenario) => {
+    updateFinances({
+      monthlyIncome: Math.round(s.monthlyIncome),
+      monthlyExpenses: Math.round(s.monthlyExpenses),
+      netWorth: Math.round(s.netWorth),
+    });
+  };
+
+  // ---- Life milestones ----
+  const yearlyExpenses = monthlyExpenses * 12;
+  const milestones = [
+    { key: "milestoneSabbatical", cost: yearlyExpenses },
+    { key: "milestoneHouse", cost: yearlyExpenses * 2 },
+    { key: "milestoneTrip", cost: monthlyExpenses * 8 },
+    { key: "milestoneCar", cost: monthlyExpenses * 6 },
+    { key: "milestoneFreedom", cost: yearlyExpenses * 25 },
+  ].map((m) => {
+    const costInYears = yearlyExpenses > 0 ? m.cost / yearlyExpenses : 0;
+    const missing = Math.max(0, m.cost - netWorth);
+    const monthsToReach =
+      missing === 0 ? 0 : monthlySavings > 0 ? Math.ceil(missing / monthlySavings) : null;
+    return { ...m, costInYears, monthsToReach };
+  });
+
+
   // Hours gained/lost this month
   const hoursGainedOrLost = freeCash > 0 && monthlyExpenses > 0
     ? Math.round((freeCash / monthlyExpenses) * 30 * 24)
