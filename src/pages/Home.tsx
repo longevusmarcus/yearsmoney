@@ -690,6 +690,43 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Life milestones */}
+      {monthlyExpenses > 0 && (
+        <div className="px-6 mb-6">
+          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
+            {t("app.home.milestonesTitle")}
+          </h2>
+          <div className="bg-card border border-border rounded-2xl divide-y divide-border/60">
+            {milestones.map((m) => (
+              <div key={m.key} className="flex items-center justify-between gap-3 p-4">
+                <div>
+                  <p className="text-sm font-light text-foreground">{t(`app.home.${m.key}`)}</p>
+                  <p className="text-[10px] font-light text-muted-foreground">
+                    {m.costInYears < 1
+                      ? `${Math.round(m.costInYears * 12)} ${t("app.home.unitMonths")}`
+                      : `${m.costInYears.toFixed(m.costInYears < 3 ? 1 : 0)} ${t("app.home.unitYears")}`}{" "}
+                    · {t("app.home.milestoneCost")}
+                  </p>
+                </div>
+                <div className="text-right">
+                  {m.monthsToReach === 0 ? (
+                    <p className="logo-gradient-text inline-block text-sm">{t("app.home.milestoneNow")}</p>
+                  ) : m.monthsToReach === null ? (
+                    <p className="text-sm font-light text-muted-foreground">{t("app.home.milestoneNever")}</p>
+                  ) : (
+                    <>
+                      <p className="text-sm font-light text-foreground">{formatLifeBuffer(m.monthsToReach)}</p>
+                      <p className="text-[10px] font-light text-muted-foreground">{t("app.home.milestoneReach")}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+
       {/* Insight */}
       {monthlyExpenses > 0 && monthlySavings > 0 && (
         <div className="px-6 mb-6">
