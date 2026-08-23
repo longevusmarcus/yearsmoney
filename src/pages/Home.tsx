@@ -672,7 +672,7 @@ const Home = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-4 h-0.5 bg-muted-foreground rounded-full opacity-60" />
-              <span className="text-[10px] text-muted-foreground">stop earning</span>
+              <span className="text-[10px] text-muted-foreground">{t("app.home.withoutIncome")}</span>
             </div>
           </div>
 
