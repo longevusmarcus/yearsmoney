@@ -15,6 +15,17 @@ interface Message {
   content: string;
 }
 
+interface Scenario {
+  title: string;
+  lever?: string;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  netWorth: number;
+  yearsToGoal: number;
+  description: string;
+}
+
+
 /** Minimal markdown renderer: **bold**, *italic* and `code`. */
 function renderRichText(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\n]+\*|`[^`]+`)/g);
