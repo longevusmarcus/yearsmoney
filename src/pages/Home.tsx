@@ -63,6 +63,13 @@ const Home = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [firstName, setFirstName] = useState<string>("");
 
+  // Freedom goal + AI scenarios
+  const [goalYears, setGoalYears] = useState<string>(() => localStorage.getItem("tc_goal_years") ?? "");
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [scenariosLoading, setScenariosLoading] = useState(false);
+  const [scenariosError, setScenariosError] = useState<string | null>(null);
+
+
   // Load the user's name for the advisor greeting
   useEffect(() => {
     if (!user) {
