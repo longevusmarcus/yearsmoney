@@ -110,7 +110,7 @@ Return JSON only with this structure:
   ]
 }
 Rules: numbers must be plausible deltas from the current situation (no more than ~2.5x income, no expenses below ~45% of current), and yearsToGoal is how many years of effort before reaching ${g} years of freedom. Vary the scenarios each time (variation seed: ${seed ?? Math.random()}).`;
-        userPrompt = `Current situation: monthly income ${income}, monthly expenses ${expenses}, net worth ${netWorth}. Goal: ${g} years of freedom. Give 3 fresh scenarios.`;
+        userPrompt = `Current situation: monthly income ${income}, monthly expenses ${expenses}, net worth ${netWorth}. Goal: ${g} years of freedom. Give 4 fresh scenarios, including one driven purely by growing/investing net worth.`;
         break;
       }
 
