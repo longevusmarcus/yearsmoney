@@ -169,16 +169,22 @@ IMPORTANT: Write ALL user-facing text (including any JSON string values such as 
           mi: number,
           me: number,
           description: string,
+          nwOverride?: number,
         ) => {
           const target = me * 12 * g;
+          const startNw = nwOverride ?? nw;
           const monthlySave = mi - me;
-          const yearsToGoal = monthlySave > 0 ? Math.max(0, (target - nw) / (monthlySave * 12)) : 99;
+          const yearsToGoal = startNw >= target
+            ? 0
+            : monthlySave > 0
+              ? Math.max(0, (target - startNw) / (monthlySave * 12))
+              : 99;
           return {
             title,
             lever,
             monthlyIncome: Math.round(mi),
             monthlyExpenses: Math.round(me),
-            netWorth: Math.round(Math.max(nw, target)),
+            netWorth: Math.round(Math.max(startNw, target)),
             yearsToGoal: Math.round(yearsToGoal * 10) / 10,
             description,
           };
@@ -203,15 +209,27 @@ IMPORTANT: Write ALL user-facing text (including any JSON string values such as 
               : "Grow income by 60% while keeping the same lifestyle.",
           ),
           build(
+            it ? "Fai crescere il patrimonio" : "Grow your assets",
+            "assets",
+            inc,
+            exp,
+            it
+              ? "Stesso stile di vita, ma il patrimonio investito cresce (~6% l'anno reale): il capitale lavora al posto tuo."
+              : "Same lifestyle, but your invested net worth compounds (~6% real per year): capital works for you.",
+            Math.max(nw * 1.35, nw + exp * 12),
+          ),
+          build(
             it ? "Equilibrio" : "Balanced",
             "mix",
             inc * 1.3,
             Math.max(1, exp * 0.85),
             it
-              ? "Un mix realistico: +30% entrate e -15% spese."
-              : "A realistic mix: +30% income and -15% expenses.",
+              ? "Un mix realistico: +30% entrate, -15% spese e patrimonio investito."
+              : "A realistic mix: +30% income, -15% expenses and invested assets.",
+            Math.max(nw * 1.15, nw),
           ),
         ];
+
       };
 
       // Non-streaming JSON response
