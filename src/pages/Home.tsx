@@ -209,11 +209,13 @@ const Home = () => {
     if (!canGenerateScenarios) return;
     setScenariosLoading(true);
     setScenariosError(null);
-    try {
+
+    const attempt = async (): Promise<Scenario[]> => {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/time-advisor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
@@ -226,10 +228,22 @@ const Home = () => {
           seed: Math.random().toString(36).slice(2),
         }),
       });
-      if (!response.ok) throw new Error("scenarios failed");
+      if (!response.ok) throw new Error(`scenarios failed: ${response.status}`);
       const data = await response.json();
-      const list: Scenario[] = Array.isArray(data.scenarios) ? data.scenarios : [];
+      const list: Scenario[] = Array.isArray(data?.scenarios) ? data.scenarios : [];
       if (list.length === 0) throw new Error("empty");
+      return list;
+    };
+
+    try {
+      let list: Scenario[];
+      try {
+        list = await attempt();
+      } catch (first) {
+        console.warn("scenarios retry after:", first);
+        await new Promise((r) => setTimeout(r, 1200));
+        list = await attempt();
+      }
       setScenarios(list);
     } catch (e) {
       console.error("scenarios error:", e);
@@ -238,6 +252,7 @@ const Home = () => {
       setScenariosLoading(false);
     }
   };
+
 
   const applyScenario = (s: Scenario) => {
     updateFinances({
