@@ -93,8 +93,8 @@ Consider the user has ${yearlyOptionalHours} optional hours per year and each ho
       case "scenarios": {
         const g = Number(goalYears) || 10;
         systemPrompt = `You are a financial freedom planner. The user measures wealth in "years of freedom" = net worth / yearly expenses.
-Create 3 DIFFERENT, concrete and realistic scenarios that would let the user reach their goal of ${g} years of freedom.
-Each scenario changes the ratio between income, expenses and net worth with a distinct lever (earn more, spend less, invest/grow assets, or a mix).
+Create 4 DIFFERENT, concrete and realistic scenarios that would let the user reach their goal of ${g} years of freedom.
+Each scenario changes the ratio between income, expenses and net worth with a distinct lever. You MUST include at least one scenario whose main lever is NET WORTH / assets (investing existing capital, compounding returns ~5-7% real per year, selling or reallocating an asset) where income and expenses stay close to current values, and at least one "mix" scenario that changes all three (income, expenses and net worth).
 Return JSON only with this structure:
 {
   "scenarios": [
@@ -110,7 +110,7 @@ Return JSON only with this structure:
   ]
 }
 Rules: numbers must be plausible deltas from the current situation (no more than ~2.5x income, no expenses below ~45% of current), and yearsToGoal is how many years of effort before reaching ${g} years of freedom. Vary the scenarios each time (variation seed: ${seed ?? Math.random()}).`;
-        userPrompt = `Current situation: monthly income ${income}, monthly expenses ${expenses}, net worth ${netWorth}. Goal: ${g} years of freedom. Give 3 fresh scenarios.`;
+        userPrompt = `Current situation: monthly income ${income}, monthly expenses ${expenses}, net worth ${netWorth}. Goal: ${g} years of freedom. Give 4 fresh scenarios, including one driven purely by growing/investing net worth.`;
         break;
       }
 
@@ -169,16 +169,22 @@ IMPORTANT: Write ALL user-facing text (including any JSON string values such as 
           mi: number,
           me: number,
           description: string,
+          nwOverride?: number,
         ) => {
           const target = me * 12 * g;
+          const startNw = nwOverride ?? nw;
           const monthlySave = mi - me;
-          const yearsToGoal = monthlySave > 0 ? Math.max(0, (target - nw) / (monthlySave * 12)) : 99;
+          const yearsToGoal = startNw >= target
+            ? 0
+            : monthlySave > 0
+              ? Math.max(0, (target - startNw) / (monthlySave * 12))
+              : 99;
           return {
             title,
             lever,
             monthlyIncome: Math.round(mi),
             monthlyExpenses: Math.round(me),
-            netWorth: Math.round(Math.max(nw, target)),
+            netWorth: Math.round(Math.max(startNw, target)),
             yearsToGoal: Math.round(yearsToGoal * 10) / 10,
             description,
           };
@@ -203,15 +209,27 @@ IMPORTANT: Write ALL user-facing text (including any JSON string values such as 
               : "Grow income by 60% while keeping the same lifestyle.",
           ),
           build(
+            it ? "Fai crescere il patrimonio" : "Grow your assets",
+            "assets",
+            inc,
+            exp,
+            it
+              ? "Stesso stile di vita, ma il patrimonio investito cresce (~6% l'anno reale): il capitale lavora al posto tuo."
+              : "Same lifestyle, but your invested net worth compounds (~6% real per year): capital works for you.",
+            Math.max(nw * 1.35, nw + exp * 12),
+          ),
+          build(
             it ? "Equilibrio" : "Balanced",
             "mix",
             inc * 1.3,
             Math.max(1, exp * 0.85),
             it
-              ? "Un mix realistico: +30% entrate e -15% spese."
-              : "A realistic mix: +30% income and -15% expenses.",
+              ? "Un mix realistico: +30% entrate, -15% spese e patrimonio investito."
+              : "A realistic mix: +30% income, -15% expenses and invested assets.",
+            Math.max(nw * 1.15, nw),
           ),
         ];
+
       };
 
       // Non-streaming JSON response

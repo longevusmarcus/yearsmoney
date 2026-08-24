@@ -254,13 +254,7 @@ const Home = () => {
   };
 
 
-  const applyScenario = (s: Scenario) => {
-    updateFinances({
-      monthlyIncome: Math.round(s.monthlyIncome),
-      monthlyExpenses: Math.round(s.monthlyExpenses),
-      netWorth: Math.round(s.netWorth),
-    });
-  };
+
 
   // ---- Life milestones ----
   const yearlyExpenses = monthlyExpenses * 12;
@@ -695,12 +689,6 @@ const Home = () => {
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={() => applyScenario(s)}
-                    className="mt-3 w-full rounded-lg border border-border px-3 py-1.5 text-[11px] font-light text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
-                  >
-                    {t("app.home.scenarioApply")}
-                  </button>
                 </div>
               ))}
             </div>
