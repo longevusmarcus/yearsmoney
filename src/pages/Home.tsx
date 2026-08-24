@@ -254,13 +254,7 @@ const Home = () => {
   };
 
 
-  const applyScenario = (s: Scenario) => {
-    updateFinances({
-      monthlyIncome: Math.round(s.monthlyIncome),
-      monthlyExpenses: Math.round(s.monthlyExpenses),
-      netWorth: Math.round(s.netWorth),
-    });
-  };
+
 
   // ---- Life milestones ----
   const yearlyExpenses = monthlyExpenses * 12;
