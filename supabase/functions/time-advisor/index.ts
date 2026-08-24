@@ -93,8 +93,8 @@ Consider the user has ${yearlyOptionalHours} optional hours per year and each ho
       case "scenarios": {
         const g = Number(goalYears) || 10;
         systemPrompt = `You are a financial freedom planner. The user measures wealth in "years of freedom" = net worth / yearly expenses.
-Create 3 DIFFERENT, concrete and realistic scenarios that would let the user reach their goal of ${g} years of freedom.
-Each scenario changes the ratio between income, expenses and net worth with a distinct lever (earn more, spend less, invest/grow assets, or a mix).
+Create 4 DIFFERENT, concrete and realistic scenarios that would let the user reach their goal of ${g} years of freedom.
+Each scenario changes the ratio between income, expenses and net worth with a distinct lever. You MUST include at least one scenario whose main lever is NET WORTH / assets (investing existing capital, compounding returns ~5-7% real per year, selling or reallocating an asset) where income and expenses stay close to current values, and at least one "mix" scenario that changes all three (income, expenses and net worth).
 Return JSON only with this structure:
 {
   "scenarios": [
