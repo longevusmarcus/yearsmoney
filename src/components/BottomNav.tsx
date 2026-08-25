@@ -3,6 +3,7 @@ import { Home, Search, AlertTriangle, Trophy } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useI18n } from "@/i18n/I18nProvider";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 const BottomNav = () => {
   const location = useLocation();
@@ -30,8 +31,8 @@ const BottomNav = () => {
 
     const idle = (window as unknown as { requestIdleCallback?: (cb: () => void) => number })
       .requestIdleCallback;
-    if (idle) idle(run);
-    else setTimeout(run, 1200);
+    if (idle) idle(() => void run());
+    else setTimeout(() => void run(), 1200);
   }, [location.pathname]);
 
   const navItems = [
