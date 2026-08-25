@@ -9,6 +9,7 @@ import { useMsx } from "@/msx/MsxBootGate";
 import { useUserFinances } from "@/hooks/useUserFinances";
 import { useI18n } from "@/i18n/I18nProvider";
 import { ComposedChart, Area, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 interface Message {
   role: "user" | "assistant";
@@ -213,11 +214,7 @@ const Home = () => {
     const attempt = async (): Promise<Scenario[]> => {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/time-advisor`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
+        headers: await functionAuthHeaders(),
         body: JSON.stringify({
           type: "scenarios",
           lang,
