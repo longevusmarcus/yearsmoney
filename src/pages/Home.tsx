@@ -258,12 +258,20 @@ const Home = () => {
 
   // ---- Life milestones ----
   const yearlyExpenses = monthlyExpenses * 12;
-  const milestones = [
+
+  const defaultMilestones = [
     { key: "milestoneSabbatical", cost: yearlyExpenses },
     { key: "milestoneHouse", cost: yearlyExpenses * 2 },
     { key: "milestoneTrip", cost: monthlyExpenses * 8 },
     { key: "milestoneCar", cost: monthlyExpenses * 6 },
     { key: "milestoneFreedom", cost: yearlyExpenses * 25 },
+  ];
+
+  const milestones = [
+    ...defaultMilestones
+      .filter((m) => !hiddenMilestones.includes(m.key))
+      .map((m) => ({ id: m.key, label: t(`app.home.${m.key}`), cost: m.cost, custom: false })),
+    ...customMilestones.map((m) => ({ id: m.id, label: m.label, cost: m.cost, custom: true })),
   ].map((m) => {
     const costInYears = yearlyExpenses > 0 ? m.cost / yearlyExpenses : 0;
     const missing = Math.max(0, m.cost - netWorth);
@@ -271,6 +279,27 @@ const Home = () => {
       missing === 0 ? 0 : monthlySavings > 0 ? Math.ceil(missing / monthlySavings) : null;
     return { ...m, costInYears, monthsToReach };
   });
+
+  const removeMilestone = (m: { id: string; custom: boolean }) => {
+    if (m.custom) setCustomMilestones((prev) => prev.filter((c) => c.id !== m.id));
+    else setHiddenMilestones((prev) => [...prev, m.id]);
+  };
+
+  const addCustomMilestone = () => {
+    const label = newGoalName.trim();
+    const cost = parseFloat(newGoalCost.replace(",", "."));
+    if (!label || !cost || cost <= 0 || customMilestones.length >= 5) return;
+    setCustomMilestones((prev) => [...prev, { id: `c_${Date.now()}`, label, cost }]);
+    setNewGoalName("");
+    setNewGoalCost("");
+    setAddingGoal(false);
+  };
+
+  const resetMilestones = () => {
+    setHiddenMilestones([]);
+    setCustomMilestones([]);
+  };
+
 
 
   // Hours gained/lost this month
