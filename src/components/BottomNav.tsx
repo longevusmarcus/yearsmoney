@@ -15,17 +15,19 @@ const BottomNav = () => {
   useEffect(() => {
     if (warmed.current || location.pathname === "/risks") return;
     warmed.current = true;
-    const run = () => {
+    const run = async () => {
       void import("@/pages/Risks");
-      void fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ warmup: true }),
-      }).catch(() => {});
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/investment-prices`, {
+          method: "POST",
+          headers: await functionAuthHeaders(),
+          body: JSON.stringify({ warmup: true }),
+        });
+      } catch {
+        /* warmup is best-effort */
+      }
     };
+
     const idle = (window as unknown as { requestIdleCallback?: (cb: () => void) => number })
       .requestIdleCallback;
     if (idle) idle(run);
