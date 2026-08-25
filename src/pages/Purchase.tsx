@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { PageHeader } from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 interface Listing {
   title: string;
@@ -101,7 +102,7 @@ const Purchase = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          ...(await functionAuthHeaders()),
         },
         body: JSON.stringify({
           query,

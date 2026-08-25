@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 interface Message {
   role: "user" | "assistant";
@@ -49,7 +50,7 @@ export const AICoach = ({ initialPrompt }: AICoachProps) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: newMessages,

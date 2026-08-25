@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import AuthModal from "@/components/AuthModal";
 import { useMsx } from "@/msx/MsxBootGate";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 
 interface Investment {
@@ -165,7 +166,7 @@ const Risks = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          ...(await functionAuthHeaders()),
         },
         body: JSON.stringify({ assets: assetNames }),
         signal: controller.signal,
@@ -239,7 +240,7 @@ const Risks = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          ...(await functionAuthHeaders()),
         },
         body: JSON.stringify({
           type: "risk",

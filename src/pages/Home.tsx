@@ -367,7 +367,7 @@ const Home = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: newMessages,

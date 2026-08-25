@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { getGamificationData } from "@/utils/gamification";
 import { supabase } from "@/integrations/supabase/client";
 import { PatternCard } from "@/components/PatternCard";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 const Insights = () => {
   const [entries, setEntries] = useState<any[]>([]);
@@ -115,7 +116,7 @@ const Insights = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: [
@@ -235,7 +236,7 @@ const Insights = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: [

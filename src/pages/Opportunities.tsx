@@ -17,6 +17,7 @@ import BottomNav from "@/components/BottomNav";
 import { ProductSkeletonList } from "@/components/ProductCardSkeleton";
 import { PageHeader } from "@/components/PageHeader";
 import MobileOnly from "@/components/MobileOnly";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 interface Product {
   title: string;
@@ -103,7 +104,7 @@ const Opportunities = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          ...(await functionAuthHeaders()),
         },
         body: JSON.stringify({ category }),
       });
