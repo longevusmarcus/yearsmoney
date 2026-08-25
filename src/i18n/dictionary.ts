@@ -604,6 +604,13 @@ const it = {
       milestoneTrip: "Giro del mondo",
       milestoneCar: "Auto nuova",
       milestoneFreedom: "Libertà totale (25x)",
+      milestoneAdd: "Aggiungi obiettivo",
+      milestoneRemove: "Rimuovi",
+      milestoneReset: "Ripristina",
+      milestoneSave: "Salva",
+      milestoneCancel: "Annulla",
+      milestoneNamePlaceholder: "Nome obiettivo (es. Barca)",
+      milestoneCostPlaceholder: "Costo totale",
 
     },
     purchase: {
@@ -1545,6 +1552,13 @@ const en: typeof it = {
       milestoneTrip: "World trip",
       milestoneCar: "New car",
       milestoneFreedom: "Full freedom (25x)",
+      milestoneAdd: "Add goal",
+      milestoneRemove: "Remove",
+      milestoneReset: "Reset",
+      milestoneSave: "Save",
+      milestoneCancel: "Cancel",
+      milestoneNamePlaceholder: "Goal name (e.g. Boat)",
+      milestoneCostPlaceholder: "Total cost",
 
     },
     purchase: {
