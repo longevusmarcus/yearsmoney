@@ -256,14 +256,49 @@ const Home = () => {
 
 
 
+  // ---- Custom life goals (persisted locally) ----
+  const [hiddenMilestones, setHiddenMilestones] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("years_hidden_milestones") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [customMilestones, setCustomMilestones] = useState<{ id: string; label: string; cost: number }[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("years_custom_milestones") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [addingGoal, setAddingGoal] = useState(false);
+  const [newGoalName, setNewGoalName] = useState("");
+  const [newGoalCost, setNewGoalCost] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("years_hidden_milestones", JSON.stringify(hiddenMilestones));
+  }, [hiddenMilestones]);
+  useEffect(() => {
+    localStorage.setItem("years_custom_milestones", JSON.stringify(customMilestones));
+  }, [customMilestones]);
+
   // ---- Life milestones ----
+
   const yearlyExpenses = monthlyExpenses * 12;
-  const milestones = [
+
+  const defaultMilestones = [
     { key: "milestoneSabbatical", cost: yearlyExpenses },
     { key: "milestoneHouse", cost: yearlyExpenses * 2 },
     { key: "milestoneTrip", cost: monthlyExpenses * 8 },
     { key: "milestoneCar", cost: monthlyExpenses * 6 },
     { key: "milestoneFreedom", cost: yearlyExpenses * 25 },
+  ];
+
+  const milestones = [
+    ...defaultMilestones
+      .filter((m) => !hiddenMilestones.includes(m.key))
+      .map((m) => ({ id: m.key, label: t(`app.home.${m.key}`), cost: m.cost, custom: false })),
+    ...customMilestones.map((m) => ({ id: m.id, label: m.label, cost: m.cost, custom: true })),
   ].map((m) => {
     const costInYears = yearlyExpenses > 0 ? m.cost / yearlyExpenses : 0;
     const missing = Math.max(0, m.cost - netWorth);
@@ -271,6 +306,27 @@ const Home = () => {
       missing === 0 ? 0 : monthlySavings > 0 ? Math.ceil(missing / monthlySavings) : null;
     return { ...m, costInYears, monthsToReach };
   });
+
+  const removeMilestone = (m: { id: string; custom: boolean }) => {
+    if (m.custom) setCustomMilestones((prev) => prev.filter((c) => c.id !== m.id));
+    else setHiddenMilestones((prev) => [...prev, m.id]);
+  };
+
+  const addCustomMilestone = () => {
+    const label = newGoalName.trim();
+    const cost = parseFloat(newGoalCost.replace(",", "."));
+    if (!label || !cost || cost <= 0 || customMilestones.length >= 5) return;
+    setCustomMilestones((prev) => [...prev, { id: `c_${Date.now()}`, label, cost }]);
+    setNewGoalName("");
+    setNewGoalCost("");
+    setAddingGoal(false);
+  };
+
+  const resetMilestones = () => {
+    setHiddenMilestones([]);
+    setCustomMilestones([]);
+  };
+
 
 
   // Hours gained/lost this month
@@ -700,14 +756,24 @@ const Home = () => {
 
       {monthlyExpenses > 0 && (
         <div className="px-6 mb-6">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
-            {t("app.home.milestonesTitle")}
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {t("app.home.milestonesTitle")}
+            </h2>
+            {(hiddenMilestones.length > 0 || customMilestones.length > 0) && (
+              <button
+                onClick={resetMilestones}
+                className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t("app.home.milestoneReset")}
+              </button>
+            )}
+          </div>
           <div className="bg-card border border-border rounded-2xl divide-y divide-border/60">
             {milestones.map((m) => (
-              <div key={m.key} className="flex items-center justify-between gap-3 p-4">
-                <div>
-                  <p className="text-sm font-light text-foreground">{t(`app.home.${m.key}`)}</p>
+              <div key={m.id} className="flex items-center justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-light text-foreground truncate">{m.label}</p>
                   <p className="text-[10px] font-light text-muted-foreground">
                     {m.costInYears < 1
                       ? `${Math.round(m.costInYears * 12)} ${t("app.home.unitMonths")}`
@@ -715,23 +781,82 @@ const Home = () => {
                     · {t("app.home.milestoneCost")}
                   </p>
                 </div>
-                <div className="text-right">
-                  {m.monthsToReach === 0 ? (
-                    <p className="logo-gradient-text inline-block text-sm">{t("app.home.milestoneNow")}</p>
-                  ) : m.monthsToReach === null ? (
-                    <p className="text-sm font-light text-muted-foreground">{t("app.home.milestoneNever")}</p>
-                  ) : (
-                    <>
-                      <p className="text-sm font-light text-foreground">{formatLifeBuffer(m.monthsToReach)}</p>
-                      <p className="text-[10px] font-light text-muted-foreground">{t("app.home.milestoneReach")}</p>
-                    </>
-                  )}
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    {m.monthsToReach === 0 ? (
+                      <p className="logo-gradient-text inline-block text-sm">{t("app.home.milestoneNow")}</p>
+                    ) : m.monthsToReach === null ? (
+                      <p className="text-sm font-light text-muted-foreground">{t("app.home.milestoneNever")}</p>
+                    ) : (
+                      <>
+                        <p className="text-sm font-light text-foreground">{formatLifeBuffer(m.monthsToReach)}</p>
+                        <p className="text-[10px] font-light text-muted-foreground">{t("app.home.milestoneReach")}</p>
+                      </>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => removeMilestone(m)}
+                    aria-label={t("app.home.milestoneRemove")}
+                    className="p-1 text-muted-foreground/60 hover:text-foreground transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             ))}
+
+            {/* Add custom goal */}
+            {customMilestones.length < 5 && (
+              <div className="p-4">
+                {!addingGoal ? (
+                  <button
+                    onClick={() => setAddingGoal(true)}
+                    className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    + {t("app.home.milestoneAdd")}
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <input
+                      value={newGoalName}
+                      onChange={(e) => setNewGoalName(e.target.value)}
+                      placeholder={t("app.home.milestoneNamePlaceholder")}
+                      maxLength={40}
+                      className="w-full bg-transparent border border-border rounded-xl px-3 py-2 text-sm font-light text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground/30"
+                    />
+                    <input
+                      value={newGoalCost}
+                      onChange={(e) => setNewGoalCost(e.target.value.replace(/[^0-9.,]/g, ""))}
+                      inputMode="decimal"
+                      placeholder={t("app.home.milestoneCostPlaceholder")}
+                      className="w-full bg-transparent border border-border rounded-xl px-3 py-2 text-sm font-light text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground/30"
+                    />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={addCustomMilestone}
+                        className="flex-1 rounded-xl border border-border py-2 text-sm font-light text-foreground hover:bg-muted/40 transition-colors"
+                      >
+                        {t("app.home.milestoneSave")}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAddingGoal(false);
+                          setNewGoalName("");
+                          setNewGoalCost("");
+                        }}
+                        className="px-4 py-2 text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {t("app.home.milestoneCancel")}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
+
 
 
       {/* Insight */}
