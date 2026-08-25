@@ -256,7 +256,34 @@ const Home = () => {
 
 
 
+  // ---- Custom life goals (persisted locally) ----
+  const [hiddenMilestones, setHiddenMilestones] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("years_hidden_milestones") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [customMilestones, setCustomMilestones] = useState<{ id: string; label: string; cost: number }[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("years_custom_milestones") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [addingGoal, setAddingGoal] = useState(false);
+  const [newGoalName, setNewGoalName] = useState("");
+  const [newGoalCost, setNewGoalCost] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("years_hidden_milestones", JSON.stringify(hiddenMilestones));
+  }, [hiddenMilestones]);
+  useEffect(() => {
+    localStorage.setItem("years_custom_milestones", JSON.stringify(customMilestones));
+  }, [customMilestones]);
+
   // ---- Life milestones ----
+
   const yearlyExpenses = monthlyExpenses * 12;
 
   const defaultMilestones = [
