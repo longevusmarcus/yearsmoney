@@ -23,15 +23,29 @@ const Leaderboard = () => {
 
   useEffect(() => {
     let active = true;
-    (async () => {
+
+    const fetchRows = async () => {
       const { data, error } = await supabase.rpc("get_leaderboard");
       if (!active || error || !data) return;
       setRealRows(data as RealRow[]);
-    })();
+    };
+
+    void fetchRows();
+
+    // Keep the ranking in sync with edits made on the dashboard.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void fetchRows();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+
     return () => {
       active = false;
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
     };
-  }, [user?.id]);
+  }, [user?.id, finances.netWorth, finances.monthlyIncome, finances.monthlyExpenses]);
+
 
   // Realistic human names
   const names = [
