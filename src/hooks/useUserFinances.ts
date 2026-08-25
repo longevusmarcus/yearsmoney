@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthUser } from "./useAuthUser";
 
@@ -8,15 +8,35 @@ interface UserFinances {
   netWorth: number;
 }
 
+// Shared store so every page (dashboard, leaderboard, risks…) reads the same
+// live numbers instead of its own stale snapshot.
+let sharedFinances: UserFinances = {
+  monthlyIncome: Number(localStorage.getItem("tc_income")) || 0,
+  monthlyExpenses: Number(localStorage.getItem("tc_expenses")) || 0,
+  netWorth: Number(localStorage.getItem("tc_networth")) || 0,
+};
+const listeners = new Set<(f: UserFinances) => void>();
+const setSharedFinances = (next: UserFinances) => {
+  sharedFinances = next;
+  listeners.forEach((l) => l(next));
+};
+
 export const useUserFinances = () => {
-  const [finances, setFinances] = useState<UserFinances>({
-    monthlyIncome: Number(localStorage.getItem("tc_income")) || 0,
-    monthlyExpenses: Number(localStorage.getItem("tc_expenses")) || 0,
-    netWorth: Number(localStorage.getItem("tc_networth")) || 0,
-  });
+  const [finances, setLocalFinances] = useState<UserFinances>(sharedFinances);
+  const setFinances = useCallback((next: UserFinances) => setSharedFinances(next), []);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const { user, isLoading: authLoading } = useAuthUser();
+
+  useEffect(() => {
+    listeners.add(setLocalFinances);
+    setLocalFinances(sharedFinances);
+    return () => {
+      listeners.delete(setLocalFinances);
+    };
+  }, []);
+
+
 
   // Load (or migrate) the numbers whenever the shared auth state settles
   useEffect(() => {
