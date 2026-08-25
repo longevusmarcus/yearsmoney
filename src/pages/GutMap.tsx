@@ -6,6 +6,7 @@ import { Calendar, Circle, Droplet, Sparkles, CheckCircle2, AlertTriangle, Plus,
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 const GutMap = () => {
   const [entries, setEntries] = useState<any[]>([]);
@@ -67,7 +68,7 @@ const GutMap = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: [{
@@ -123,7 +124,7 @@ const GutMap = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: [{
@@ -192,7 +193,7 @@ const GutMap = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: [{

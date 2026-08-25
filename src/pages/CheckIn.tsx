@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import VoiceBubbleLogo from "@/components/VoiceBubbleLogo";
+import { functionAuthHeaders } from "@/lib/functionAuth";
 
 type TapStep = "context" | "describe" | "body" | "gut" | "ignore" | "gentle-reminder" | "congratulations" | "decision";
 type VoiceStep = "recording" | "processing" | "label" | "response" | "analyzing" | "insights" | "gut" | "ignore" | "gentle-reminder" | "congratulations";
@@ -259,7 +260,7 @@ const CheckIn = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            ...(await functionAuthHeaders()),
           },
           body: JSON.stringify({
             messages: [
