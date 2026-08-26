@@ -58,6 +58,8 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
 
   const formatted = formatLifeBuffer(lifeBuffer);
   const monthlyFormatted = formatLifeBuffer(monthlyGain);
+  const yearlyFormatted = formatLifeBuffer(monthlyGain * 12);
+  const daysFree = Math.round(lifeBuffer * 30).toLocaleString();
 
   return (
     <motion.div
@@ -72,83 +74,106 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
         transition={{ delay: 0.1, type: "spring", damping: 20 }}
         className="w-full max-w-sm"
       >
-        {/* The shareable widget card.
-            Everything here is kept html2canvas-safe: sRGB hex instead of oklch, no
-            backdrop-filter, and no background-clip:text — html2canvas renders none of
-            those, and the download is the whole point of this card. The YEARS ramp is
-            carried by real gradient elements instead. */}
+        {/* Wrapped-style share card.
+            html2canvas-safe: sRGB hex only, no oklch, no backdrop-filter,
+            no background-clip:text. Stripes are real elements. */}
         <div
           ref={widgetRef}
-          className="relative overflow-hidden rounded-3xl border border-white/10 p-8 shadow-2xl"
-          style={{ backgroundColor: "#08080b" }}
+          className="relative overflow-hidden rounded-[28px] shadow-2xl"
+          style={{ backgroundColor: "#0d0d10" }}
         >
-          {/* Ambient blooms, echoing the app's background field */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full"
-            style={{ background: "radial-gradient(closest-side, rgba(251,124,0,0.22), transparent 70%)" }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-24 -right-12 h-64 w-64 rounded-full"
-            style={{ background: "radial-gradient(closest-side, rgba(130,63,235,0.26), transparent 70%)" }}
-          />
-
-          <div className="relative">
-            {/* Top accent line — the violet-to-gold ramp */}
+          {/* Top panel — bold accent block */}
+          <div className="relative overflow-hidden px-7 pb-8 pt-7" style={{ backgroundColor: "#fbdd67" }}>
+            {/* striped frame accent */}
             <div
-              className="mb-8 h-0.5 w-16 rounded-full"
-              style={{ background: "linear-gradient(90deg, #823feb, #ff992b)" }}
+              aria-hidden
+              className="absolute inset-y-0 right-0 w-10"
+              style={{
+                background:
+                  "repeating-linear-gradient(135deg, #0d0d10 0px, #0d0d10 7px, #fbdd67 7px, #fbdd67 14px)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="absolute left-0 top-0 h-10 w-full"
+              style={{
+                background:
+                  "repeating-linear-gradient(135deg, #823feb 0px, #823feb 7px, #fbdd67 7px, #fbdd67 14px)",
+              }}
             />
 
-            {/* Main number */}
-            <div className="mb-8">
-              {/* Explicit line-height: html2canvas lays out `leading-none` tighter than the
-                  browser does, which collapsed the gap to the label in the exported PNG. */}
+            <div className="relative mt-12 pr-12">
               <p
-                className="font-display text-7xl tracking-tight"
-                style={{ color: "#f9f7fe", lineHeight: 1.12 }}
+                className="text-[10px] font-semibold uppercase tracking-[0.28em]"
+                style={{ color: "#0d0d10" }}
+              >
+                {t("app.share.wrapped")}
+              </p>
+              <p
+                className="font-display text-[5.5rem] tracking-tight"
+                style={{ color: "#0d0d10", lineHeight: 1.02 }}
               >
                 {formatted.value}
               </p>
               <p
-                className="mt-3 text-lg font-light tracking-wide"
-                style={{ color: "#fbdd67", lineHeight: 1.4 }}
+                className="text-xl font-semibold"
+                style={{ color: "#0d0d10", lineHeight: 1.3 }}
               >
                 {formatted.unit} {t("app.share.ofFreedom")}
               </p>
             </div>
+          </div>
 
-            {/* Divider */}
-            <div className="mb-6 h-px" style={{ backgroundColor: "rgba(255,255,255,0.10)" }} />
-
-            {/* Monthly gain */}
-            <div className="flex items-baseline gap-2">
-              <span className="font-display text-2xl" style={{ color: "#c97dfc" }}>
-                +{monthlyFormatted.value}
-              </span>
-              <span className="text-sm font-light" style={{ color: "rgba(255,255,255,0.45)" }}>
-                {monthlyFormatted.unit}{t("app.share.perMonth")}
-              </span>
+          {/* Bottom stats — Wrapped two-column list */}
+          <div className="px-7 pb-6 pt-7">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-6">
+              {[
+                { label: t("app.share.statFreedom"), value: `${formatted.value} ${formatted.unit}` },
+                { label: t("app.share.statDaysFree"), value: daysFree },
+                {
+                  label: t("app.share.statPerMonth"),
+                  value: `+${monthlyFormatted.value} ${monthlyFormatted.unit}`,
+                },
+                {
+                  label: t("app.share.statPerYear"),
+                  value: `+${yearlyFormatted.value} ${yearlyFormatted.unit}`,
+                },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-[0.16em]"
+                    style={{ color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}
+                  >
+                    {stat.label}
+                  </p>
+                  <p
+                    className="font-display text-2xl"
+                    style={{ color: "#f9f7fe", lineHeight: 1.25 }}
+                  >
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
             </div>
 
-            {/* Bottom branding */}
-            <div className="mt-10 flex items-center justify-between">
+            {/* Footer branding */}
+            <div className="mt-8 flex items-center justify-between">
               <p
-                className="text-[10px] uppercase tracking-[0.2em]"
-                style={{ color: "rgba(255,255,255,0.40)" }}
+                className="text-[10px] font-semibold uppercase tracking-[0.18em]"
+                style={{ color: "rgba(255,255,255,0.45)" }}
               >
                 {t("app.share.timeWealth")}
               </p>
               <p
-                className="font-cormorant text-base italic"
-                style={{ color: "rgba(255,255,255,0.55)" }}
+                className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+                style={{ color: "#fbdd67" }}
               >
-                Years
+                YEARS.MONEY
               </p>
             </div>
           </div>
         </div>
+
 
         {/* Action buttons */}
         {!isDownloading && (
