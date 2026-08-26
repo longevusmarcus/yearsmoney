@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, LogIn, Trash2, Trophy, ShieldAlert } from "lucide-react";
+import { User, LogOut, LogIn, Trash2, Trophy, ShieldAlert, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
