@@ -120,7 +120,7 @@ export const useUserFinances = () => {
 
 
   const updateFinances = async (newFinances: Partial<UserFinances>) => {
-    const updated = { ...finances, ...newFinances };
+    const updated = { ...sharedFinances, ...newFinances };
     setFinances(updated);
 
     // Always update localStorage
