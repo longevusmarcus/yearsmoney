@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, LogOut, LogIn, Trash2, Trophy, ShieldAlert } from "lucide-react";
+import { User, LogOut, LogIn, Trash2, Trophy, ShieldAlert, Landmark, CreditCard, Coins, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -248,6 +248,36 @@ const Settings = () => {
             </Card>
           )}
         </div>
+
+        {/* Connect Accounts - Coming Soon */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground font-light">
+              {t("app.home.syncAccounts")}
+            </h2>
+            <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">
+              {t("app.home.soon")}
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { icon: Building2, label: "Schwab" },
+              { icon: CreditCard, label: "Stripe" },
+              { icon: Landmark, label: t("app.home.bank") },
+              { icon: Coins, label: "Crypto" },
+            ].map((item) => (
+              <button
+                key={item.label}
+                disabled
+                className="flex cursor-not-allowed flex-col items-center gap-1.5 rounded-xl border border-border/50 bg-card/30 p-3 opacity-40"
+              >
+                <item.icon className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[9px] font-light text-muted-foreground">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
 
         {/* Leaderboard */}
         {user && (
