@@ -503,7 +503,7 @@ const it = {
       qrAlt: "Scansiona per aprire Years su mobile",
     },
     notFound: { title: "Pagina non trovata", back: "Torna alla home" },
-    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi" },
+    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi", wrapped: "Il mio tempo", statFreedom: "Libertà", statPerMonth: "Guadagno / mese", statPerYear: "Guadagno / anno", statDaysFree: "Giorni liberi", myFreedom: "La mia libertà" },
     auth: {
       welcomeBack: "Bentornato",
       accountCreated: "Account creato",
