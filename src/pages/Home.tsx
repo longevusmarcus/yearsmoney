@@ -473,30 +473,8 @@ const Home = () => {
       </div>
 
 
-      {/* Connect Accounts - Coming Soon */}
-      <div className="px-6 mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("app.home.syncAccounts")}</h2>
-          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/50">{t("app.home.soon")}</span>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { icon: Building2, label: "Schwab" },
-            { icon: CreditCard, label: "Stripe" },
-            { icon: Landmark, label: t("app.home.bank") },
-            { icon: Coins, label: "Crypto" },
-          ].map((item, idx) => (
-            <button
-              key={idx}
-              disabled
-              className="group flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border/50 bg-card/30 opacity-40 cursor-not-allowed transition-opacity"
-            >
-              <item.icon className="w-4 h-4 text-muted-foreground" />
-              <span className="text-[9px] text-muted-foreground font-light">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+
+
 
       {/* Life Buffer Cards - Both scenarios */}
       <div className="px-6 mb-6">
