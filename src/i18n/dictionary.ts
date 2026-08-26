@@ -503,7 +503,7 @@ const it = {
       qrAlt: "Scansiona per aprire Years su mobile",
     },
     notFound: { title: "Pagina non trovata", back: "Torna alla home" },
-    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi" },
+    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi", wrapped: "Il mio tempo", statFreedom: "Libertà", statPerMonth: "Guadagno / mese", statPerYear: "Guadagno / anno", statDaysFree: "Giorni liberi", myFreedom: "La mia libertà" },
     auth: {
       welcomeBack: "Bentornato",
       accountCreated: "Account creato",
@@ -1451,7 +1451,7 @@ const en: typeof it = {
       qrAlt: "Scan to open Years on mobile",
     },
     notFound: { title: "Page not found", back: "Return to home" },
-    share: { unitYears: "years", unitMonths: "months", unitDays: "days", ofFreedom: "of freedom", perMonth: "/month", timeWealth: "Time Wealth", download: "Download", close: "Close" },
+    share: { unitYears: "years", unitMonths: "months", unitDays: "days", ofFreedom: "of freedom", perMonth: "/month", timeWealth: "Time Wealth", download: "Download", close: "Close", wrapped: "My time", statFreedom: "Freedom", statPerMonth: "Gain / month", statPerYear: "Gain / year", statDaysFree: "Days free", myFreedom: "My freedom" },
     auth: {
       welcomeBack: "Welcome back",
       accountCreated: "Account created",
