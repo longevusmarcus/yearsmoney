@@ -248,8 +248,11 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
           </div>
         )}
       </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
+
 
 export default ShareableWidget;
