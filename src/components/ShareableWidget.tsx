@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Download, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -11,10 +11,21 @@ interface ShareableWidgetProps {
   onClose?: () => void;
 }
 
+const INTRO_DURATION = 2400;
+
 const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: ShareableWidgetProps) => {
   const { t } = useI18n();
   const widgetRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  // Wrapped-style story: two intro beats, then the shareable card.
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (step >= 2) return;
+    const timer = setTimeout(() => setStep((s) => s + 1), INTRO_DURATION);
+    return () => clearTimeout(timer);
+  }, [step]);
+
 
   const formatLifeBuffer = (months: number) => {
     if (displayMode === 'days') {
