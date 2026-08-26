@@ -72,19 +72,61 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
   const yearlyFormatted = formatLifeBuffer(monthlyGain * 12);
   const daysFree = Math.round(lifeBuffer * 30).toLocaleString();
 
+  const introSlides = [
+    { title: t("app.share.intro1Title"), sub: t("app.share.intro1Sub") },
+    { title: t("app.share.intro2Title"), sub: t("app.share.intro2Sub") },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[100] flex items-center justify-center p-6"
+      onClick={() => step < 2 && setStep((s) => s + 1)}
     >
+      {/* Story progress bars */}
+      <div className="absolute left-6 right-6 top-6 flex gap-1.5">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="h-[3px] flex-1 overflow-hidden rounded-full bg-foreground/15">
+            <motion.div
+              className="h-full bg-foreground/80"
+              initial={false}
+              animate={{ width: step > i ? "100%" : step === i ? "100%" : "0%" }}
+              transition={{ duration: step === i && i < 2 ? INTRO_DURATION / 1000 : 0.2, ease: "linear" }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        {step < 2 ? (
+          <motion.div
+            key={`intro-${step}`}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-sm text-center"
+          >
+            <h2 className="font-display text-4xl leading-tight text-foreground whitespace-pre-line">
+              {introSlides[step].title}
+            </h2>
+            <p className="mt-5 text-base text-muted-foreground">{introSlides[step].sub}</p>
+            <p className="mt-10 text-[11px] uppercase tracking-[0.22em] text-muted-foreground/50">
+              {t("app.share.tapToContinue")}
+            </p>
+          </motion.div>
+        ) : (
       <motion.div
+        key="card"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, type: "spring", damping: 20 }}
         className="w-full max-w-sm"
+        onClick={(e) => e.stopPropagation()}
       >
+
         {/* Wrapped-style share card.
             html2canvas-safe: sRGB hex only, no oklch, no backdrop-filter,
             no background-clip:text. Stripes are real elements. */}
