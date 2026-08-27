@@ -146,6 +146,12 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
         className="w-full max-w-sm"
         onClick={(e) => e.stopPropagation()}
       >
+        {!isDownloading && (
+          <div className="mb-3 flex justify-center">
+            <BouncingMascot size={80} />
+          </div>
+        )}
+
 
         {/* Wrapped-style share card.
             html2canvas-safe: sRGB hex only, no oklch, no backdrop-filter,
