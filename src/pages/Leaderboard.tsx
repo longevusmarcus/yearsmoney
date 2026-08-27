@@ -106,26 +106,26 @@ const Leaderboard = () => {
       const nw = Number(r.net_worth) || 0;
       const inc = Number(r.monthly_income) || 0;
       const exp = Number(r.monthly_expenses) || 0;
-      if (nw <= 0 || inc <= 0) continue;
+      if (nw <= 0 || exp <= 0) continue;
       users.push({
         rank: 0,
         name: r.display_name || "Anon...",
-        buffer0Years: nw / (inc * 12),
-        buffer1Years: exp > 0 ? nw / (exp * 12) : 0,
+        buffer0Years: nw / (exp * 12),
+        buffer1Years: inc > 0 ? nw / (inc * 12) : 0,
         isCurrentUser: false,
       });
     }
 
     // Signed in and with real numbers entered → slot the visitor into the ranking.
     // Same buffer formulas as above so the comparison is apples to apples.
-    if (user && finances.netWorth > 0 && finances.monthlyIncome > 0) {
+    if (user && finances.netWorth > 0 && finances.monthlyExpenses > 0) {
       users.push({
         rank: 0,
         name: t("app.leaderboard.you"),
-        buffer0Years: finances.netWorth / (finances.monthlyIncome * 12),
+        buffer0Years: finances.netWorth / (finances.monthlyExpenses * 12),
         buffer1Years:
-          finances.monthlyExpenses > 0
-            ? finances.netWorth / (finances.monthlyExpenses * 12)
+          finances.monthlyIncome > 0
+            ? finances.netWorth / (finances.monthlyIncome * 12)
             : 0,
         isCurrentUser: true,
       });
