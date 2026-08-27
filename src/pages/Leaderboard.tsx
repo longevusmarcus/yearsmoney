@@ -88,8 +88,10 @@ const Leaderboard = () => {
 
       // Buffer 0 = Net Worth / Annual Expenses — same "autonomy now" figure as the home page
       const buffer0 = netWorth / (monthlyExpenses * 12);
-      // Buffer 1 = Net Worth / Annual Income (lifestyle-maintaining view)
-      const buffer1 = netWorth / (monthlyIncome * 12);
+      // Buffer 1 = projected autonomy in 1 year: (NW + 12 months of savings) / Annual Expenses
+      const buffer1 =
+        (netWorth + (monthlyIncome - monthlyExpenses) * 12) /
+        (monthlyExpenses * 12);
 
       users.push({
         rank: i + 1,
