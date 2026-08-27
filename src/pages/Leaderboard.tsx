@@ -88,8 +88,10 @@ const Leaderboard = () => {
 
       // Buffer 0 = Net Worth / Annual Expenses — same "autonomy now" figure as the home page
       const buffer0 = netWorth / (monthlyExpenses * 12);
-      // Buffer 1 = Net Worth / Annual Income (lifestyle-maintaining view)
-      const buffer1 = netWorth / (monthlyIncome * 12);
+      // Buffer 1 = projected autonomy in 1 year: (NW + 12 months of savings) / Annual Expenses
+      const buffer1 =
+        (netWorth + (monthlyIncome - monthlyExpenses) * 12) /
+        (monthlyExpenses * 12);
 
       users.push({
         rank: i + 1,
@@ -111,7 +113,7 @@ const Leaderboard = () => {
         rank: 0,
         name: r.display_name || "Anon...",
         buffer0Years: nw / (exp * 12),
-        buffer1Years: inc > 0 ? nw / (inc * 12) : 0,
+        buffer1Years: (nw + (inc - exp) * 12) / (exp * 12),
         isCurrentUser: false,
       });
     }
@@ -124,9 +126,9 @@ const Leaderboard = () => {
         name: t("app.leaderboard.you"),
         buffer0Years: finances.netWorth / (finances.monthlyExpenses * 12),
         buffer1Years:
-          finances.monthlyIncome > 0
-            ? finances.netWorth / (finances.monthlyIncome * 12)
-            : 0,
+          (finances.netWorth +
+            (finances.monthlyIncome - finances.monthlyExpenses) * 12) /
+          (finances.monthlyExpenses * 12),
         isCurrentUser: true,
       });
     }
