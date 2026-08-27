@@ -86,10 +86,10 @@ const Leaderboard = () => {
       const monthlyIncome = baseIncome * incomeDecay;
       const monthlyExpenses = monthlyIncome * expenseVariation;
 
-      // Buffer 0 = Net Worth / Annual Income (lower - based on maintaining lifestyle)
-      const buffer0 = netWorth / (monthlyIncome * 12);
-      // Buffer 1 = Net Worth / Annual Expenses (higher - survival mode)  
-      const buffer1 = netWorth / (monthlyExpenses * 12);
+      // Buffer 0 = Net Worth / Annual Expenses — same "autonomy now" figure as the home page
+      const buffer0 = netWorth / (monthlyExpenses * 12);
+      // Buffer 1 = Net Worth / Annual Income (lifestyle-maintaining view)
+      const buffer1 = netWorth / (monthlyIncome * 12);
 
       users.push({
         rank: i + 1,
