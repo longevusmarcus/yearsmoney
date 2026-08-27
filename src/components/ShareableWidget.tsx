@@ -126,6 +126,9 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
             transition={{ duration: 0.5 }}
             className="w-full max-w-sm text-center"
           >
+            <div className="mb-6 flex justify-center">
+              <BouncingMascot size={step === 0 ? 112 : 96} />
+            </div>
             <h2 className="font-display text-4xl leading-tight text-foreground whitespace-pre-line">
               {introSlides[step].title}
             </h2>
