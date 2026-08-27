@@ -113,7 +113,7 @@ const Leaderboard = () => {
         rank: 0,
         name: r.display_name || "Anon...",
         buffer0Years: nw / (exp * 12),
-        buffer1Years: inc > 0 ? nw / (inc * 12) : 0,
+        buffer1Years: (nw + (inc - exp) * 12) / (exp * 12),
         isCurrentUser: false,
       });
     }
