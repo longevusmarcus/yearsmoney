@@ -3,6 +3,23 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Download, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { useI18n } from "@/i18n/I18nProvider";
+import bearMascot from "@/assets/bear-mascot.png";
+
+// Playful mascot: hops and rolls (screen-only, not in exported card)
+const BouncingMascot = ({ size = 96, delay = 0 }: { size?: number; delay?: number }) => (
+  <motion.div
+    initial={{ y: 24, opacity: 0, rotate: -20 }}
+    animate={{ y: [0, -18, 0, -10, 0], rotate: [-20, 15, -10, 12, 0], opacity: 1 }}
+    transition={{
+      y: { duration: 1.2, repeat: Infinity, repeatDelay: 0.4, delay },
+      rotate: { duration: 1.2, repeat: Infinity, repeatDelay: 0.4, delay },
+      opacity: { duration: 0.3, delay },
+    }}
+    style={{ width: size, height: size }}
+  >
+    <img src={bearMascot} alt="" className="h-full w-full object-contain" draggable={false} />
+  </motion.div>
+);
 
 interface ShareableWidgetProps {
   lifeBuffer: number;
