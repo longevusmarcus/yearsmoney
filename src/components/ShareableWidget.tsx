@@ -3,6 +3,23 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Download, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { useI18n } from "@/i18n/I18nProvider";
+import bearMascot from "@/assets/bear-mascot.png";
+
+// Playful mascot: hops and rolls (screen-only, not in exported card)
+const BouncingMascot = ({ size = 96, delay = 0 }: { size?: number; delay?: number }) => (
+  <motion.div
+    initial={{ y: 24, opacity: 0, rotate: -20 }}
+    animate={{ y: [0, -18, 0, -10, 0], rotate: [-20, 15, -10, 12, 0], opacity: 1 }}
+    transition={{
+      y: { duration: 1.2, repeat: Infinity, repeatDelay: 0.4, delay },
+      rotate: { duration: 1.2, repeat: Infinity, repeatDelay: 0.4, delay },
+      opacity: { duration: 0.3, delay },
+    }}
+    style={{ width: size, height: size }}
+  >
+    <img src={bearMascot} alt="" className="h-full w-full object-contain" draggable={false} />
+  </motion.div>
+);
 
 interface ShareableWidgetProps {
   lifeBuffer: number;
@@ -109,6 +126,9 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
             transition={{ duration: 0.5 }}
             className="w-full max-w-sm text-center"
           >
+            <div className="mb-6 flex justify-center">
+              <BouncingMascot size={step === 0 ? 112 : 96} />
+            </div>
             <h2 className="font-display text-4xl leading-tight text-foreground whitespace-pre-line">
               {introSlides[step].title}
             </h2>
@@ -126,6 +146,12 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
         className="w-full max-w-sm"
         onClick={(e) => e.stopPropagation()}
       >
+        {!isDownloading && (
+          <div className="mb-3 flex justify-center">
+            <BouncingMascot size={80} />
+          </div>
+        )}
+
 
         {/* Wrapped-style share card.
             html2canvas-safe: sRGB hex only, no oklch, no backdrop-filter,
