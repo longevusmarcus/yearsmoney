@@ -126,9 +126,9 @@ const Leaderboard = () => {
         name: t("app.leaderboard.you"),
         buffer0Years: finances.netWorth / (finances.monthlyExpenses * 12),
         buffer1Years:
-          finances.monthlyIncome > 0
-            ? finances.netWorth / (finances.monthlyIncome * 12)
-            : 0,
+          (finances.netWorth +
+            (finances.monthlyIncome - finances.monthlyExpenses) * 12) /
+          (finances.monthlyExpenses * 12),
         isCurrentUser: true,
       });
     }
