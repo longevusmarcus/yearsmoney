@@ -3,7 +3,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Download, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { useI18n } from "@/i18n/I18nProvider";
+import { supabase } from "@/integrations/supabase/client";
 import bearMascot from "@/assets/bear-mascot.png";
+
+// Same deterministic mock distribution as the Leaderboard page (buffer0 in years),
+// so the "top %" figure matches the pool the user sees ranked against.
+const mockPoolYears: number[] = (() => {
+  const pool: number[] = [];
+  for (let i = 0; i < 50; i++) {
+    const netWorth = 1_000_000 * Math.pow(0.94 - (i % 3) * 0.01, i);
+    const expenseVariation = 0.4 + ((i * 7) % 10) / 20;
+    const monthlyIncome = 20_000 * Math.pow(0.97, i * 0.8);
+    const monthlyExpenses = monthlyIncome * expenseVariation;
+    pool.push(netWorth / (monthlyExpenses * 12));
+  }
+  return pool;
+})();
 
 // Playful mascot: hops and rolls (screen-only, not in exported card)
 const BouncingMascot = ({ size = 96, delay = 0 }: { size?: number; delay?: number }) => (
