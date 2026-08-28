@@ -49,6 +49,37 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
   const { t } = useI18n();
   const widgetRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [topPercent, setTopPercent] = useState<number | null>(null);
+
+  // Position in the world pool (mock pool + real users) by current autonomy.
+  useEffect(() => {
+    let active = true;
+    const userYears = lifeBuffer / 12;
+    if (!(userYears > 0)) return;
+
+    const compute = async () => {
+      const pool = [...mockPoolYears];
+      try {
+        const { data } = await supabase.rpc("get_leaderboard");
+        if (Array.isArray(data)) {
+          for (const r of data as { net_worth: number | null; monthly_expenses: number | null }[]) {
+            const nw = Number(r.net_worth) || 0;
+            const exp = Number(r.monthly_expenses) || 0;
+            if (nw > 0 && exp > 0) pool.push(nw / (exp * 12));
+          }
+        }
+      } catch {
+        // leaderboard unavailable — fall back to the mock pool only
+      }
+      const better = pool.filter((y) => y > userYears).length;
+      const pct = Math.max(1, Math.ceil(((better + 1) / (pool.length + 1)) * 100));
+      if (active) setTopPercent(pct);
+    };
+    void compute();
+    return () => {
+      active = false;
+    };
+  }, [lifeBuffer]);
   // Wrapped-style story: two intro beats, then the shareable card.
   const [step, setStep] = useState(0);
 
