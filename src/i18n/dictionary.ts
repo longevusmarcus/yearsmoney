@@ -503,7 +503,7 @@ const it = {
       qrAlt: "Scansiona per aprire Years su mobile",
     },
     notFound: { title: "Pagina non trovata", back: "Torna alla home" },
-    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi", wrapped: "Il mio tempo", statFreedom: "Libertà", statPerMonth: "Guadagno / mese", statPerYear: "Guadagno / anno", statDaysFree: "Giorni liberi", myFreedom: "La mia libertà", intro1Title: "Il tuo anno\nnon si misura\nin denaro.", intro1Sub: "Si misura nel tempo che ti sei comprato.", intro2Title: "Allora,\nquanta libertà\nhai accumulato?", intro2Sub: "Vediamo i tuoi numeri.", tapToContinue: "Tocca per continuare" },
+    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi", wrapped: "Il mio tempo", statFreedom: "Libertà", statPerMonth: "Guadagno / mese", statPerYear: "Guadagno / anno", statDaysFree: "Giorni liberi", statWorldRank: "Nel mondo", topPercent: "Top {pct}%", myFreedom: "La mia libertà", intro1Title: "Il tuo anno\nnon si misura\nin denaro.", intro1Sub: "Si misura nel tempo che ti sei comprato.", intro2Title: "Allora,\nquanta libertà\nhai accumulato?", intro2Sub: "Vediamo i tuoi numeri.", tapToContinue: "Tocca per continuare" },
     auth: {
       welcomeBack: "Bentornato",
       accountCreated: "Account creato",
@@ -1451,7 +1451,7 @@ const en: typeof it = {
       qrAlt: "Scan to open Years on mobile",
     },
     notFound: { title: "Page not found", back: "Return to home" },
-    share: { unitYears: "years", unitMonths: "months", unitDays: "days", ofFreedom: "of freedom", perMonth: "/month", timeWealth: "Time Wealth", download: "Download", close: "Close", wrapped: "My time", statFreedom: "Freedom", statPerMonth: "Gain / month", statPerYear: "Gain / year", statDaysFree: "Days free", myFreedom: "My freedom", intro1Title: "Your year\nisn't measured\nin money.", intro1Sub: "It's measured in the time you bought back.", intro2Title: "So,\nhow much freedom\nhave you built?", intro2Sub: "Let's look at your numbers.", tapToContinue: "Tap to continue" },
+    share: { unitYears: "years", unitMonths: "months", unitDays: "days", ofFreedom: "of freedom", perMonth: "/month", timeWealth: "Time Wealth", download: "Download", close: "Close", wrapped: "My time", statFreedom: "Freedom", statPerMonth: "Gain / month", statPerYear: "Gain / year", statDaysFree: "Days free", statWorldRank: "In the world", topPercent: "Top {pct}%", myFreedom: "My freedom", intro1Title: "Your year\nisn't measured\nin money.", intro1Sub: "It's measured in the time you bought back.", intro2Title: "So,\nhow much freedom\nhave you built?", intro2Sub: "Let's look at your numbers.", tapToContinue: "Tap to continue" },
     auth: {
       welcomeBack: "Welcome back",
       accountCreated: "Account created",

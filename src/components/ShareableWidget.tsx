@@ -3,7 +3,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Download, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { useI18n } from "@/i18n/I18nProvider";
+import { supabase } from "@/integrations/supabase/client";
 import bearMascot from "@/assets/bear-mascot.png";
+
+// Same deterministic mock distribution as the Leaderboard page (buffer0 in years),
+// so the "top %" figure matches the pool the user sees ranked against.
+const mockPoolYears: number[] = (() => {
+  const pool: number[] = [];
+  for (let i = 0; i < 50; i++) {
+    const netWorth = 1_000_000 * Math.pow(0.94 - (i % 3) * 0.01, i);
+    const expenseVariation = 0.4 + ((i * 7) % 10) / 20;
+    const monthlyIncome = 20_000 * Math.pow(0.97, i * 0.8);
+    const monthlyExpenses = monthlyIncome * expenseVariation;
+    pool.push(netWorth / (monthlyExpenses * 12));
+  }
+  return pool;
+})();
 
 // Playful mascot: hops and rolls (screen-only, not in exported card)
 const BouncingMascot = ({ size = 96, delay = 0 }: { size?: number; delay?: number }) => (
@@ -34,6 +49,37 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
   const { t } = useI18n();
   const widgetRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [topPercent, setTopPercent] = useState<number | null>(null);
+
+  // Position in the world pool (mock pool + real users) by current autonomy.
+  useEffect(() => {
+    let active = true;
+    const userYears = lifeBuffer / 12;
+    if (!(userYears > 0)) return;
+
+    const compute = async () => {
+      const pool = [...mockPoolYears];
+      try {
+        const { data } = await supabase.rpc("get_leaderboard");
+        if (Array.isArray(data)) {
+          for (const r of data as { net_worth: number | null; monthly_expenses: number | null }[]) {
+            const nw = Number(r.net_worth) || 0;
+            const exp = Number(r.monthly_expenses) || 0;
+            if (nw > 0 && exp > 0) pool.push(nw / (exp * 12));
+          }
+        }
+      } catch {
+        // leaderboard unavailable — fall back to the mock pool only
+      }
+      const better = pool.filter((y) => y > userYears).length;
+      const pct = Math.max(1, Math.ceil(((better + 1) / (pool.length + 1)) * 100));
+      if (active) setTopPercent(pct);
+    };
+    void compute();
+    return () => {
+      active = false;
+    };
+  }, [lifeBuffer]);
   // Wrapped-style story: two intro beats, then the shareable card.
   const [step, setStep] = useState(0);
 
@@ -234,6 +280,27 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
                 </div>
               ))}
             </div>
+
+            {/* World ranking highlight */}
+            {topPercent !== null && (
+              <div
+                className="mt-7 flex items-center justify-between rounded-2xl px-5 py-4"
+                style={{ backgroundColor: "#823feb" }}
+              >
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}
+                >
+                  {t("app.share.statWorldRank")}
+                </p>
+                <p
+                  className="font-display text-3xl"
+                  style={{ color: "#fbdd67", lineHeight: 1.1 }}
+                >
+                  {t("app.share.topPercent").replace("{pct}", String(topPercent))}
+                </p>
+              </div>
+            )}
 
             {/* Footer branding */}
             <div className="mt-8 flex items-center justify-between">
