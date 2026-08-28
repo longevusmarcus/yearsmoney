@@ -281,6 +281,27 @@ const ShareableWidget = ({ lifeBuffer, monthlyGain, displayMode, onClose }: Shar
               ))}
             </div>
 
+            {/* World ranking highlight */}
+            {topPercent !== null && (
+              <div
+                className="mt-7 flex items-center justify-between rounded-2xl px-5 py-4"
+                style={{ backgroundColor: "#823feb" }}
+              >
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}
+                >
+                  {t("app.share.statWorldRank")}
+                </p>
+                <p
+                  className="font-display text-3xl"
+                  style={{ color: "#fbdd67", lineHeight: 1.1 }}
+                >
+                  {t("app.share.topPercent").replace("{pct}", String(topPercent))}
+                </p>
+              </div>
+            )}
+
             {/* Footer branding */}
             <div className="mt-8 flex items-center justify-between">
               <p
