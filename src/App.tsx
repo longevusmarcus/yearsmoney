@@ -86,7 +86,9 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
+          <PaywallGate />
           </MsxBootGate>
+
         </BrowserRouter>
       </TooltipProvider>
       </I18nProvider>
