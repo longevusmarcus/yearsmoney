@@ -6,6 +6,8 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { AppBackground } from "./components/AppBackground";
 import { I18nProvider } from "./i18n/I18nProvider";
 import { MsxBootGate } from "./msx/MsxBootGate";
+import { PaywallGate } from "./components/PaywallGate";
+
 import Landing from "./pages/Landing";
 
 // Toast layers are never visible on first paint, so they load after the app boots.
@@ -84,7 +86,9 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
+          <PaywallGate />
           </MsxBootGate>
+
         </BrowserRouter>
       </TooltipProvider>
       </I18nProvider>
