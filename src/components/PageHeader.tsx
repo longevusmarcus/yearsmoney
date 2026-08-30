@@ -87,14 +87,14 @@ export const PageHeader = ({
                   className="p-0.5 hover:opacity-70 transition-opacity"
                   aria-label="Share time wealth"
                 >
-                  <img src={bearMascot} alt="Share" className="w-6 h-6 object-contain" />
+                  <img src={bearMascot} alt="Share" className="w-7 h-7 object-contain" />
                 </button>
               )}
               <button
                 onClick={() => navigate("/settings")}
                 className="p-1 hover:opacity-70 transition-opacity"
               >
-                <Settings className="w-4 h-4 text-muted-foreground" />
+                <Settings className="w-5 h-5 text-muted-foreground" />
               </button>
             </motion.div>
           )}
