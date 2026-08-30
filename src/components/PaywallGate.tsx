@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { Sparkles, Target, Timer, LineChart, Trophy } from "lucide-react";
+import { Crown, Target, Timer, LineChart, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n/I18nProvider";
 import { SubscriptionScreen } from "@/components/ui/subscription-screen";
