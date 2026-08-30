@@ -10,13 +10,12 @@ import bearMascot from "@/assets/bear-mascot.png";
 /** In-app screens the paywall covers. */
 const GATED_ROUTES = ["/home", "/purchase", "/risks", "/leaderboard", "/settings"];
 
-const DELAY_MS = 2000;
-const SESSION_KEY = "years_paywall_seen";
+const DELAY_MS = 4000;
 
 /**
- * Shows the premium paywall two seconds after landing on any in-app screen.
- * Skipped for MSX users launched with full access (`msx_entitled`) and shown at
- * most once per browser session so the app stays usable while payments are off.
+ * Shows the premium paywall four seconds after landing on any in-app screen.
+ * Skipped for MSX users launched with full access (`msx_entitled`) and for
+ * users who already purchased premium. Reappears on every visit until purchase.
  */
 export function PaywallGate() {
   const { pathname } = useLocation();
@@ -29,10 +28,8 @@ export function PaywallGate() {
     if (!gated || open) return;
     if (localStorage.getItem("msx_entitled") === "true") return;
     if (localStorage.getItem("years_premium") === "true") return;
-    if (sessionStorage.getItem(SESSION_KEY) === "true") return;
 
     const timer = window.setTimeout(() => {
-      sessionStorage.setItem(SESSION_KEY, "true");
       setOpen(true);
     }, DELAY_MS);
     return () => window.clearTimeout(timer);
