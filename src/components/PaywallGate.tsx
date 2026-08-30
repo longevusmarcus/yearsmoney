@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { Sparkles, Timer, LineChart, Trophy } from "lucide-react";
+import { Sparkles, Target, Timer, LineChart, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n/I18nProvider";
 import { SubscriptionScreen } from "@/components/ui/subscription-screen";
@@ -42,9 +42,10 @@ export function PaywallGate() {
 
   const features = [
     { icon: <Sparkles className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature1") },
-    { icon: <Timer className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature2") },
-    { icon: <LineChart className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature3") },
-    { icon: <Trophy className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature4") },
+    { icon: <Target className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature2") },
+    { icon: <Timer className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature3") },
+    { icon: <LineChart className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature4") },
+    { icon: <Trophy className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature5") },
   ];
 
   const pricingOptions = [
