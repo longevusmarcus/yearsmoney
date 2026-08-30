@@ -38,7 +38,7 @@ export function PaywallGate() {
   if (!gated) return null;
 
   const features = [
-    { icon: <Sparkles className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature1") },
+    { icon: <Crown className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature1") },
     { icon: <Target className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature2") },
     { icon: <Timer className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature3") },
     { icon: <LineChart className="h-4 w-4" strokeWidth={1.6} />, text: t("app.paywall.feature4") },
