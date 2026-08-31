@@ -523,6 +523,17 @@ const it = {
       close: "Chiudi",
       soonTitle: "Presto disponibile",
       soonBody: "I pagamenti stanno arrivando. Continua a usare YEARS gratis nel frattempo.",
+      signInTitle: "Accedi per continuare",
+      signInBody: "Crea un account o accedi per attivare Premium.",
+      errorTitle: "Pagamento non disponibile",
+      errorBody: "Non riusciamo ad aprire il pagamento. Riprova più tardi.",
+    },
+    checkout: {
+      successTitle: "Benvenuto in Premium",
+      successBody: "Il pagamento è andato a buon fine. L'accesso si attiva in pochi secondi.",
+      missingTitle: "Nessun pagamento trovato",
+      missingBody: "Non abbiamo trovato dati di pagamento in questo link.",
+      backToApp: "Torna nell'app",
     },
 
     auth: {
