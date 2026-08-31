@@ -523,6 +523,17 @@ const it = {
       close: "Chiudi",
       soonTitle: "Presto disponibile",
       soonBody: "I pagamenti stanno arrivando. Continua a usare YEARS gratis nel frattempo.",
+      signInTitle: "Accedi per continuare",
+      signInBody: "Crea un account o accedi per attivare Premium.",
+      errorTitle: "Pagamento non disponibile",
+      errorBody: "Non riusciamo ad aprire il pagamento. Riprova più tardi.",
+    },
+    checkout: {
+      successTitle: "Benvenuto in Premium",
+      successBody: "Il pagamento è andato a buon fine. L'accesso si attiva in pochi secondi.",
+      missingTitle: "Nessun pagamento trovato",
+      missingBody: "Non abbiamo trovato dati di pagamento in questo link.",
+      backToApp: "Torna nell'app",
     },
 
     auth: {
@@ -1492,6 +1503,17 @@ const en: typeof it = {
       close: "Close",
       soonTitle: "Coming soon",
       soonBody: "Payments are on the way. Keep using YEARS for free in the meantime.",
+      signInTitle: "Sign in to continue",
+      signInBody: "Create an account or sign in to activate Premium.",
+      errorTitle: "Payment unavailable",
+      errorBody: "We couldn't open checkout. Please try again later.",
+    },
+    checkout: {
+      successTitle: "Welcome to Premium",
+      successBody: "Your payment went through. Access activates in a few seconds.",
+      missingTitle: "No payment found",
+      missingBody: "We couldn't find any payment details in this link.",
+      backToApp: "Back to the app",
     },
 
     auth: {
