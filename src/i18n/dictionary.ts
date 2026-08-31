@@ -1503,6 +1503,17 @@ const en: typeof it = {
       close: "Close",
       soonTitle: "Coming soon",
       soonBody: "Payments are on the way. Keep using YEARS for free in the meantime.",
+      signInTitle: "Sign in to continue",
+      signInBody: "Create an account or sign in to activate Premium.",
+      errorTitle: "Payment unavailable",
+      errorBody: "We couldn't open checkout. Please try again later.",
+    },
+    checkout: {
+      successTitle: "Welcome to Premium",
+      successBody: "Your payment went through. Access activates in a few seconds.",
+      missingTitle: "No payment found",
+      missingBody: "We couldn't find any payment details in this link.",
+      backToApp: "Back to the app",
     },
 
     auth: {
