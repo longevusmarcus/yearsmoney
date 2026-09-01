@@ -14,7 +14,7 @@ import bearMascot from "@/assets/bear-mascot.png";
 /** In-app screens the paywall covers. */
 const GATED_ROUTES = ["/home", "/purchase", "/risks", "/leaderboard", "/settings"];
 
-const DELAY_MS = 4000;
+const DELAY_MS = 2000;
 
 /** Paywall plan ids mapped to the payment catalog price ids. */
 const PRICE_IDS: Record<string, string> = {
@@ -24,7 +24,7 @@ const PRICE_IDS: Record<string, string> = {
 };
 
 /**
- * Shows the premium paywall four seconds after landing on any in-app screen.
+ * Shows the premium paywall two seconds after landing on any in-app screen.
  * Skipped for MSX users launched with full access (`msx_entitled`) and for
  * users who already purchased premium. Reappears on every visit until purchase.
  */
