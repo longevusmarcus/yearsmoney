@@ -77,6 +77,10 @@ const App = () => {
             {/* Auth */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+
+            {/* Payments */}
+            <Route path="/checkout/return" element={<CheckoutReturn />} />
+            
             
             {/* Legal/Info pages */}
             <Route path="/ubi" element={<UBI />} />
