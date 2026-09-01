@@ -30,6 +30,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Auth = lazy(() => import("./pages/Auth"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const CheckoutReturn = lazy(() => import("./pages/CheckoutReturn"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -76,6 +77,10 @@ const App = () => {
             {/* Auth */}
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+
+            {/* Payments */}
+            <Route path="/checkout/return" element={<CheckoutReturn />} />
+            
             
             {/* Legal/Info pages */}
             <Route path="/ubi" element={<UBI />} />
