@@ -37,6 +37,21 @@ export default {
         cormorant: ['Cormorant Garamond', 'serif'],
       },
       colors: {
+        landing: {
+          DEFAULT: "hsl(var(--landing))",
+          foreground: "hsl(var(--landing-foreground))",
+          muted: "hsl(var(--landing-muted))",
+          line: "hsl(var(--landing-line))",
+          soft: "hsl(var(--landing-soft))",
+          "soft-hover": "hsl(var(--landing-soft-hover))",
+          accent: "hsl(var(--landing-accent))",
+          "accent-foreground": "hsl(var(--landing-accent-foreground))",
+          violet: "hsl(var(--landing-violet))",
+          mint: "hsl(var(--landing-mint))",
+          gold: "hsl(var(--landing-gold))",
+          blue: "hsl(var(--landing-blue))",
+          overlay: "hsl(var(--landing-overlay))",
+        },
         border: surface("--border", "--border-a"),
         input: surface("--input", "--input-a"),
         ring: "hsl(var(--ring))",
@@ -79,6 +94,9 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        "landing-product": "0 30px 80px -28px hsl(var(--landing-foreground) / 0.35)",
       },
       keyframes: {
         "accordion-down": {

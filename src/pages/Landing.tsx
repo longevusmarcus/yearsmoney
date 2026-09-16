@@ -23,7 +23,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[oklch(0.09_0.01_260)] text-white">
+    <div className="min-h-screen bg-landing text-landing-foreground">
       <Hero />
       {showRest && (
         <Suspense fallback={<div className="min-h-[50vh]" />}>
