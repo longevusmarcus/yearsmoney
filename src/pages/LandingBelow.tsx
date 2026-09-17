@@ -5,8 +5,14 @@ import appHome from "@/assets/app-home.png";
 import appPurchase from "@/assets/app-purchase.png";
 import appRisks from "@/assets/app-risks.png";
 import appOptional from "@/assets/app-optional.png";
+import showcaseLeaderboard from "@/assets/showcase-leaderboard.png";
 import womanSky from "@/assets/woman-sky.jpg";
 import peopleMountain from "@/assets/people-mountain.jpg";
+import peopleHome from "@/assets/people-home.jpg";
+import peopleRetire from "@/assets/people-retire.jpg";
+import japanImg from "@/assets/example-japan.jpg";
+import carImg from "@/assets/example-car.jpg";
+import fashionImg from "@/assets/example-fashion.jpg";
 import yearsLogo from "@/assets/years-logo.webp";
 import { APP_ENTRY } from "@/components/landing/appEntry";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -30,7 +36,9 @@ const tones = {
 function SectionHeading({ title, body }: { title: string; body: string }) {
   return (
     <header className="mx-auto max-w-3xl px-5 text-center">
-      <h2 className="text-balance font-grotesk text-4xl font-medium leading-[1.05] md:text-6xl">{title}</h2>
+      <h2 className="text-balance whitespace-pre-line font-grotesk text-4xl font-medium leading-[1.05] md:text-6xl">
+        {title}
+      </h2>
       <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-landing-muted md:text-lg">{body}</p>
     </header>
   );
@@ -72,6 +80,72 @@ function FeatureRow({ title, body, image, alt, tone, reverse }: FeatureProps) {
   );
 }
 
+function PriceTile({
+  image,
+  caption,
+  value,
+  action,
+  footLabel,
+  footValue,
+}: {
+  image: string;
+  caption: string;
+  value: string;
+  action: string;
+  footLabel: string;
+  footValue: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="relative overflow-hidden rounded-[28px]"
+    >
+      <img src={image} alt={caption} loading="lazy" className="h-[340px] w-full object-cover md:h-[400px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-landing-overlay/40 via-transparent to-landing-overlay" />
+      <div className="absolute inset-x-0 top-10 flex flex-col items-center text-center text-landing">
+        <span className="text-xs opacity-85">{caption}</span>
+        <span className="mt-1 font-grotesk text-4xl font-medium md:text-5xl">{value}</span>
+        <span className="mt-3 rounded-full bg-landing px-4 py-1.5 text-xs font-semibold text-landing-foreground">
+          {action}
+        </span>
+      </div>
+      <div className="absolute inset-x-4 bottom-4 flex items-center justify-between rounded-2xl bg-landing px-4 py-3">
+        <span className="text-sm font-medium text-landing-foreground">{footLabel}</span>
+        <span className="text-sm font-semibold text-landing-foreground">{footValue}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+function GoalCard({
+  image,
+  alt,
+  label,
+  value,
+  budget,
+}: {
+  image: string;
+  alt: string;
+  label: string;
+  value: string;
+  budget: string;
+}) {
+  return (
+    <div className="relative min-h-[380px] overflow-hidden rounded-[28px] md:min-h-[460px]">
+      <img src={image} alt={alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-landing-overlay to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-6 text-landing md:p-8">
+        <p className="text-xs uppercase tracking-[0.18em] opacity-80">{label}</p>
+        <p className="mt-2 font-grotesk text-3xl font-medium leading-tight md:text-4xl">{value}</p>
+        <p className="mt-2 text-sm opacity-80">{budget}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingBelow() {
   const { t } = useI18n();
 
@@ -93,26 +167,82 @@ export default function LandingBelow() {
       />
       <FeatureRow
         reverse
-        title={t("sections.money.title")}
-        body={t("sections.money.sub")}
-        image={appPurchase}
-        alt={t("sections.money.title")}
+        title={t("terminology.bufferOneTitle")}
+        body={t("terminology.bufferOneDesc")}
+        image={appOptional}
+        alt={t("terminology.bufferOneTitle")}
         tone="gold"
       />
+
+      {/* Il costo in tempo di ogni acquisto */}
+      <section className="border-t border-landing-line bg-landing-soft py-20 md:py-28">
+        <SectionHeading title={t("sections.money.title")} body={t("sections.money.sub")} />
+        <div className="mx-auto mt-14 grid max-w-6xl gap-5 px-5 md:grid-cols-3 md:px-8">
+          <PriceTile
+            image={japanImg}
+            caption={t("sections.money.travel")}
+            value={t("sections.money.travelValue")}
+            action={t("sections.money.freedomCost")}
+            footLabel={t("sections.money.travelFootLabel")}
+            footValue={t("sections.money.travelFootValue")}
+          />
+          <PriceTile
+            image={carImg}
+            caption={t("sections.money.mobility")}
+            value={t("sections.money.mobilityValue")}
+            action={t("sections.money.freedomCost")}
+            footLabel={t("sections.money.mobilityFootLabel")}
+            footValue={t("sections.money.mobilityFootValue")}
+          />
+          <PriceTile
+            image={fashionImg}
+            caption={t("sections.money.luxury")}
+            value={t("sections.money.luxuryValue")}
+            action={t("sections.money.freedomCost")}
+            footLabel={t("sections.money.luxuryFootLabel")}
+            footValue={t("sections.money.luxuryFootValue")}
+          />
+        </div>
+        <div className="mt-12 text-center">
+          <Link
+            to={APP_ENTRY}
+            className="inline-flex items-center gap-2 rounded-full bg-landing-foreground px-7 py-3.5 text-sm font-semibold text-landing transition-transform hover:scale-[1.03]"
+          >
+            {t("sections.money.cta")}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
       <FeatureRow
-        title={t("terminology.advisorTitle")}
-        body={t("terminology.advisorDesc")}
-        image={appOptional}
-        alt={t("terminology.advisorTitle")}
+        title={t("showcase.purchase.title")}
+        body={t("showcase.purchase.desc")}
+        image={appPurchase}
+        alt={t("showcase.purchase.title")}
         tone="blue"
       />
       <FeatureRow
         reverse
+        title={t("terminology.advisorTitle")}
+        body={t("terminology.advisorDesc")}
+        image={appOptional}
+        alt={t("terminology.advisorTitle")}
+        tone="violet"
+      />
+      <FeatureRow
         title={t("showcase.risks.title")}
         body={t("showcase.risks.desc")}
         image={appRisks}
         alt={t("showcase.risks.title")}
-        tone="violet"
+        tone="mint"
+      />
+      <FeatureRow
+        reverse
+        title={t("showcase.leaderboard.title")}
+        body={t("showcase.leaderboard.desc")}
+        image={showcaseLeaderboard}
+        alt={t("showcase.leaderboard.title")}
+        tone="gold"
       />
 
       <section className="bg-landing-soft py-20 md:py-28">
@@ -140,7 +270,35 @@ export default function LandingBelow() {
         </div>
       </section>
 
-      <section className="flex min-h-[560px] items-center justify-center bg-landing px-5 py-20 text-center">
+      {/* Obiettivi di vita */}
+      <section className="border-t border-landing-line bg-landing py-20 md:py-28">
+        <SectionHeading title={t("sections.final.title")} body={t("sections.final.sub")} />
+        <div className="mx-auto mt-14 grid max-w-6xl gap-5 px-5 md:grid-cols-3 md:px-8">
+          <GoalCard
+            image={peopleMountain}
+            alt={t("sections.final.mountainAlt")}
+            label={t("sections.final.sabbatical")}
+            value={t("sections.final.sabbaticalValue")}
+            budget={t("sections.final.sabbaticalCardLabel")}
+          />
+          <GoalCard
+            image={peopleHome}
+            alt={t("sections.final.homeAlt")}
+            label={t("sections.final.house")}
+            value={t("sections.final.houseValue")}
+            budget={t("sections.final.houseCardLabel")}
+          />
+          <GoalCard
+            image={peopleRetire}
+            alt={t("sections.final.retireAlt")}
+            label={t("sections.final.retire")}
+            value={t("sections.final.retireValue")}
+            budget={t("sections.final.retireCardLabel")}
+          />
+        </div>
+      </section>
+
+      <section className="flex min-h-[560px] items-center justify-center bg-landing-soft px-5 py-20 text-center">
         <div className="max-w-3xl">
           <img src={yearsLogo} alt="" className="mx-auto h-20 w-20 object-contain" />
           <h2 className="mt-5 text-balance font-grotesk text-4xl font-medium leading-[1.05] md:text-6xl">{t("sections.final.title")}</h2>
