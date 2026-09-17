@@ -215,10 +215,10 @@ export default function LandingBelow() {
       </section>
 
       <FeatureRow
-        title={t("sections.money.title")}
-        body={t("sections.money.sub")}
+        title={t("showcase.purchase.title")}
+        body={t("showcase.purchase.desc")}
         image={appPurchase}
-        alt={t("sections.money.title")}
+        alt={t("showcase.purchase.title")}
         tone="blue"
       />
       <FeatureRow
