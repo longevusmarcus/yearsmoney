@@ -53,21 +53,6 @@
     --ring: 0 0% 90%;
 
     --radius: 1.25rem;
-
-    /* Editorial landing palette, adapted from the supplied reference. */
-    --landing: 45 14% 97%;
-    --landing-foreground: 230 8% 10%;
-    --landing-muted: 225 7% 42%;
-    --landing-line: 225 10% 88%;
-    --landing-soft: 45 10% 92%;
-    --landing-soft-hover: 45 10% 88%;
-    --landing-accent: 260 69% 53%;
-    --landing-accent-foreground: 0 0% 100%;
-    --landing-violet: 258 72% 92%;
-    --landing-mint: 160 31% 86%;
-    --landing-gold: 42 64% 84%;
-    --landing-blue: 213 55% 88%;
-    --landing-overlay: 230 9% 8%;
   }
 }
 
