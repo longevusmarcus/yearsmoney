@@ -52,6 +52,10 @@
     --input-a: 0.05;
     --ring: 0 0% 90%;
 
+    /* Landing canvas: a warmer charcoal ground and restrained brand light. */
+    --landing-canvas: 240 5% 5%;
+    --landing-canvas-raised: 240 4% 8%;
+
     --radius: 1.25rem;
   }
 }
@@ -171,4 +175,26 @@
     drop-shadow(0 0 10px oklch(0.55 0.28 300 / 0.22))
     drop-shadow(0 0 24px oklch(0.60 0.25 300 / 0.14))
     drop-shadow(0 0 16px oklch(0.88 0.18 92 / 0.15));
+}
+
+.landing-canvas {
+  background: hsl(var(--landing-canvas));
+  box-shadow: 0 32px 100px hsl(0 0% 0% / 0.55);
+}
+
+.landing-ambient {
+  background:
+    radial-gradient(ellipse 42% 72% at 50% -6%, hsl(var(--accent) / 0.16), transparent 72%),
+    radial-gradient(ellipse 30% 55% at 16% 42%, oklch(0.55 0.24 295 / 0.12), transparent 76%),
+    radial-gradient(ellipse 30% 55% at 84% 36%, oklch(0.78 0.13 55 / 0.10), transparent 76%);
+}
+
+.landing-grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.48'/></svg>");
+  mix-blend-mode: soft-light;
+}
+
+.landing-section-canvas {
+  background: hsl(var(--landing-canvas-raised));
+  border: 1px solid hsl(var(--border) / var(--border-a));
 }

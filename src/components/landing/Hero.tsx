@@ -1,168 +1,107 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, X, Smartphone } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+
 import yearsLogo from "@/assets/years-logo.webp";
-import { APP_ENTRY } from "./appEntry";
+import homeScreen from "@/assets/showcase-home.png";
+import purchaseScreen from "@/assets/showcase-purchase-1.png";
+import risksScreen from "@/assets/showcase-risks.png";
+import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { APP_ENTRY } from "./appEntry";
 
-/* Typing effect on the localised headline. The highlighted word comes from the
-   dictionary too, so the gradient lands on the right word in each language. */
 function TypedHeadline() {
   const { t } = useI18n();
   const full = t("hero.headline");
   const highlight = t("hero.headlineHighlight");
-  const hlStart = full.indexOf(highlight);
-  const hlEnd = hlStart >= 0 ? hlStart + highlight.length : -1;
+  const start = full.indexOf(highlight);
+  const end = start >= 0 ? start + highlight.length : -1;
+  const [length, setLength] = useState(0);
 
-  const [n, setN] = useState(0);
-
-  // Restart the animation when the language changes
-  useEffect(() => setN(0), [full]);
-
+  useEffect(() => setLength(0), [full]);
   useEffect(() => {
-    if (n >= full.length) return;
-    const pause = n === full.length ? 700 : 45;
-    const id = window.setTimeout(() => setN((v) => v + 1), pause);
-    return () => window.clearTimeout(id);
-  }, [n, full.length]);
+    if (length >= full.length) return;
+    const timer = window.setTimeout(() => setLength((value) => value + 1), 42);
+    return () => window.clearTimeout(timer);
+  }, [length, full.length]);
 
-  const typed = full.slice(0, n);
-  const before = hlStart < 0 ? typed : typed.slice(0, Math.min(n, hlStart));
-  const mid = hlStart < 0 ? "" : typed.slice(Math.min(n, hlStart), Math.min(n, hlEnd));
-  const after = hlStart < 0 ? "" : typed.slice(Math.min(n, hlEnd));
+  const typed = full.slice(0, length);
+  const before = start < 0 ? typed : typed.slice(0, Math.min(length, start));
+  const emphasis = start < 0 ? "" : typed.slice(Math.min(length, start), Math.min(length, end));
+  const after = start < 0 ? "" : typed.slice(Math.min(length, end));
 
   return (
     <span>
-      <span className="whitespace-pre-wrap">{before}</span>
-      <span className="logo-gradient-text whitespace-pre-wrap">{mid}</span>
-      <span className="whitespace-pre-wrap">{after}</span>
-      <span
-        aria-hidden
-        className={`ml-1 inline-block h-[0.85em] w-[0.06em] translate-y-[0.06em] bg-white/70 align-middle ${
-          n >= full.length ? "animate-pulse" : ""
-        }`}
-      />
+      {before}
+      <em className="font-cormorant font-normal text-muted-foreground">{emphasis}</em>
+      {after}
+      <span aria-hidden className="ml-1 inline-block h-[0.75em] w-px bg-foreground/60 align-middle" />
     </span>
   );
 }
 
-/* Precise anchor scroll: re-corrects while in-view animations change layout */
-function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
-  e.preventDefault();
-  const el = document.getElementById(id);
-  if (!el) return;
-  const go = () =>
-    window.scrollTo({
-      top: el.getBoundingClientRect().top + window.scrollY,
-      behavior: "smooth",
-    });
-  go();
-  // layout shifts from reveal animations → snap exactly on target
-  const t1 = window.setTimeout(go, 450);
-  const t2 = window.setTimeout(() => {
-    window.scrollTo({
-      top: el.getBoundingClientRect().top + window.scrollY,
-      behavior: "auto",
-    });
-    window.clearTimeout(t1);
-  }, 950);
-  void t2;
+function scrollToShowcase(event: React.MouseEvent<HTMLAnchorElement>) {
+  event.preventDefault();
+  document.getElementById("scopri")?.scrollIntoView({ behavior: "smooth" });
 }
+
+const phones = [
+  { src: purchaseScreen, alt: "YEARS — costo degli acquisti in tempo", position: "left" },
+  { src: homeScreen, alt: "YEARS — panoramica degli anni di libertà", position: "center" },
+  { src: risksScreen, alt: "YEARS — analisi dei rischi", position: "right" },
+] as const;
 
 const Hero = () => {
   const { t } = useI18n();
-  const [qrOpen, setQrOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
-  // On phones the hero must be readable the instant the page paints.
-  const d = (delay: number) => (isMobile ? 0 : delay);
-  const dur = (duration: number) => (isMobile ? 0.35 : duration);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.75);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const motionDelay = (value: number) => (isMobile ? 0 : value);
 
   return (
-    <section id="top" className="relative min-h-[100svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
-      {/* Cinematic light-field background: soft diffuse blooms on pure black */}
-      <LightLeakBackdrop />
+    <section id="top" className="landing-frame relative min-h-[100svh] overflow-hidden bg-background p-2 text-foreground md:p-6">
+      <div className="landing-canvas relative mx-auto flex min-h-[calc(100svh-1rem)] max-w-[1440px] flex-col overflow-hidden rounded-[2rem] border border-border md:min-h-[calc(100svh-3rem)] md:rounded-[3rem]">
+        <div aria-hidden className="landing-ambient pointer-events-none absolute inset-x-0 top-0 h-[55%]" />
+        <div aria-hidden className="landing-grain pointer-events-none absolute inset-0 opacity-[0.08]" />
 
-      {/* Sticky glass pill navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed inset-x-0 top-2 z-50 px-4 md:top-3 md:px-8"
-      >
-        <nav
-          className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border transition-all duration-300 ${
-            scrolled
-              ? "border-white/10 bg-[oklch(0.12_0.01_260/0.92)] px-4 py-1 shadow-[0_18px_60px_-24px_oklch(0_0_0/0.6)] backdrop-blur-xl md:px-5 md:py-1.5"
-              : "border-transparent bg-transparent px-0 py-1.5 md:py-2"
-          }`}
+        <motion.nav
+          initial={{ opacity: 0, x: "-50%", y: -16 }}
+          animate={{ opacity: 1, x: "-50%", y: 0 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="absolute left-1/2 top-3 z-50 flex w-[calc(100%-1rem)] -translate-x-1/2 items-center justify-between rounded-full border border-border bg-popover/80 px-2 py-1.5 shadow-2xl backdrop-blur-xl md:top-6 md:w-auto md:min-w-[620px] md:px-3"
         >
-          {/* Logo */}
-          <a href="#top" className="flex items-center gap-0">
-            <img
-              src={yearsLogo}
-              alt={t("common.logoAlt")}
-              className={`object-contain transition-all duration-300 ${
-                scrolled ? "h-9 w-9 md:h-10 md:w-10" : "h-10 w-10 md:h-11 md:w-11"
-              }`}
-            />
-            <span
-              className={`font-cormorant italic leading-none tracking-[0.02em] text-white transition-all duration-300 ${
-                scrolled
-                  ? "-ml-2.5 text-xl md:-ml-3 md:text-2xl"
-                  : "-ml-3 text-2xl md:-ml-3 md:text-[1.7rem]"
-              }`}
-            >
-              ears
-            </span>
+          <a href="#top" aria-label="Years" className="flex shrink-0 items-center pr-1">
+            <img src={yearsLogo} alt={t("common.logoAlt")} className="h-9 w-9 object-contain md:h-10 md:w-10" />
+            <span className="-ml-2.5 font-cormorant text-xl italic leading-none md:text-2xl">ears</span>
           </a>
 
-          {/* Right-hand actions — visible on all screen sizes, no burger menu */}
-          <div className="flex items-center gap-2 md:gap-3">
-            <LanguageSwitcher className="h-10" />
-            <Link
-              to="/auth"
-              className="inline-flex h-10 items-center rounded-full border border-white/20 px-3.5 text-sm font-medium text-white/85 transition-colors hover:border-white/40 hover:text-white active:scale-95 md:px-4"
-            >
-              {t("nav.join")}
-            </Link>
-            <Link
-              to={APP_ENTRY}
-              className="inline-flex h-10 items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-4 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95 md:px-5"
-            >
-              {t("nav.calculate")}
-            </Link>
+          <div className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+            <a href="#scopri" onClick={scrollToShowcase} className="transition-colors hover:text-foreground">{t("hero.ctaSecondary")}</a>
+            <Link to="/filosofia" className="transition-colors hover:text-foreground">{t("hero.badge")}</Link>
           </div>
-        </nav>
-      </motion.div>
 
-      {/* Content container */}
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
-        {/* Hero section */}
-        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-0 pt-3 text-center md:pb-24 md:pt-8">
-          {/* Badge */}
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <LanguageSwitcher className="h-9" />
+            <Button asChild variant="ghost" size="sm" className="hidden border border-border sm:inline-flex">
+              <Link to="/auth">{t("nav.join")}</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to={APP_ENTRY}>{t("nav.calculate")}</Link>
+            </Button>
+          </div>
+        </motion.nav>
+
+        <div className="relative z-10 flex flex-1 flex-col items-center px-4 pt-24 text-center md:px-8 md:pt-32">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.2) }}
-            className="mb-4 md:mb-6"
+            transition={{ duration: 0.55, delay: motionDelay(0.15) }}
           >
-            <Link
-              to="/filosofia"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1 pl-1 pr-3 text-xs text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
-            >
-              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.12em] text-white">
-                {t("hero.badgeChip")}
+            <Link to="/filosofia" className="group inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
               </span>
               {t("hero.badge")}
               <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
@@ -170,228 +109,72 @@ const Hero = () => {
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.9), delay: d(0.3) }}
-            className="mx-auto max-w-5xl font-grotesk text-[2.85rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
+            transition={{ duration: 0.75, delay: motionDelay(0.25), ease: "easeOut" }}
+            className="mt-5 max-w-5xl font-grotesk text-[3.15rem] font-medium leading-[0.92] sm:text-6xl md:mt-7 md:text-[5.8rem]"
           >
             <TypedHeadline />
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.5) }}
-            className="mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:mt-8 md:text-lg"
+            transition={{ duration: 0.65, delay: motionDelay(0.4) }}
+            className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:mt-7 md:text-xl"
           >
             {t("hero.sub")}
           </motion.p>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.55) }}
-            className="mt-2 max-w-2xl text-sm leading-relaxed text-white/50 md:mt-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.65, delay: motionDelay(0.5) }}
+            className="mt-2 hidden max-w-xl text-sm text-muted-foreground/70 md:block"
           >
             {t("hero.subSecondary")}
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.65) }}
-            className="mt-5 flex flex-wrap items-center justify-center gap-3 md:mt-10 md:gap-4"
+            transition={{ duration: 0.65, delay: motionDelay(0.55) }}
+            className="mt-5 flex items-center gap-3 md:mt-8"
           >
-            <Link
-              to={APP_ENTRY}
-              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-7 py-3 text-sm font-medium text-black shadow-[0_10px_40px_-12px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95 md:px-8 md:py-3.5"
-            >
-              {t("hero.ctaPrimary")}
-            </Link>
-            <a
-              href="#scopri"
-              onClick={(e) => scrollToSection(e, "scopri")}
-              className="inline-flex items-center text-sm font-medium text-white/80 underline underline-offset-4 transition-colors hover:text-white"
-            >
-              {t("hero.ctaSecondary")}
-            </a>
+            <Button asChild size="lg" className="h-12 px-7">
+              <Link to={APP_ENTRY}>{t("hero.ctaPrimary")}</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="h-12 bg-card px-7">
+              <a href="#scopri" onClick={scrollToShowcase}>{t("hero.ctaSecondary")}</a>
+            </Button>
           </motion.div>
+
+          <div className="relative mt-auto h-[31vh] min-h-[225px] w-full max-w-5xl md:h-[43vh] md:min-h-[340px]">
+            {phones.map((phone, index) => {
+              const side = phone.position !== "center";
+              return (
+                <motion.div
+                  key={phone.position}
+                  initial={{ opacity: 0, y: 90, rotate: 0 }}
+                  animate={{ opacity: side ? 0.62 : 1, y: 0, rotate: phone.position === "left" ? -10 : phone.position === "right" ? 10 : 0 }}
+                  transition={{ duration: 0.9, delay: motionDelay(0.65 + index * 0.08), ease: [0.22, 1, 0.36, 1] }}
+                  className={`absolute bottom-[-26%] overflow-hidden rounded-[2rem] border-[3px] border-border bg-popover p-1.5 shadow-2xl transition-transform duration-700 hover:-translate-y-3 md:rounded-[2.8rem] md:border-4 md:p-2 ${
+                    phone.position === "center"
+                      ? "left-1/2 z-20 w-[11.5rem] -translate-x-1/2 md:w-[17rem]"
+                      : phone.position === "left"
+                        ? "left-[2%] z-10 hidden w-[15rem] sm:block md:left-[16%]"
+                        : "right-[2%] z-10 hidden w-[15rem] sm:block md:right-[16%]"
+                  }`}
+                >
+                  <img src={phone.src} alt={phone.alt} className="block h-auto w-full rounded-[1.55rem] md:rounded-[2.15rem]" />
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
-      <QrModal open={qrOpen} onClose={() => setQrOpen(false)} />
     </section>
   );
 };
-
-/**
- * LightLeakBackdrop
- * Cinematic, diagonally-drifting light-field on pure black. A mixed palette
- * of cool blue, violet, and warm orange/peach — echoing the sky section —
- * fused with heavy blur. Central darkening keeps typography readable.
- */
-function LightLeakBackdrop() {
-  // The drift repaints several very large blurred layers forever. That is fine on a
-  // desktop GPU and ruinous on a phone, so mobile gets the same field, held still.
-  const isMobile = useIsMobile();
-  return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 bg-black" />
-
-      {/* Diagonal drift wrapper — the whole light-field breathes gently */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={
-          isMobile
-            ? { opacity: 1 }
-            : { opacity: 1, x: [0, 30, -10, 0], y: [0, -20, 10, 0] }
-        }
-        transition={
-          isMobile
-            ? { opacity: { duration: 1.8, ease: "easeOut" } }
-            : {
-                opacity: { duration: 1.8, ease: "easeOut" },
-                x: { duration: 24, repeat: Infinity, ease: "easeInOut" },
-                y: { duration: 28, repeat: Infinity, ease: "easeInOut" },
-              }
-        }
-        className="absolute inset-[-10%]"
-      >
-        {/* Violet-warm cluster — left: soft violet → peach */}
-        <div
-          className="absolute left-[-10%] top-[8%] h-[70vh] w-[70vw] rotate-[-18deg] rounded-full blur-[160px]"
-          style={{
-            background:
-              "radial-gradient(closest-side, oklch(0.80 0.14 280 / 0.50), oklch(0.74 0.16 295 / 0.42) 38%, oklch(0.80 0.15 55 / 0.26) 64%, transparent 80%)",
-          }}
-        />
-        <div
-          className="absolute left-[2%] top-[35%] h-[46vh] w-[46vw] rotate-[-8deg] rounded-full blur-[150px]"
-          style={{
-            background:
-              "radial-gradient(closest-side, oklch(0.70 0.16 295 / 0.34), oklch(0.72 0.14 280 / 0.20) 55%, transparent 78%)",
-          }}
-        />
-
-        {/* Sunset-violet cluster — right: peach → coral → soft violet */}
-        <motion.div
-          animate={isMobile ? undefined : { x: [0, -20, 15, 0], y: [0, 15, -8, 0] }}
-          transition={
-            isMobile
-              ? undefined
-              : {
-                  x: { duration: 30, repeat: Infinity, ease: "easeInOut" },
-                  y: { duration: 34, repeat: Infinity, ease: "easeInOut" },
-                }
-          }
-          className="absolute right-[-15%] top-[-10%] h-[95vh] w-[85vw] rotate-[12deg] rounded-full blur-[170px]"
-          style={{
-            background:
-              "radial-gradient(closest-side, oklch(0.90 0.13 55 / 0.52), oklch(0.78 0.16 45 / 0.38) 30%, oklch(0.60 0.17 300 / 0.28) 62%, oklch(0.55 0.18 30 / 0.20) 78%, transparent 90%)",
-          }}
-        />
-        {/* Soft peach highlight — the "hot" core of the leak */}
-        <div
-          className="absolute right-[10%] top-[22%] h-[36vh] w-[36vw] rounded-full blur-[110px]"
-          style={{
-            background:
-              "radial-gradient(closest-side, oklch(0.95 0.06 60 / 0.48), oklch(0.85 0.10 55 / 0.28) 45%, transparent 75%)",
-          }}
-        />
-        {/* Deep violet anchor bottom-right */}
-        <div
-          className="absolute right-[5%] bottom-[-15%] h-[70vh] w-[70vw] rotate-[6deg] rounded-full blur-[190px]"
-          style={{
-            background:
-              "radial-gradient(closest-side, oklch(0.40 0.18 300 / 0.44), oklch(0.55 0.15 290 / 0.24) 55%, transparent 78%)",
-          }}
-        />
-      </motion.div>
-
-      {/* Keep the center dark and clean for typography */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 55% at 50% 55%, oklch(0 0 0 / 0.75), oklch(0 0 0 / 0.35) 50%, transparent 80%)",
-        }}
-      />
-
-      {/* Fine grain — kills banding, adds analog feel */}
-      <div
-        className="absolute inset-0 opacity-[0.09] mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>\")",
-        }}
-      />
-
-      {/* Edge vignette */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,oklch(0_0_0/0.9))]" />
-    </div>
-  );
-}
-
-function QrModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { t } = useI18n();
-  const target =
-    typeof window !== "undefined" ? `${window.location.origin}${APP_ENTRY}` : APP_ENTRY;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=8&data=${encodeURIComponent(
-    target,
-  )}`;
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 backdrop-blur-xl"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.96 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[oklch(0.12_0.01_260)] p-8 text-center shadow-[0_40px_120px_-20px_oklch(0.5_0.15_270/0.5)]"
-          >
-            <button
-              onClick={onClose}
-              aria-label={t("common.close")}
-              className="absolute right-4 top-4 rounded-full p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs text-white/80">
-              <Smartphone className="h-3.5 w-3.5" />
-              {t("hero.qrBadge")}
-            </div>
-            <h3 className="mt-5 font-grotesk text-2xl font-medium leading-tight text-white">
-              {t("hero.qrTitle")}
-            </h3>
-            <p className="mt-2 text-sm text-white/60">
-              {t("hero.qrSub")}
-            </p>
-            <div className="mt-6 flex items-center justify-center">
-              <div className="rounded-2xl bg-white p-4">
-                <img
-                  src={qrUrl}
-                  alt={t("hero.qrAlt")}
-                  width={280}
-                  height={280}
-                  className="h-[280px] w-[280px]"
-                />
-              </div>
-            </div>
-            <div className="mt-5 truncate text-xs text-white/40">{target}</div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 export { Hero };
