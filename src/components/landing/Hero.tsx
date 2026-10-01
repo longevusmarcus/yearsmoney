@@ -66,8 +66,8 @@ const Hero = () => {
         <div aria-hidden className="landing-grain pointer-events-none absolute inset-0 opacity-[0.08]" />
 
         <motion.nav
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: "-50%", y: -16 }}
+          animate={{ opacity: 1, x: "-50%", y: 0 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="absolute left-1/2 top-3 z-50 flex w-[calc(100%-1rem)] -translate-x-1/2 items-center justify-between rounded-full border border-border bg-popover/80 px-2 py-1.5 shadow-2xl backdrop-blur-xl md:top-6 md:w-auto md:min-w-[620px] md:px-3"
         >
