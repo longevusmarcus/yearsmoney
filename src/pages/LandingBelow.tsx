@@ -48,9 +48,12 @@ function LightSection({
   return (
     <section
       id={id}
-      className={`relative bg-white px-4 py-24 text-[oklch(0.15_0_0)] md:px-8 md:py-36 ${className}`}
+      className={`relative bg-background px-2 py-3 text-foreground md:px-6 md:py-8 ${className}`}
     >
-      <div className="relative mx-auto max-w-6xl">{children}</div>
+      <div className="landing-section-canvas relative mx-auto max-w-[1440px] overflow-hidden rounded-[2rem] px-4 py-24 md:rounded-[3rem] md:px-8 md:py-36">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.09),transparent_70%)]" />
+        <div className="relative mx-auto max-w-6xl">{children}</div>
+      </div>
     </section>
   );
 }
@@ -72,8 +75,8 @@ function CenteredHeader({
   return (
     <div className="mx-auto max-w-3xl text-center">
       <h2
-        className={`font-display text-[2.6rem] leading-[1.02] md:text-[4.25rem] ${
-          isLight ? "text-[oklch(0.15_0_0)]" : "text-white"
+        className={`font-cormorant text-[2.9rem] font-normal leading-[0.95] md:text-[5rem] ${
+          isLight ? "text-foreground" : "text-foreground"
         }`}
       >
         {title}
@@ -81,7 +84,7 @@ function CenteredHeader({
       {sub && (
         <p
           className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl ${
-            isLight ? "text-[oklch(0.35_0_0)]" : "text-white/65"
+            isLight ? "text-muted-foreground" : "text-muted-foreground"
           }`}
         >
           {sub}
@@ -92,7 +95,7 @@ function CenteredHeader({
           <Link
             to={ctaTo}
             className={`inline-flex items-center rounded-full px-8 py-4 text-base font-semibold transition-transform duration-200 hover:scale-[1.03] ${
-              isLight ? "bg-[oklch(0.18_0_0)] text-white" : "bg-white text-[oklch(0.15_0_0)]"
+              isLight ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
             }`}
           >
             {cta}
@@ -340,7 +343,7 @@ function FullBleedStory({
   return (
     <section
       id={id}
-      className="relative min-h-[80svh] w-full overflow-hidden md:min-h-[92vh]"
+       className="relative mx-2 my-3 min-h-[80svh] overflow-hidden rounded-[2rem] border border-border md:mx-6 md:my-8 md:min-h-[92vh] md:rounded-[3rem]"
     >
       <picture>
         {shownImgDesktop && <source media="(min-width: 768px)" srcSet={shownImgDesktop} />}
@@ -368,7 +371,7 @@ function FullBleedStory({
         }`}
       >
         <h2
-          className="font-display text-[2.6rem] leading-[1.02] whitespace-pre-line text-white md:text-[4.25rem]"
+           className="font-cormorant text-[2.9rem] font-normal leading-[0.95] whitespace-pre-line text-foreground md:text-[5rem]"
           style={{ textShadow: "0 2px 30px rgba(0,0,0,0.55)" }}
         >
           {title}
@@ -464,7 +467,7 @@ function SectionShell({
   className?: string;
 }) {
   return (
-    <section id={id} className={`relative scroll-mt-0 px-4 py-28 md:px-8 md:py-36 ${className}`}>
+     <section id={id} className={`relative mx-2 my-3 scroll-mt-0 overflow-hidden rounded-[2rem] border border-border px-4 py-28 md:mx-6 md:my-8 md:rounded-[3rem] md:px-8 md:py-36 ${className}`}>
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-1/4 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-[oklch(0.55_0.24_295/0.10)] blur-[180px]" />
       </div>
@@ -501,7 +504,7 @@ function Solution() {
   const { t } = useI18n();
   return (
     <SectionShell id="soluzione">
-      <h2 className="mb-12 flex flex-wrap items-center justify-center gap-1 text-center font-grotesk text-4xl font-medium leading-[1.05] tracking-tight text-white md:text-6xl">
+      <h2 className="mb-12 flex flex-wrap items-center justify-center gap-1 text-center font-cormorant text-[2.9rem] font-normal leading-[0.95] text-foreground md:text-[5rem]">
         <span>{t("terminology.heading")}</span>
         <span className="flex items-center">
           <img
@@ -732,7 +735,7 @@ function MiniYearsChart() {
 function HowItWorks() {
   const { t } = useI18n();
   return (
-    <SectionShell id="come-funziona" className="bg-[oklch(0.16_0.005_260)]">
+    <SectionShell id="come-funziona" className="landing-section-canvas">
       <SectionHeader
         title={t("sections.how.title")}
         sub={t("sections.how.sub")}
@@ -792,7 +795,7 @@ function HowItWorks() {
 function Footer() {
   const { t } = useI18n();
   return (
-    <footer className="border-t border-white/10 px-4 py-12 md:px-8">
+    <footer className="mx-2 mt-3 rounded-t-[2rem] border border-b-0 border-border bg-card px-4 py-12 md:mx-6 md:mt-8 md:rounded-t-[3rem] md:px-8">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div>
           <div className="flex items-center">
