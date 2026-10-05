@@ -131,7 +131,7 @@ function CenteredHeader({
       </h2>
       {sub && (
         <p
-          className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl ${
+          className={`mt-6 max-w-xl text-lg leading-relaxed md:text-xl ${
             isLight ? "text-[oklch(0.35_0_0)]" : "text-white/65"
           }`}
         >
@@ -142,7 +142,7 @@ function CenteredHeader({
         <div className="mt-10">
           <Link
             to={ctaTo}
-            className={`inline-flex items-center rounded-full px-8 py-4 text-base font-semibold transition-transform duration-200 hover:scale-[1.03] ${
+            className={`inline-flex items-center rounded-[3px] px-5 py-3 text-sm font-medium transition-opacity hover:opacity-80 ${
               isLight ? "bg-[oklch(0.18_0_0)] text-white" : "bg-white text-[oklch(0.15_0_0)]"
             }`}
           >
