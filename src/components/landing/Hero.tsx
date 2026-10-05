@@ -3,6 +3,7 @@ import { ArrowRight, X, Smartphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import yearsLogo from "@/assets/years-logo.webp";
+import heroImg from "@/assets/years-coast-hero.jpg";
 import { APP_ENTRY } from "./appEntry";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -89,138 +90,99 @@ const Hero = () => {
   }, []);
 
   return (
-    <section id="top" className="relative min-h-[100svh] w-full overflow-hidden bg-black text-foreground md:min-h-[100svh]">
-      {/* Cinematic light-field background: soft diffuse blooms on pure black */}
-      <LightLeakBackdrop />
+    <section id="top" className="relative min-h-[100svh] w-full overflow-hidden bg-black text-foreground">
+      {/* Full-bleed cinematic media, Terafab-style */}
+      <motion.img
+        src={heroImg}
+        alt=""
+        aria-hidden
+        initial={{ scale: 1.08, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 2.2, ease: [0.4, 0, 0.2, 1] }}
+        className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
 
-      {/* Sticky glass pill navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed inset-x-0 top-2 z-50 px-4 md:top-3 md:px-8"
+      {/* Minimal nav: logo left, text links right; frosts on scroll */}
+      <div
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+          scrolled ? "bg-black/60 backdrop-blur-xl" : "bg-transparent"
+        }`}
       >
-        <nav
-          className={`mx-auto flex max-w-7xl items-center justify-between rounded-full border transition-all duration-300 ${
-            scrolled
-              ? "border-white/10 bg-[oklch(0.12_0.01_260/0.92)] px-4 py-1 shadow-[0_18px_60px_-24px_oklch(0_0_0/0.6)] backdrop-blur-xl md:px-5 md:py-1.5"
-              : "border-transparent bg-transparent px-0 py-1.5 md:py-2"
-          }`}
-        >
-          {/* Logo */}
-          <a href="#top" className="flex items-center gap-0">
-            <img
-              src={yearsLogo}
-              alt={t("common.logoAlt")}
-              className={`object-contain transition-all duration-300 ${
-                scrolled ? "h-9 w-9 md:h-10 md:w-10" : "h-10 w-10 md:h-11 md:w-11"
-              }`}
-            />
-            <span
-              className={`font-cormorant italic leading-none tracking-[0.02em] text-white transition-all duration-300 ${
-                scrolled
-                  ? "-ml-2.5 text-xl md:-ml-3 md:text-2xl"
-                  : "-ml-3 text-2xl md:-ml-3 md:text-[1.7rem]"
-              }`}
-            >
-              ears
-            </span>
+        <nav className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-3 md:px-6">
+          <a href="#top" className="flex items-center">
+            <img src={yearsLogo} alt={t("common.logoAlt")} className="h-9 w-9 object-contain" />
+            <span className="-ml-2.5 font-cormorant text-2xl italic leading-none text-white">ears</span>
           </a>
-
-          {/* Right-hand actions — visible on all screen sizes, no burger menu */}
-          <div className="flex items-center gap-2 md:gap-3">
-            <LanguageSwitcher className="h-10" />
-            <Link
-              to="/auth"
-              className="inline-flex h-10 items-center rounded-full border border-white/20 px-3.5 text-sm font-medium text-white/85 transition-colors hover:border-white/40 hover:text-white active:scale-95 md:px-4"
-            >
+          <div className="flex items-center gap-4 text-sm md:gap-7">
+            <LanguageSwitcher className="h-8" />
+            <Link to="/auth" className="text-white/60 transition-colors hover:text-white">
               {t("nav.join")}
             </Link>
-            <Link
-              to={APP_ENTRY}
-              className="inline-flex h-10 items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-4 text-sm font-medium text-black transition-transform hover:scale-105 active:scale-95 md:px-5"
-            >
+            <Link to={APP_ENTRY} className="text-white transition-opacity hover:opacity-70">
               {t("nav.calculate")}
             </Link>
           </div>
         </nav>
-      </motion.div>
+      </div>
 
-      {/* Content container */}
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pt-16 md:min-h-[100svh] md:px-8 md:pt-28">
-        {/* Hero section */}
-        <div className="flex flex-1 flex-col items-center justify-center px-2 pb-0 pt-3 text-center md:pb-24 md:pt-8">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.2) }}
-            className="mb-4 md:mb-6"
-          >
-            <Link
-              to="/filosofia"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1 pl-1 pr-3 text-xs text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
-            >
-              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-[0.12em] text-white">
-                {t("hero.badgeChip")}
-              </span>
-              {t("hero.badge")}
-              <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </motion.div>
-
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1180px] flex-col justify-end px-5 pb-10 pt-28 md:px-6 md:pb-14">
+        <div className="max-w-2xl">
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.9), delay: d(0.3) }}
-            className="mx-auto max-w-5xl font-grotesk text-[2.85rem] font-medium leading-[1.08] tracking-[-0.02em] text-white sm:text-5xl md:text-7xl lg:text-[5rem]"
+            transition={{ duration: dur(0.9), delay: d(0.3), ease: [0.4, 0, 0.2, 1] }}
+            className="font-tight text-[2.9rem] leading-[1.02] text-white md:text-[4.75rem]"
           >
             <TypedHeadline />
           </motion.h1>
-
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.5) }}
-            className="mt-4 max-w-2xl text-base leading-relaxed text-white/70 md:mt-8 md:text-lg"
+            transition={{ duration: dur(0.8), delay: d(0.5) }}
+            className="mt-5 max-w-md font-tight text-xl leading-snug text-white/70 md:text-2xl"
           >
             {t("hero.sub")}
           </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.55) }}
-            className="mt-2 max-w-2xl text-sm leading-relaxed text-white/50 md:mt-3"
-          >
-            {t("hero.subSecondary")}
-          </motion.p>
-
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: dur(0.7), delay: d(0.65) }}
-            className="mt-5 flex flex-wrap items-center justify-center gap-3 md:mt-10 md:gap-4"
+            transition={{ duration: dur(0.8), delay: d(0.65) }}
+            className="mt-9 flex flex-wrap items-center gap-2.5"
           >
             <Link
               to={APP_ENTRY}
-              className="inline-flex items-center rounded-full bg-gradient-to-b from-white via-white/95 to-white/70 px-7 py-3 text-sm font-medium text-black shadow-[0_10px_40px_-12px_rgba(255,255,255,0.5)] transition-transform hover:scale-105 active:scale-95 md:px-8 md:py-3.5"
+              className="group inline-flex items-center gap-2 rounded-[3px] bg-white/90 px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-white"
             >
               {t("hero.ctaPrimary")}
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <a
               href="#scopri"
               onClick={(e) => scrollToSection(e, "scopri")}
-              className="inline-flex items-center text-sm font-medium text-white/80 underline underline-offset-4 transition-colors hover:text-white"
+              className="group inline-flex items-center gap-2 rounded-[3px] bg-white/10 px-5 py-3 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-white/20"
             >
               {t("hero.ctaSecondary")}
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </a>
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: d(0.9) }}
+          className="mt-16 flex items-center justify-between gap-6 border-t border-white/10 pt-6 text-xs uppercase tracking-[0.3em] text-white/50 md:mt-24"
+        >
+          <span>{t("hero.subSecondary")}</span>
+          <span className="hidden md:inline">years.money</span>
+        </motion.div>
       </div>
       <QrModal open={qrOpen} onClose={() => setQrOpen(false)} />
     </section>
   );
+};
 };
 
 /**
