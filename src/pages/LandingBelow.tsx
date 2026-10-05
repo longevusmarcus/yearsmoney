@@ -48,10 +48,37 @@ function LightSection({
   return (
     <section
       id={id}
-      className={`relative bg-white px-4 py-24 text-[oklch(0.15_0_0)] md:px-8 md:py-36 ${className}`}
+      className={`relative bg-background px-4 py-24 text-foreground md:px-8 md:py-36 ${className}`}
     >
       <div className="relative mx-auto max-w-6xl">{children}</div>
     </section>
+  );
+}
+
+/** Terafab-style statement: words rise and un-blur one after another on viewport entry. */
+function WordReveal({ text }: { text: string }) {
+  const words = text.split(" ");
+  return (
+    <motion.span
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ staggerChildren: 0.06 }}
+      className="inline"
+    >
+      {words.map((w, i) => (
+        <motion.span
+          key={i}
+          className="inline-block whitespace-pre"
+          variants={{
+            hidden: { opacity: 0.12, y: 14, filter: "blur(6px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] } },
+          }}
+        >
+          {w + (i < words.length - 1 ? " " : "")}
+        </motion.span>
+      ))}
+    </motion.span>
   );
 }
 
@@ -60,7 +87,7 @@ function CenteredHeader({
   sub,
   cta,
   ctaTo,
-  tone = "light",
+  tone = "dark",
 }: {
   title: string;
   sub?: string;
@@ -68,15 +95,11 @@ function CenteredHeader({
   ctaTo?: string;
   tone?: "light" | "dark";
 }) {
-  const isLight = tone === "light";
+  const isLight = false && tone === "light";
   return (
     <div className="mx-auto max-w-3xl text-center">
-      <h2
-        className={`font-display text-[2.6rem] leading-[1.02] md:text-[4.25rem] ${
-          isLight ? "text-[oklch(0.15_0_0)]" : "text-white"
-        }`}
-      >
-        {title}
+      <h2 className="font-display text-[2.6rem] font-light leading-[1.02] text-foreground md:text-[4.25rem]">
+        <WordReveal text={title} />
       </h2>
       {sub && (
         <p
@@ -732,7 +755,7 @@ function MiniYearsChart() {
 function HowItWorks() {
   const { t } = useI18n();
   return (
-    <SectionShell id="come-funziona" className="bg-[oklch(0.16_0.005_260)]">
+    <SectionShell id="come-funziona" className="bg-background">
       <SectionHeader
         title={t("sections.how.title")}
         sub={t("sections.how.sub")}
