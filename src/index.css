@@ -172,3 +172,10 @@
     drop-shadow(0 0 24px oklch(0.60 0.25 300 / 0.14))
     drop-shadow(0 0 16px oklch(0.88 0.18 92 / 0.15));
 }
+
+/* Terafab-style editorial display face for landing headlines */
+.font-tight {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.045em;
+}
