@@ -2,7 +2,8 @@
 // bundle only contains the hero — this chunk loads after first paint.
 import { Link } from "react-router-dom";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useScroll, type MotionValue } from "framer-motion";
 import { Route as RouteIcon, Scale, TrendingUp } from "lucide-react";
 
 import { IphoneShowcase } from "@/components/landing/IphoneShowcase";
@@ -25,6 +26,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 export default function LandingBelow() {
   return (
     <>
+      <Statement />
       <IphoneShowcase />
       <SkyStory />
       <MoneyReimagined />
@@ -82,6 +84,32 @@ function WordReveal({ text }: { text: string }) {
   );
 }
 
+/** Terafab statement: left-aligned large copy whose words brighten as you scroll. */
+function Statement() {
+  const { t } = useI18n();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 45%"] });
+  const words = t("sections.money.sub").split(" ");
+  return (
+    <section className="bg-background px-5 py-32 md:px-6 md:py-48">
+      <div ref={ref} className="mx-auto max-w-[1180px]">
+        <p className="max-w-3xl font-tight text-[2rem] leading-[1.12] md:text-[3.25rem]">
+          {words.map((w, i) => (
+            <ScrollWord key={i} progress={scrollYProgress} range={[i / words.length, (i + 1) / words.length]}>
+              {w}
+            </ScrollWord>
+          ))}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function ScrollWord({ children, progress, range }: { children: string; progress: MotionValue<number>; range: [number, number] }) {
+  const opacity = useTransform(progress, range, [0.28, 1]);
+  return <motion.span style={{ opacity }} className="text-foreground">{children} </motion.span>;
+}
+
 function CenteredHeader({
   title,
   sub,
@@ -97,8 +125,8 @@ function CenteredHeader({
 }) {
   const isLight = false && tone === "light";
   return (
-    <div className="mx-auto max-w-3xl text-center">
-      <h2 className="font-display text-[2.6rem] font-light leading-[1.02] text-foreground md:text-[4.25rem]">
+    <div className="max-w-3xl text-left">
+      <h2 className="font-tight text-[2.6rem] leading-[1.02] text-foreground md:text-[4.25rem]">
         <WordReveal text={title} />
       </h2>
       {sub && (
