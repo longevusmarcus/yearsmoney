@@ -183,7 +183,6 @@ const Hero = () => {
     </section>
   );
 };
-};
 
 /**
  * LightLeakBackdrop
