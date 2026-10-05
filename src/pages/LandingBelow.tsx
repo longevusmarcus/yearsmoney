@@ -755,7 +755,7 @@ function MiniYearsChart() {
 function HowItWorks() {
   const { t } = useI18n();
   return (
-    <SectionShell id="come-funziona" className="bg-[oklch(0.16_0.005_260)]">
+    <SectionShell id="come-funziona" className="bg-background">
       <SectionHeader
         title={t("sections.how.title")}
         sub={t("sections.how.sub")}
