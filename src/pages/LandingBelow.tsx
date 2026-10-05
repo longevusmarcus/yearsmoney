@@ -91,7 +91,7 @@ function Statement() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 45%"] });
   const words = t("sections.money.sub").split(" ");
   return (
-    <section className="bg-background px-5 py-32 md:px-6 md:py-48">
+    <section className="bg-background px-5 py-24 md:px-6 md:py-36">
       <div ref={ref} className="mx-auto max-w-[1180px]">
         <p className="max-w-3xl font-tight text-[2rem] leading-[1.12] md:text-[3.25rem]">
           {words.map((w, i) => (
