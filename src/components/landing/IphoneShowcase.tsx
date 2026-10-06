@@ -569,7 +569,7 @@ export function IphoneShowcase() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -24 }}
                             transition={{ duration: 0.35, ease: "easeOut" }}
-                            className="h-full w-full"
+                            className="phone-demo-screen h-full w-full font-sans"
                           >
                             <Screen />
                           </motion.div>
