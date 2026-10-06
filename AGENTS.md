@@ -1,0 +1,2 @@
+# Architecture rules
+- Scope landing presentation styles to the landing root and its dedicated components; preserve the in-app UI and phone demo screen styling because they represent the actual product.
