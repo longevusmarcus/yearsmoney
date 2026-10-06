@@ -524,15 +524,12 @@ export function IphoneShowcase() {
   const Screen = current.render;
 
   return (
-    <section id="scopri" className="relative bg-black">
+    <section id="scopri" className="relative bg-background">
       <div ref={wrapperRef} style={{ height: `calc(${SCREEN_KEYS.length * 35}vh + 100vh)` }}>
-        <div className="sticky top-0 flex h-[100svh] max-w-full items-center overflow-hidden px-4 md:px-8 md:pt-36 md:pb-32">
-          <div className="pointer-events-none absolute inset-0 -z-10 hidden md:block">
-            <div className="absolute left-[8%] top-1/4 h-[420px] w-[420px] rounded-full bg-[oklch(0.72_0.19_55/0.16)] blur-[140px]" />
-            <div className="absolute bottom-1/4 right-[10%] h-[460px] w-[460px] rounded-full bg-[oklch(0.55_0.24_295/0.16)] blur-[150px]" />
-          </div>
+        <div className="sticky top-0 flex h-[100svh] max-w-full items-center overflow-hidden px-5 md:px-6 md:pt-36 md:pb-32">
 
-          <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-3 md:grid-cols-2 md:gap-16">
+
+          <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 items-center gap-3 md:grid-cols-2 md:gap-16">
             {/* iPhone 18 mockup */}
             <div className="order-1 flex min-w-0 justify-center overflow-hidden md:order-2">
               <div className="relative h-[470px] w-[232px] md:h-[600px] md:w-[296px]">
@@ -603,10 +600,10 @@ export function IphoneShowcase() {
                   exit={{ opacity: 0, y: -18 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
                 >
-                  <h3 className="mt-4 font-tight text-2xl leading-[1.05] text-white md:mt-5 md:text-5xl">
+                  <h3 className="mt-4 font-tight text-[2rem] leading-[1.05] text-foreground md:mt-5 md:text-[4.25rem]">
                     {current.title}
                   </h3>
-                  <p className="mt-2 max-w-md text-sm leading-snug text-white/60 md:mt-4 md:text-lg md:leading-relaxed">
+                  <p className="mt-2 max-w-md text-base leading-snug text-foreground/60 md:mt-5 md:text-xl md:leading-relaxed">
                     {current.desc}
                   </p>
                 </motion.div>
