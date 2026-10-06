@@ -177,5 +177,22 @@
 .font-tight {
   font-family: 'Inter Tight', 'Inter', sans-serif;
   font-weight: 300;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
 }
+
+/* Landing-only editorial system; the product UI remains unchanged. */
+.years-landing {
+  --landing-media-shade: linear-gradient(to bottom, hsl(var(--background) / 0.1), hsl(var(--background) / 0.8));
+  --landing-story-shade: linear-gradient(90deg, hsl(var(--background) / 0.72), hsl(var(--background) / 0.12)), linear-gradient(0deg, hsl(var(--background) / 0.72), transparent 65%);
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 300;
+}
+
+.years-landing :is(h1, h2, h3):not(.phone-demo-screen *) {
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+.landing-photo-shade { background: var(--landing-media-shade); }
+.landing-story-shade { background: var(--landing-story-shade); }

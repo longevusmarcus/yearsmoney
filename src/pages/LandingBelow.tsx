@@ -21,6 +21,7 @@ import peopleHome from "@/assets/people-home.jpg";
 import peopleRetire from "@/assets/people-retire.jpg";
 import { APP_ENTRY } from "@/components/landing/appEntry";
 import { useI18n } from "@/i18n/I18nProvider";
+import { Button } from "@/components/ui/button";
 
 
 export default function LandingBelow() {
@@ -50,9 +51,9 @@ function LightSection({
   return (
     <section
       id={id}
-      className={`relative bg-background px-4 py-24 text-foreground md:px-8 md:py-36 ${className}`}
+      className={`relative bg-background px-5 py-24 text-foreground md:px-6 md:py-36 ${className}`}
     >
-      <div className="relative mx-auto max-w-6xl">{children}</div>
+      <div className="relative mx-auto max-w-[1180px]">{children}</div>
     </section>
   );
 }
@@ -123,7 +124,7 @@ function CenteredHeader({
   ctaTo?: string;
   tone?: "light" | "dark";
 }) {
-  const isLight = false && tone === "light";
+  void tone;
   return (
     <div className="max-w-3xl text-left">
       <h2 className="font-tight text-[2.6rem] leading-[1.02] text-foreground md:text-[4.25rem]">
@@ -131,23 +132,14 @@ function CenteredHeader({
       </h2>
       {sub && (
         <p
-          className={`mt-6 max-w-xl text-lg leading-relaxed md:text-xl ${
-            isLight ? "text-[oklch(0.35_0_0)]" : "text-white/65"
-          }`}
+          className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/65 md:text-xl"
         >
           {sub}
         </p>
       )}
       {cta && ctaTo && (
         <div className="mt-10">
-          <Link
-            to={ctaTo}
-            className={`inline-flex items-center rounded-[3px] px-5 py-3 text-sm font-medium transition-opacity hover:opacity-80 ${
-              isLight ? "bg-[oklch(0.18_0_0)] text-white" : "bg-white text-[oklch(0.15_0_0)]"
-            }`}
-          >
-            {cta}
-          </Link>
+          <Button asChild variant="editorial"><Link to={ctaTo}>{cta}</Link></Button>
         </div>
       )}
     </div>
@@ -191,13 +183,13 @@ function PhotoTile({
 
   return (
     <div
-      className={`[perspective:1200px] ${featured ? "md:-mt-8 md:mb-8 md:scale-[1.04]" : ""}`}
+      className={`[perspective:1200px] ${featured ? "" : ""}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       <motion.div
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="relative overflow-hidden rounded-[28px] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.45)] transition-shadow duration-300 hover:shadow-[0_35px_70px_-25px_rgba(0,0,0,0.6)]"
+        className="relative overflow-hidden rounded-[4px]"
       >
         <img
           src={img}
@@ -205,25 +197,25 @@ function PhotoTile({
           loading="lazy"
           className="h-[320px] w-full object-cover md:h-[380px]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/55" />
+        <div className="absolute inset-0 landing-photo-shade" />
 
         <div
-          className="absolute inset-x-0 top-1/3 flex flex-col items-center text-center"
+          className="absolute inset-x-5 bottom-24 flex flex-col items-start text-left"
           style={{ transform: "translateZ(60px)" }}
         >
-          <span className="text-xs text-white/80">{caption}</span>
-          <span className="font-display mt-1 text-4xl text-white md:text-5xl">{value}</span>
-          <span className="mt-3 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-[oklch(0.15_0_0)]">
+          <span className="text-xs text-foreground/80">{caption}</span>
+          <span className="font-tight mt-1 text-4xl text-foreground md:text-5xl">{value}</span>
+          <span className="mt-3 border-t border-foreground/30 pt-2 text-xs text-foreground/80">
             {action}
           </span>
         </div>
 
         <div
-          className="absolute inset-x-4 bottom-4 flex items-center justify-between rounded-2xl bg-white px-4 py-3"
+          className="absolute inset-x-5 bottom-5 flex items-center justify-between gap-3 border-t border-foreground/30 pt-4"
           style={{ transform: "translateZ(40px)" }}
         >
-          <span className="text-sm font-medium text-[oklch(0.15_0_0)]">{footLabel}</span>
-          <span className="text-sm font-semibold text-[oklch(0.15_0_0)]">{footValue}</span>
+          <span className="text-sm font-normal text-foreground">{footLabel}</span>
+          <span className="text-sm font-normal text-foreground">{footValue}</span>
         </div>
       </motion.div>
     </div>
@@ -241,7 +233,7 @@ function MoneyReimagined() {
         ctaTo={APP_ENTRY}
       />
 
-      <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3 md:items-center">
+      <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3 md:items-stretch">
         <PhotoTile
           img={japanImg}
           caption={t("sections.money.travel")}
@@ -328,7 +320,6 @@ function SkyStory() {
       cardLabel={t("sections.sky.cardLabel")}
       cardValue={t("sections.sky.cardValue")}
       cardAction={t("sections.sky.cardAction")}
-      gradient="from-[oklch(0.70_0.10_55/0.18)] via-[oklch(0.55_0.09_85/0.10)] to-[oklch(0.35_0.12_300/0.52)]"
     />
   );
 }
@@ -347,9 +338,9 @@ function FullBleedStory({
   budgetTotal,
   chips,
   goals,
-  align = "center",
+  align = "left",
   eager = false,
-  gradient = "from-[oklch(0.72_0.16_55/0.30)] via-[oklch(0.62_0.15_290/0.22)] via-[oklch(0.55_0.14_260/0.26)] to-[oklch(0.32_0.14_300/0.55)]",
+  gradient = "landing-story-shade",
 }: {
   id?: string;
   img: string;
@@ -411,86 +402,74 @@ function FullBleedStory({
         />
       </picture>
 
-      <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`} />
+      <div className={`absolute inset-0 ${gradient}`} />
 
       <div
-        className={`relative mx-auto flex min-h-[80svh] max-w-6xl flex-col px-6 pt-12 pb-8 md:min-h-[92vh] md:pt-36 md:pb-20 ${
+        className={`relative mx-auto flex min-h-[80svh] max-w-[1180px] flex-col justify-end px-5 pt-24 pb-10 md:min-h-[92vh] md:px-6 md:pt-36 md:pb-14 ${
           align === "left" ? "items-start text-left" : "items-center text-center"
         }`}
       >
         <h2
-          className="font-display text-[2.6rem] leading-[1.02] whitespace-pre-line text-white md:text-[4.25rem]"
-          style={{ textShadow: "0 2px 30px rgba(0,0,0,0.55)" }}
+          className="max-w-3xl font-tight text-[2.6rem] leading-[1.02] whitespace-pre-line text-foreground md:text-[4.25rem]"
         >
           {title}
         </h2>
         <p
-          className="mt-6 max-w-xl text-lg leading-relaxed text-white/90 md:text-xl"
-          style={{ textShadow: "0 1px 18px rgba(0,0,0,0.5)" }}
+          className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/90 md:text-xl"
         >
           {sub}
         </p>
-        <Link
-          to={APP_ENTRY}
-          className="mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[oklch(0.15_0_0)] transition-transform duration-200 hover:scale-[1.03] md:mt-9 md:px-8 md:py-4 md:text-base"
-        >
-          {cta}
-        </Link>
+        <Button asChild variant="editorial" className="mt-7"><Link to={APP_ENTRY}>{cta}</Link></Button>
 
-        <div className="mt-auto pt-6 md:pt-16">
+        <div className="mt-12 w-full border-t border-foreground/25 pt-6 md:mt-20">
           <motion.div
             key={shownLabel}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="rounded-3xl border border-white/25 bg-white/5 px-5 py-3 text-center backdrop-blur-md md:px-10 md:py-6"
+            className="text-left"
           >
-            <span className="text-xs text-white/70">{shownLabel}</span>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-white/50">
+            <span className="text-xs text-foreground/70">{shownLabel}</span>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-foreground/50">
               {t("sections.final.priceInTime")}
             </div>
-            <div className="font-display mt-1 text-2xl text-white md:text-5xl">{shownValue}</div>
+            <div className="font-tight mt-1 text-2xl text-foreground md:text-5xl">{shownValue}</div>
             {shownBudget && (
-              <div className="mt-1 text-xs text-white/70">
-                {t("sections.final.freedomBudget")}: <span className="font-semibold text-white">{shownBudget}</span>
+              <div className="mt-1 text-xs text-foreground/70">
+                {t("sections.final.freedomBudget")}: <span className="font-normal text-foreground">{shownBudget}</span>
               </div>
             )}
             {shownAction && (
-              <span className="mt-2 inline-block rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-[oklch(0.15_0_0)]">
+              <span className="mt-2 inline-block border-t border-foreground/30 pt-2 text-xs text-foreground/80">
                 {shownAction}
               </span>
             )}
           </motion.div>
 
           {goals && (
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:mt-8">
+            <div className="mt-6 flex flex-wrap items-center justify-start gap-3 md:mt-8">
               {goals.map((g, i) => (
-                <button
+                <Button
                   key={g.label}
-                  type="button"
+                  variant={i === active ? "editorial" : "editorialOutline"}
                   onClick={() => setActive(i)}
                   aria-pressed={i === active}
-                  className={`rounded-full px-4 py-2 text-xs font-semibold transition-all duration-200 hover:scale-[1.04] md:px-6 md:py-3 md:text-sm ${
-                    i === active
-                      ? "bg-white text-[oklch(0.15_0_0)]"
-                      : "border border-white/30 bg-black/30 text-white backdrop-blur-md hover:bg-black/45"
-                  }`}
                 >
                   {g.label}
-                </button>
+                </Button>
               ))}
             </div>
           )}
 
           {chips && (
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 md:mt-8">
+            <div className="mt-6 flex flex-wrap items-center justify-start gap-3 md:mt-8">
               {chips.map((c, i) => (
                 <span
                   key={c}
-                  className={`rounded-full px-4 py-2 text-xs font-semibold md:px-6 md:py-3 md:text-sm ${
+                  className={`rounded-full px-4 py-2 text-xs font-normal md:px-6 md:py-3 md:text-sm ${
                     i === 0
-                      ? "bg-white text-[oklch(0.15_0_0)]"
-                      : "border border-white/30 bg-black/30 text-white backdrop-blur-md"
+                      ? "bg-foreground text-foreground"
+                      : "border border-foreground/30 bg-black/30 text-foreground backdrop-blur-md"
                   }`}
                 >
                   {c}
@@ -515,11 +494,8 @@ function SectionShell({
   className?: string;
 }) {
   return (
-    <section id={id} className={`relative scroll-mt-0 px-4 py-28 md:px-8 md:py-36 ${className}`}>
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-[oklch(0.55_0.24_295/0.10)] blur-[180px]" />
-      </div>
-      <div className="relative mx-auto max-w-7xl">{children}</div>
+    <section id={id} className={`relative bg-background scroll-mt-0 px-5 py-24 md:px-6 md:py-36 ${className}`}>
+      <div className="relative mx-auto max-w-[1180px]">{children}</div>
     </section>
   );
 }
@@ -541,7 +517,7 @@ function GlassCard({
 }) {
   return (
     <div
-      className={`rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_20px_80px_-30px_oklch(0.5_0.15_270/0.35)] ${className}`}
+      className={`rounded-[4px] border border-border bg-card ${className}`}
     >
       {children}
     </div>
@@ -552,7 +528,7 @@ function Solution() {
   const { t } = useI18n();
   return (
     <SectionShell id="soluzione">
-      <h2 className="mb-12 flex flex-wrap items-center justify-center gap-1 text-center font-grotesk text-4xl font-medium leading-[1.05] tracking-tight text-white md:text-6xl">
+      <h2 className="mb-12 flex flex-wrap items-center justify-start gap-3 text-left font-tight text-[2.6rem] leading-[1.02] text-foreground md:text-[4.25rem]">
         <span>{t("terminology.heading")}</span>
         <span className="flex items-center">
           <img
@@ -560,13 +536,13 @@ function Solution() {
             alt={t("common.logoAlt")}
             className="h-16 w-16 object-contain md:h-24 md:w-24"
           />
-          <span className="-ml-5 font-cormorant italic leading-none tracking-[0.02em] text-white md:-ml-7">
+          <span className="-ml-5 font-cormorant italic leading-none tracking-[0.02em] text-foreground md:-ml-7">
             ears
           </span>
         </span>
       </h2>
       <MorphingCardStack
-        defaultLayout="stack"
+        defaultLayout="list"
         cards={[
           {
             id: "buffer-zero",
@@ -623,18 +599,18 @@ function PurchaseCard({
         className="h-40 w-full object-cover"
       />
       <div className="flex flex-1 flex-col p-7">
-        <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">{kicker}</div>
-        <div className="mt-2 text-sm text-white/80">{label}</div>
-        <div className="mt-1 font-grotesk text-3xl font-medium text-white">{price}</div>
+        <div className="text-[11px] uppercase tracking-[0.22em] text-foreground/40">{kicker}</div>
+        <div className="mt-2 text-sm text-foreground/80">{label}</div>
+        <div className="mt-1 font-tight text-3xl font-normal text-foreground">{price}</div>
 
         <div className="mt-auto pt-8">
           <div className="flex items-center gap-3">
-            <span className="h-px flex-1 bg-white/10" />
-            <span className="text-[10px] uppercase tracking-widest text-white/40">{equals}</span>
-            <span className="h-px flex-1 bg-white/10" />
+            <span className="h-px flex-1 bg-foreground/10" />
+            <span className="text-[10px] uppercase tracking-widest text-foreground/40">{equals}</span>
+            <span className="h-px flex-1 bg-foreground/10" />
           </div>
-          <div className="logo-gradient-text mt-4 text-2xl font-medium">{time}</div>
-          <div className="mt-1 text-xs text-white/50">{detail}</div>
+          <div className="text-foreground mt-4 text-2xl font-normal">{time}</div>
+          <div className="mt-1 text-xs text-foreground/50">{detail}</div>
         </div>
       </div>
     </GlassCard>
@@ -650,34 +626,34 @@ function FlowCard() {
   ];
   return (
     <GlassCard className="flex h-full flex-col p-8">
-      <div className="text-[11px] uppercase tracking-[0.22em] text-white/40">{t("sections.how.flowKicker")}</div>
-      <h3 className="mt-3 font-grotesk text-2xl font-medium text-white">
+      <div className="text-[11px] uppercase tracking-[0.22em] text-foreground/40">{t("sections.how.flowKicker")}</div>
+      <h3 className="mt-3 font-tight text-2xl font-normal text-foreground">
         {t("sections.how.flowTitle")}
       </h3>
 
       <div className="mt-8 space-y-4">
         {steps.map((s, i) => (
           <div key={s.k}>
-            <div className="flex items-baseline justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-4">
-              <span className="text-xs text-white/50">{s.k}</span>
-              <span className="text-lg font-bold text-white">{s.v}</span>
+            <div className="flex items-baseline justify-between gap-4 border-b border-border py-4">
+              <span className="text-xs text-foreground/50">{s.k}</span>
+              <span className="text-lg font-normal text-foreground">{s.v}</span>
             </div>
-            {i < steps.length - 1 && <div className="mx-auto my-1 h-4 w-px bg-white/15" />}
+            {i < steps.length - 1 && <div className="mx-auto my-1 h-4 w-px bg-foreground/15" />}
           </div>
         ))}
       </div>
 
       <div className="mt-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-white/10" />
-        <span className="text-[10px] uppercase tracking-widest text-white/50">{t("sections.how.result")}</span>
-        <span className="h-px flex-1 bg-white/10" />
+        <span className="h-px flex-1 bg-foreground/10" />
+        <span className="text-[10px] uppercase tracking-widest text-foreground/50">{t("sections.how.result")}</span>
+        <span className="h-px flex-1 bg-foreground/10" />
       </div>
 
       <div className="mt-6">
-        <div className="logo-gradient-text font-grotesk text-4xl font-medium">{t("sections.how.resultValue")}</div>
-        <p className="mt-3 text-sm leading-relaxed text-white/60">
+        <div className="text-foreground font-tight text-4xl font-normal">{t("sections.how.resultValue")}</div>
+        <p className="mt-3 text-sm leading-relaxed text-foreground/60">
           {t("sections.how.resultCopyBefore")}{" "}
-          <span className="text-white">{t("sections.how.resultCopyHighlight")}</span>{" "}
+          <span className="text-foreground">{t("sections.how.resultCopyHighlight")}</span>{" "}
           {t("sections.how.resultCopyAfter")}
         </p>
       </div>
@@ -712,16 +688,16 @@ function MiniYearsChart() {
   const fmt = (v: number) => `${Math.floor(v)}a ${Math.round((v % 1) * 12)}m`;
 
   return (
-    <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+    <div className="mt-8 border-t border-border pt-5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">
+        <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/40">
           {t("sections.how.chartTitle")}
         </span>
         <motion.span
           key={active}
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="logo-gradient-text text-xs font-bold"
+          className="text-foreground text-xs font-normal"
         >
           {data[active].y} · {fmt(data[active].v)}
         </motion.span>
@@ -751,15 +727,12 @@ function MiniYearsChart() {
                 }}
                 style={{
                   originY: 1,
-                  background:
-                    "linear-gradient(to top, oklch(0.55 0.22 300 / 0.55), oklch(0.88 0.13 90 / 0.95))",
-                  boxShadow: isActive ? "0 0 18px oklch(0.7 0.18 300 / 0.45)" : "none",
                 }}
-                className="w-full rounded-t-md"
+                className="w-full bg-foreground"
               />
               <span
                 className={`text-center text-[9px] transition-colors ${
-                  isActive ? "text-white/80" : "text-white/30"
+                  isActive ? "text-foreground/80" : "text-foreground/30"
                 }`}
               >
                 {d.y.slice(2)}
@@ -769,11 +742,11 @@ function MiniYearsChart() {
         })}
       </div>
 
-      <div className="mt-4 text-[11px] text-white/45">
+      <div className="mt-4 text-[11px] text-foreground/45">
         {t("sections.how.chartFootBefore")}{" "}
-        <span className="text-white/80">{t("sections.how.chartFootFrom")}</span>{" "}
+        <span className="text-foreground/80">{t("sections.how.chartFootFrom")}</span>{" "}
         {t("sections.how.chartFootMiddle")}{" "}
-        <span className="text-white/80">{t("sections.how.chartFootTo")}</span>{" "}
+        <span className="text-foreground/80">{t("sections.how.chartFootTo")}</span>{" "}
         {t("sections.how.chartFootAfter")}
       </div>
     </div>
@@ -843,25 +816,25 @@ function HowItWorks() {
 function Footer() {
   const { t } = useI18n();
   return (
-    <footer className="border-t border-white/10 px-4 py-12 md:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+    <footer className="border-t border-foreground/10 px-5 py-12 md:px-6">
+      <div className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div>
           <div className="flex items-center">
             <img src={yearsLogo} alt={t("common.logoAlt")} className="h-14 w-14 object-contain" />
-            <span className="-ml-4 font-cormorant text-3xl italic leading-none tracking-[0.02em] text-white">
+            <span className="-ml-4 font-cormorant text-3xl italic leading-none tracking-[0.02em] text-foreground">
               ears
             </span>
           </div>
-          <div className="mt-2 text-xs text-white/40">{t("footer.tagline")}</div>
+          <div className="mt-2 text-xs text-foreground/40">{t("footer.tagline")}</div>
         </div>
-        <div className="flex gap-8 text-sm text-white/60">
-          <Link to="/ubi" className="hover:text-white">
+        <div className="flex flex-wrap gap-6 text-sm text-foreground/60">
+          <Link to="/ubi" className="hover:text-foreground">
             {t("footer.ubi")}
           </Link>
-          <Link to="/privacy" className="hover:text-white">
+          <Link to="/privacy" className="hover:text-foreground">
             {t("footer.privacy")}
           </Link>
-          <Link to="/terms" className="hover:text-white">
+          <Link to="/terms" className="hover:text-foreground">
             {t("footer.terms")}
           </Link>
         </div>

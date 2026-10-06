@@ -67,7 +67,7 @@ export function MorphingCardStack({
   const containerStyles: Record<LayoutMode, string> = {
     stack: "relative mx-auto h-[23rem] w-full max-w-[19rem] sm:h-[21rem] sm:max-w-[24rem]",
     grid: "grid gap-5 sm:grid-cols-2 lg:grid-cols-3",
-    list: "flex flex-col gap-4",
+    list: "flex flex-col",
   };
 
   const displayCards =
@@ -109,37 +109,37 @@ export function MorphingCardStack({
                     onCardClick?.(card);
                   }}
                   className={cn(
-                    "cursor-pointer rounded-3xl border border-white/10 bg-background/90 p-5 backdrop-blur-xl sm:p-7",
-                    "shadow-[0_20px_80px_-30px_oklch(0.5_0.15_270/0.35)] transition-colors hover:border-white/25",
+                    "cursor-pointer rounded-[4px] border border-border bg-card p-5 sm:p-7",
+                    "transition-colors hover:border-foreground/25",
                     layout === "stack" &&
                       "absolute flex h-[21rem] w-[16rem] flex-col overflow-hidden sm:h-[19rem] sm:w-[22rem]",
                     layout === "stack" && isTopCard && "cursor-grab active:cursor-grabbing",
-                    layout === "list" && "w-full",
-                    isExpanded && "border-white/30",
+                    layout === "list" && "w-full rounded-none border-x-0 border-b-0 bg-transparent px-0 py-8 sm:px-0 sm:py-10",
+                    isExpanded && "border-foreground/30",
                   )}
                 >
                   <div
                     className={cn(
                       "min-h-0 transition-opacity duration-300",
-                      layout === "list" && "flex items-start gap-5",
+                      layout === "list" && "grid grid-cols-[24px_1fr] items-start gap-5 md:grid-cols-[48px_1fr] md:gap-8",
                       layout === "stack" && !isTopCard && "opacity-0",
                     )}
                   >
                     {card.icon && (
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-white/20 to-white/5 text-white ring-1 ring-inset ring-white/15 shadow-[0_4px_20px_-8px_rgba(255,255,255,0.25)] sm:h-11 sm:w-11">
+                      <div className="flex h-8 w-6 shrink-0 items-center justify-start text-foreground/60 sm:h-11 sm:w-11">
                         {card.icon}
                       </div>
                     )}
                     <div className={cn(layout !== "list" && "mt-5 sm:mt-8")}>
                       {card.kicker && (
-                        <div className="text-[10px] uppercase tracking-[0.18em] text-white/40 sm:text-[11px] sm:tracking-[0.22em]">
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-foreground/40 sm:text-[11px] sm:tracking-[0.22em]">
                           {card.kicker}
                         </div>
                       )}
-                      <h3 className="mt-2 font-grotesk text-xl font-bold text-white sm:text-2xl">
+                      <h3 className="mt-2 font-tight text-2xl font-light text-foreground sm:text-4xl">
                         {card.title}
                       </h3>
-                      <p className="mt-2.5 text-[13px] leading-relaxed text-white/60 sm:mt-3 sm:text-sm">
+                      <p className="mt-2.5 max-w-2xl text-base leading-relaxed text-foreground/60 sm:mt-4 sm:text-lg">
                         {card.description}
                       </p>
                     </div>
@@ -147,7 +147,7 @@ export function MorphingCardStack({
 
 
                   {isTopCard && (
-                    <div className="mt-auto pt-4 text-[10px] uppercase tracking-[0.2em] text-white/30">
+                    <div className="mt-auto pt-4 text-[10px] uppercase tracking-[0.2em] text-foreground/30">
                       Trascina per navigare
                     </div>
                   )}
@@ -168,7 +168,7 @@ export function MorphingCardStack({
               aria-label={`Vai alla card ${index + 1}`}
               className={cn(
                 "h-1.5 rounded-full transition-all",
-                index === activeIndex ? "w-6 bg-white" : "w-1.5 bg-white/25 hover:bg-white/50",
+                index === activeIndex ? "w-6 bg-foreground" : "w-1.5 bg-foreground/25 hover:bg-foreground/50",
               )}
             />
           ))}
