@@ -58,6 +58,7 @@ const App = () => {
         <BrowserRouter>
           <ScrollToTop />
           <MsxBootGate>
+          <div className="years-product">
           <Suspense fallback={<div className="min-h-screen bg-transparent" />}>
           <Routes>
             {/* Landing page — same component on both paths so existing /about links keep working */}
@@ -92,6 +93,7 @@ const App = () => {
           </Routes>
           </Suspense>
           <PaywallGate />
+          </div>
           </MsxBootGate>
 
         </BrowserRouter>

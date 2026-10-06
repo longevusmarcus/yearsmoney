@@ -30,9 +30,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
-        inter: ['Inter', 'system-ui', 'sans-serif'],
-        grotesk: ['Space Grotesk', 'Inter', 'sans-serif'],
+        sans: ['Inter Tight', 'Inter', 'system-ui', 'sans-serif'],
+        inter: ['Inter Tight', 'Inter', 'system-ui', 'sans-serif'],
+        grotesk: ['Inter Tight', 'Inter', 'sans-serif'],
         cursive: ['Playfair Display', 'serif'],
         cormorant: ['Cormorant Garamond', 'serif'],
       },

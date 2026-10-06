@@ -52,7 +52,10 @@
     --input-a: 0.05;
     --ring: 0 0% 90%;
 
-    --radius: 1.25rem;
+    --radius: 0.5rem;
+    --editorial-font: 'Inter Tight', 'Inter', sans-serif;
+    --editorial-control-radius: 3px;
+    --editorial-surface-radius: 8px;
   }
 }
 
@@ -63,13 +66,15 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--editorial-font);
+    font-weight: 300;
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
-    font-weight: 500;
-    letter-spacing: -0.025em;
+    font-family: var(--editorial-font);
+    font-weight: 300;
+    letter-spacing: 0;
   }
 
   html {
@@ -90,9 +95,9 @@
    ------------------------------------------------------------------- */
 
 .font-display {
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
-  font-weight: 500;
-  letter-spacing: -0.03em;
+  font-family: var(--editorial-font);
+  font-weight: 300;
+  letter-spacing: 0;
   line-height: 0.95;
 }
 
@@ -180,7 +185,7 @@
   letter-spacing: 0;
 }
 
-/* Landing-only editorial system; the product UI remains unchanged. */
+/* Media rules remain landing-only; editorial type is shared with the product. */
 .years-landing {
   --landing-media-shade: linear-gradient(to bottom, hsl(var(--background) / 0.1), hsl(var(--background) / 0.8));
   --landing-story-shade: linear-gradient(90deg, hsl(var(--background) / 0.72), hsl(var(--background) / 0.12)), linear-gradient(0deg, hsl(var(--background) / 0.72), transparent 65%);
@@ -196,3 +201,37 @@
 
 .landing-photo-shade { background: var(--landing-media-shade); }
 .landing-story-shade { background: var(--landing-story-shade); }
+
+/* Product pages, including onboarding, use the same restrained editorial language.
+   Geometry stays intact for charts, circular selection indicators and slider thumbs. */
+.years-product {
+  font-family: var(--editorial-font);
+  font-weight: 300;
+}
+
+.years-product :is(h1, h2, h3, h4, .font-display):not(.font-cormorant):not(.years-landing *) {
+  font-family: var(--editorial-font);
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+.years-product :is(.tracking-tight, .tracking-tighter):not(.years-landing *) {
+  letter-spacing: 0;
+}
+
+.years-product :is(div, section, article, aside, form)[class*="rounded-"]:not(.years-landing *):not([class*="rounded-full"]):not([class*="rounded-none"]) {
+  border-radius: var(--editorial-surface-radius);
+}
+
+.years-product :is(button, input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, a[class*="rounded-"]):not(.years-landing *):not([role="switch"]):not([role="slider"]):not([data-state][class*="rounded-full"]) {
+  border-radius: var(--editorial-control-radius);
+  font-family: var(--editorial-font);
+}
+
+.years-product button:not(.years-landing *) {
+  font-weight: 400;
+}
+
+.years-product :is([role="dialog"], [role="alertdialog"]) {
+  border-radius: var(--editorial-surface-radius);
+}
