@@ -176,7 +176,6 @@ const Hero = () => {
           className="mt-16 flex items-center justify-between gap-6 border-t border-white/10 pt-6 text-xs uppercase tracking-[0.3em] text-white/50 md:mt-24"
         >
           <span>{t("hero.subSecondary")}</span>
-          <span className="hidden md:inline">years.money</span>
         </motion.div>
       </div>
       <QrModal open={qrOpen} onClose={() => setQrOpen(false)} />
