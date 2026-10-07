@@ -116,7 +116,7 @@ const Hero = () => {
             <span className="-ml-2.5 font-cormorant text-2xl italic leading-none text-white">ears</span>
           </a>
           <div className="flex items-center gap-4 text-sm md:gap-7">
-            <LanguageSwitcher className="h-8" />
+            <LanguageSwitcher className="h-7 text-xs" />
             <Link to="/auth" className="text-white/60 transition-colors hover:text-white">
               {t("nav.join")}
             </Link>

@@ -33,12 +33,15 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
   // Mobile dropdown: globe icon + current language, with a menu below.
   if (isMobile) {
     return (
-      <div ref={containerRef} className={cn("relative inline-flex shrink-0", className)}>
+      <div ref={containerRef} className="relative inline-flex shrink-0">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={t("common.language")}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 text-sm font-medium tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          className={cn(
+            "inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 text-sm font-medium tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/10",
+            className,
+          )}
         >
           <Globe className="h-3.5 w-3.5" />
           {lang === "it" ? "IT" : "EN"}
@@ -76,7 +79,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       role="group"
       aria-label={t("common.language")}
       className={cn(
-        "inline-flex h-10 shrink-0 items-center rounded-full border border-white/15 bg-white/5 p-0.5 backdrop-blur-md",
+        "inline-flex h-10 shrink-0 items-center rounded-full border border-white/15 bg-white/5 p-0.5 text-sm backdrop-blur-md",
         className,
       )}
     >
@@ -87,7 +90,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
           onClick={() => setLang(code)}
           aria-pressed={lang === code}
           className={cn(
-            "h-full rounded-full px-3 text-sm font-medium tracking-[0.08em] transition-colors",
+            "h-full rounded-full px-3 font-medium tracking-[0.08em] transition-colors",
             lang === code
               ? "bg-white text-black"
               : "text-white/60 hover:text-white",
