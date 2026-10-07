@@ -79,7 +79,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       role="group"
       aria-label={t("common.language")}
       className={cn(
-        "inline-flex h-10 shrink-0 items-center rounded-full border border-white/15 bg-white/5 p-0.5 backdrop-blur-md",
+        "inline-flex h-10 shrink-0 items-center rounded-full border border-white/15 bg-white/5 p-0.5 text-sm backdrop-blur-md",
         className,
       )}
     >
