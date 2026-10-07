@@ -31,14 +31,13 @@ const it = {
   },
 
   hero: {
-    headline: "Misura la tua libertà.",
+    headline: "Misura e accresci la tua libertà.",
     /** Substring of `headline` that carries the gradient treatment. */
     headlineHighlight: "libertà",
     badgeChip: "YEARS",
     badge: "Scopri la filosofia",
     sub: "YEARS ti fa vedere per quanto tempo puoi vivere con quello che hai oggi e ti aiuta a progettare come avere più libertà domani.",
-    subSecondary:
-      "Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.",
+    subSecondary: "Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.",
     ctaPrimary: "Prova il calcolatore",
     ctaSecondary: "Guarda la demo",
     qrBadge: "Solo da mobile",
@@ -106,8 +105,7 @@ const it = {
       listingsFound: "4 annunci trovati (caro → economico)",
       mostExpensive: "Più caro",
       carName: "2025 Tesla Model S Plaid",
-      carDesc:
-        "Prestazioni estreme, 0-100 km/h in meno di 2 s e oltre 300 km/h di velocità massima.",
+      carDesc: "Prestazioni estreme, 0-100 km/h in meno di 2 s e oltre 300 km/h di velocità massima.",
       days: "giorni",
       toBreakEven: "per rientrare",
       ofBuffer: "del buffer",
@@ -193,8 +191,7 @@ const it = {
       perMonth: "/ mese",
       result: "Risultato",
       resultValue: "6 anni 7 mesi",
-      resultCopyBefore:
-        "È la tua autonomia se ogni entrata si fermasse oggi. Continuando a guadagnare diventa",
+      resultCopyBefore: "È la tua autonomia se ogni entrata si fermasse oggi. Continuando a guadagnare diventa",
       resultCopyHighlight: "6 anni e 11 mesi",
       resultCopyAfter: "entro un anno.",
       chartTitle: "Anni di libertà nel tempo",
@@ -376,8 +373,7 @@ const it = {
       "Barcellona, Spagna",
     ],
     citySearch: "Cerca la tua città",
-    cityNote:
-      "Paese e valuta arrivano dalle impostazioni del dispositivo. Nessun permesso GPS richiesto.",
+    cityNote: "Paese e valuta arrivano dalle impostazioni del dispositivo. Nessun permesso GPS richiesto.",
     amountExampleIncome: "Es. 2.450",
     amountExampleWealth: "Es. 18.500",
     amountExampleSaving: "Es. 450",
@@ -443,8 +439,6 @@ const it = {
     },
   },
 
-
-
   calcola: {
     welcomeBack: "Bentornato.",
     createProfile: "Crea il tuo profilo.",
@@ -506,14 +500,36 @@ const it = {
       qrAlt: "Scansiona per aprire Years su mobile",
     },
     notFound: { title: "Pagina non trovata", back: "Torna alla home" },
-    share: { unitYears: "anni", unitMonths: "mesi", unitDays: "giorni", ofFreedom: "di libertà", perMonth: "/mese", timeWealth: "Ricchezza in tempo", download: "Scarica", close: "Chiudi", wrapped: "Il mio tempo", statFreedom: "Libertà", statPerMonth: "Guadagno / mese", statPerYear: "Guadagno / anno", statDaysFree: "Giorni liberi", statWorldRank: "Nel mondo", topPercent: "Top {pct}%", myFreedom: "La mia libertà", intro1Title: "Il tuo anno\nnon si misura\nin denaro.", intro1Sub: "Si misura nel tempo che ti sei comprato.", intro2Title: "Allora,\nquanta libertà\nhai accumulato?", intro2Sub: "Vediamo i tuoi numeri.", tapToContinue: "Tocca per continuare" },
+    share: {
+      unitYears: "anni",
+      unitMonths: "mesi",
+      unitDays: "giorni",
+      ofFreedom: "di libertà",
+      perMonth: "/mese",
+      timeWealth: "Ricchezza in tempo",
+      download: "Scarica",
+      close: "Chiudi",
+      wrapped: "Il mio tempo",
+      statFreedom: "Libertà",
+      statPerMonth: "Guadagno / mese",
+      statPerYear: "Guadagno / anno",
+      statDaysFree: "Giorni liberi",
+      statWorldRank: "Nel mondo",
+      topPercent: "Top {pct}%",
+      myFreedom: "La mia libertà",
+      intro1Title: "Il tuo anno\nnon si misura\nin denaro.",
+      intro1Sub: "Si misura nel tempo che ti sei comprato.",
+      intro2Title: "Allora,\nquanta libertà\nhai accumulato?",
+      intro2Sub: "Vediamo i tuoi numeri.",
+      tapToContinue: "Tocca per continuare",
+    },
     paywall: {
       appName: "YEARS",
       planType: "Premium",
       title: "Misura la tua libertà",
       feature1: "Conversione automatica della tua ricchezza in anni di libertà e proiezioni future",
       feature2: "Obiettivi di libertà e piani di accumulo",
-      feature3: "Costo in \"tempo\" di ogni acquisto",
+      feature3: 'Costo in "tempo" di ogni acquisto',
       feature4: "Analisi rischi del tuo portafoglio",
       feature5: "Sblocco premi della leaderboard",
       monthly: "Mensile",
@@ -646,7 +662,6 @@ const it = {
       milestoneCancel: "Annulla",
       milestoneNamePlaceholder: "Nome obiettivo (es. Barca)",
       milestoneCostPlaceholder: "Costo totale",
-
     },
     purchase: {
       title: "Acquisto",
@@ -696,7 +711,8 @@ const it = {
       refresh: "Aggiorna",
       loading: "Caricamento…",
       unitYearsLong: "anni",
-      defaultRecommendationFallback: "Questo investimento comporta un rischio moderato. Assicurati di poterti permettere di perdere questo tempo.",
+      defaultRecommendationFallback:
+        "Questo investimento comporta un rischio moderato. Assicurati di poterti permettere di perdere questo tempo.",
       signInToTrack: "Accedi per seguire i tuoi investimenti",
     },
     leaderboard: {
@@ -738,7 +754,8 @@ const it = {
 
       displayNameLabel: "Nome visualizzato",
       displayNamePlaceholder: "Nome, cognome o nickname",
-      displayNameHint: "Usato in classifica quando sei pubblico. Senza nickname mostriamo le prime lettere della tua email.",
+      displayNameHint:
+        "Usato in classifica quando sei pubblico. Senza nickname mostriamo le prime lettere della tua email.",
       save: "Salva",
       saved: "Nome salvato",
 
@@ -763,185 +780,278 @@ const it = {
     terms: {
       title: "Termini di servizio",
       sections: [
-        { h: "1. Accettazione dei termini", p: ["Accedendo e utilizzando Years, accetti di essere vincolato da questi Termini di servizio. Se non accetti questi termini, ti invitiamo a non utilizzare il servizio."], li: [] },
-        { h: "2. Descrizione del servizio", p: ["Years è uno strumento di visualizzazione delle finanze personali che aiuta a capire la propria ricchezza in termini di tempo. Il servizio calcola il tuo Life Buffer — per quanto potresti sostenere il tuo stile di vita senza entrate — e converte gli acquisti in ore di vita."], li: [] },
-        { h: "3. Responsabilità dell'utente", p: ["Ti impegni a:"], li: ["Fornire informazioni finanziarie accurate per i calcoli", "Mantenere riservate le credenziali del tuo account", "Utilizzare il servizio per scopi personali e non commerciali", "Non tentare di accedere al servizio senza autorizzazione"] },
-        { h: "4. Avvertenza finanziaria", p: ["Years fornisce solo analisi e calcoli a scopo informativo. Non siamo consulenti finanziari. Le informazioni fornite non costituiscono consulenza finanziaria, di investimento o fiscale. Per una guida finanziaria, rivolgiti a professionisti qualificati."], li: [] },
-        { h: "5. Privacy e dati", p: ["La tua privacy è importante per noi. I dati finanziari che inserisci sono salvati localmente sul tuo dispositivo. Consulta la nostra Informativa sulla privacy per capire come raccogliamo e proteggiamo le tue informazioni."], li: [] },
-        { h: "6. Modifiche al servizio", p: ["Ci riserviamo il diritto di modificare o interrompere il servizio in qualsiasi momento. Non saremo responsabili per eventuali modifiche, sospensioni o interruzioni del servizio."], li: [] },
+        {
+          h: "1. Accettazione dei termini",
+          p: [
+            "Accedendo e utilizzando Years, accetti di essere vincolato da questi Termini di servizio. Se non accetti questi termini, ti invitiamo a non utilizzare il servizio.",
+          ],
+          li: [],
+        },
+        {
+          h: "2. Descrizione del servizio",
+          p: [
+            "Years è uno strumento di visualizzazione delle finanze personali che aiuta a capire la propria ricchezza in termini di tempo. Il servizio calcola il tuo Life Buffer — per quanto potresti sostenere il tuo stile di vita senza entrate — e converte gli acquisti in ore di vita.",
+          ],
+          li: [],
+        },
+        {
+          h: "3. Responsabilità dell'utente",
+          p: ["Ti impegni a:"],
+          li: [
+            "Fornire informazioni finanziarie accurate per i calcoli",
+            "Mantenere riservate le credenziali del tuo account",
+            "Utilizzare il servizio per scopi personali e non commerciali",
+            "Non tentare di accedere al servizio senza autorizzazione",
+          ],
+        },
+        {
+          h: "4. Avvertenza finanziaria",
+          p: [
+            "Years fornisce solo analisi e calcoli a scopo informativo. Non siamo consulenti finanziari. Le informazioni fornite non costituiscono consulenza finanziaria, di investimento o fiscale. Per una guida finanziaria, rivolgiti a professionisti qualificati.",
+          ],
+          li: [],
+        },
+        {
+          h: "5. Privacy e dati",
+          p: [
+            "La tua privacy è importante per noi. I dati finanziari che inserisci sono salvati localmente sul tuo dispositivo. Consulta la nostra Informativa sulla privacy per capire come raccogliamo e proteggiamo le tue informazioni.",
+          ],
+          li: [],
+        },
+        {
+          h: "6. Modifiche al servizio",
+          p: [
+            "Ci riserviamo il diritto di modificare o interrompere il servizio in qualsiasi momento. Non saremo responsabili per eventuali modifiche, sospensioni o interruzioni del servizio.",
+          ],
+          li: [],
+        },
         { h: "7. Contatti", p: [], li: [] },
       ],
     },
     privacy: {
       title: "Informativa sulla privacy",
       sections: [
-        { h: "1. Informazioni che raccogliamo", p: ["Raccogliamo le informazioni che ci fornisci direttamente, tra cui:"], li: ["Informazioni sull'account (indirizzo email)", "Dati finanziari che inserisci (entrate, spese, patrimonio)", "Dati di utilizzo e analisi"] },
-        { h: "2. Come usiamo le tue informazioni", p: ["Usiamo le informazioni raccolte per:"], li: ["Calcolare il tuo Life Buffer e le analisi basate sul tempo", "Fornire proiezioni finanziarie personalizzate", "Migliorare i nostri servizi e l'esperienza d'uso", "Comunicare con te riguardo al servizio"] },
-        { h: "3. Archiviazione locale", p: ["I tuoi dati finanziari sono salvati localmente sul tuo dispositivo. Non conserviamo entrate, spese o patrimonio sui nostri server, a meno che non scelga esplicitamente di sincronizzare i dati con un account."], li: [] },
-        { h: "4. Sicurezza dei dati", p: ["Adottiamo misure di sicurezza conformi agli standard di settore per proteggere le tue informazioni personali da accessi, alterazioni, divulgazioni o distruzioni non autorizzate."], li: [] },
-        { h: "5. Condivisione dei dati", p: ["Non vendiamo le tue informazioni personali. Potremmo condividerle solo nei seguenti casi:"], li: ["Con il tuo consenso esplicito", "Per adempiere a obblighi di legge", "Per tutelare i nostri diritti e la sicurezza"] },
-        { h: "6. I tuoi diritti", p: ["Hai il diritto di:"], li: ["Accedere ai tuoi dati personali", "Correggere dati inesatti", "Richiedere la cancellazione dei tuoi dati", "Cancellare tutti i dati locali dalle Impostazioni"] },
-        { h: "7. Modifiche a questa informativa", p: ["Potremmo aggiornare periodicamente questa Informativa sulla privacy. Ti informeremo di eventuali modifiche pubblicando la nuova informativa su questa pagina."], li: [] },
+        {
+          h: "1. Informazioni che raccogliamo",
+          p: ["Raccogliamo le informazioni che ci fornisci direttamente, tra cui:"],
+          li: [
+            "Informazioni sull'account (indirizzo email)",
+            "Dati finanziari che inserisci (entrate, spese, patrimonio)",
+            "Dati di utilizzo e analisi",
+          ],
+        },
+        {
+          h: "2. Come usiamo le tue informazioni",
+          p: ["Usiamo le informazioni raccolte per:"],
+          li: [
+            "Calcolare il tuo Life Buffer e le analisi basate sul tempo",
+            "Fornire proiezioni finanziarie personalizzate",
+            "Migliorare i nostri servizi e l'esperienza d'uso",
+            "Comunicare con te riguardo al servizio",
+          ],
+        },
+        {
+          h: "3. Archiviazione locale",
+          p: [
+            "I tuoi dati finanziari sono salvati localmente sul tuo dispositivo. Non conserviamo entrate, spese o patrimonio sui nostri server, a meno che non scelga esplicitamente di sincronizzare i dati con un account.",
+          ],
+          li: [],
+        },
+        {
+          h: "4. Sicurezza dei dati",
+          p: [
+            "Adottiamo misure di sicurezza conformi agli standard di settore per proteggere le tue informazioni personali da accessi, alterazioni, divulgazioni o distruzioni non autorizzate.",
+          ],
+          li: [],
+        },
+        {
+          h: "5. Condivisione dei dati",
+          p: ["Non vendiamo le tue informazioni personali. Potremmo condividerle solo nei seguenti casi:"],
+          li: [
+            "Con il tuo consenso esplicito",
+            "Per adempiere a obblighi di legge",
+            "Per tutelare i nostri diritti e la sicurezza",
+          ],
+        },
+        {
+          h: "6. I tuoi diritti",
+          p: ["Hai il diritto di:"],
+          li: [
+            "Accedere ai tuoi dati personali",
+            "Correggere dati inesatti",
+            "Richiedere la cancellazione dei tuoi dati",
+            "Cancellare tutti i dati locali dalle Impostazioni",
+          ],
+        },
+        {
+          h: "7. Modifiche a questa informativa",
+          p: [
+            "Potremmo aggiornare periodicamente questa Informativa sulla privacy. Ti informeremo di eventuali modifiche pubblicando la nuova informativa su questa pagina.",
+          ],
+          li: [],
+        },
         { h: "8. Contatti", p: [], li: [] },
       ],
     },
   },
   ubi: {
-    "back": "Indietro",
-    "copyright": "© 2026 Years. Il tempo è l'unica valuta che conta.",
-    "badge": "Il futuro",
-    "title": "Reddito di Base Universale",
-    "sub": "Perché il reddito di base è inevitabile, e cosa significa per il tempo",
-    "cardZeroTitle": "Life Buffer Zero",
-    "cardZeroBody": "Misura il tempo di sopravvivenza. Se ogni entrata si fermasse oggi, per quanto potresti continuare a vivere? Patrimonio diviso costi mensili.",
-    "cardOneTitle": "Life Buffer One",
-    "cardOneBody": "Misura il tempo opzionale. Quanta vita futura puoi accumulare oltre la sopravvivenza? Questo buffer riguarda la scelta.",
-    "blocks": [
+    back: "Indietro",
+    copyright: "© 2026 Years. Il tempo è l'unica valuta che conta.",
+    badge: "Il futuro",
+    title: "Reddito di Base Universale",
+    sub: "Perché il reddito di base è inevitabile, e cosa significa per il tempo",
+    cardZeroTitle: "Life Buffer Zero",
+    cardZeroBody:
+      "Misura il tempo di sopravvivenza. Se ogni entrata si fermasse oggi, per quanto potresti continuare a vivere? Patrimonio diviso costi mensili.",
+    cardOneTitle: "Life Buffer One",
+    cardOneBody:
+      "Misura il tempo opzionale. Quanta vita futura puoi accumulare oltre la sopravvivenza? Questo buffer riguarda la scelta.",
+    blocks: [
       {
-        "t": "lead",
-        "x": "La transizione verso il Reddito di Base Universale non avverrà perché la società diventerà generosa. Avverrà perché il sistema attuale diventerà matematicamente instabile."
+        t: "lead",
+        x: "La transizione verso il Reddito di Base Universale non avverrà perché la società diventerà generosa. Avverrà perché il sistema attuale diventerà matematicamente instabile.",
       },
       {
-        "t": "p",
-        "x": "Con l'espansione dell'automazione e il disaccoppiamento della produttività dal lavoro umano, il legame tra lavoro e sopravvivenza si indebolisce. Servono meno persone per produrre lo stesso risultato. Allo stesso tempo, il costo politico di lasciare grandi fasce di popolazione senza reddito cresce oltre ciò che gli stati possono tollerare."
+        t: "p",
+        x: "Con l'espansione dell'automazione e il disaccoppiamento della produttività dal lavoro umano, il legame tra lavoro e sopravvivenza si indebolisce. Servono meno persone per produrre lo stesso risultato. Allo stesso tempo, il costo politico di lasciare grandi fasce di popolazione senza reddito cresce oltre ciò che gli stati possono tollerare.",
       },
       {
-        "t": "p",
-        "x": "Il reddito di base non emerge come riforma idealista, ma come stabilizzatore: un modo per garantire continuità sociale quando il lavoro non è più il meccanismo principale di distribuzione."
+        t: "p",
+        x: "Il reddito di base non emerge come riforma idealista, ma come stabilizzatore: un modo per garantire continuità sociale quando il lavoro non è più il meccanismo principale di distribuzione.",
       },
       {
-        "t": "p",
-        "x": "Ma una volta garantito il reddito, inizia un cambiamento più profondo, di cui si parla raramente. Quando la sopravvivenza non dipende più dal lavoro, il denaro perde la sua funzione più potente: la coercizione. Ciò che resta è un ruolo più silenzioso e preciso."
+        t: "p",
+        x: "Ma una volta garantito il reddito, inizia un cambiamento più profondo, di cui si parla raramente. Quando la sopravvivenza non dipende più dal lavoro, il denaro perde la sua funzione più potente: la coercizione. Ciò che resta è un ruolo più silenzioso e preciso.",
       },
       {
-        "t": "quote",
-        "x": "Il denaro diventa un meccanismo per allocare il Tempo."
+        t: "quote",
+        x: "Il denaro diventa un meccanismo per allocare il Tempo.",
       },
       {
-        "t": "h2",
-        "x": "Una nuova unità di ricchezza"
+        t: "h2",
+        x: "Una nuova unità di ricchezza",
       },
       {
-        "t": "p",
-        "x": "Per comprendere questa transizione serve una nuova unità di ricchezza. Non il reddito. Non il patrimonio netto. Ma i buffer di tempo."
+        t: "p",
+        x: "Per comprendere questa transizione serve una nuova unità di ricchezza. Non il reddito. Non il patrimonio netto. Ma i buffer di tempo.",
       },
       {
-        "t": "p",
-        "x": "Un life buffer misura per quanto tempo una persona può esistere senza essere costretta ad agire. Non è filosofia. È matematica."
+        t: "p",
+        x: "Un life buffer misura per quanto tempo una persona può esistere senza essere costretta ad agire. Non è filosofia. È matematica.",
       },
       {
-        "t": "cards",
-        "x": ""
+        t: "cards",
+        x: "",
       },
       {
-        "t": "h2",
-        "x": "Il reddito di base cambia tutto"
+        t: "h2",
+        x: "Il reddito di base cambia tutto",
       },
       {
-        "t": "p",
-        "x": "Per come è concepito, il reddito di base allinea le entrate mensili al costo della vita di base. Il tempo di sopravvivenza diventa garantito. Il Life Buffer Zero diventa fornito dalla collettività. Nessuno è costretto a vendere il proprio tempo solo per restare in vita."
+        t: "p",
+        x: "Per come è concepito, il reddito di base allinea le entrate mensili al costo della vita di base. Il tempo di sopravvivenza diventa garantito. Il Life Buffer Zero diventa fornito dalla collettività. Nessuno è costretto a vendere il proprio tempo solo per restare in vita.",
       },
       {
-        "t": "p",
-        "x": "Non è abbondanza. È sufficienza. Ciò che scompare è la disperazione."
+        t: "p",
+        x: "Non è abbondanza. È sufficienza. Ciò che scompare è la disperazione.",
       },
       {
-        "t": "p",
-        "x": "Ciò che emerge, lentamente e inevitabilmente, è un'economia della vita opzionale."
+        t: "p",
+        x: "Ciò che emerge, lentamente e inevitabilmente, è un'economia della vita opzionale.",
       },
       {
-        "t": "h2",
-        "x": "L'economia della vita opzionale"
+        t: "h2",
+        x: "L'economia della vita opzionale",
       },
       {
-        "t": "p",
-        "x": "Spazi più grandi. Viaggi. Velocità. Privacy. Strumenti premium. Istruzione oltre il livello base. Esperienze che comprimono o dilatano il tempo. Queste cose non scompaiono in un mondo con reddito di base. Diventano esplicitamente opzionali."
+        t: "p",
+        x: "Spazi più grandi. Viaggi. Velocità. Privacy. Strumenti premium. Istruzione oltre il livello base. Esperienze che comprimono o dilatano il tempo. Queste cose non scompaiono in un mondo con reddito di base. Diventano esplicitamente opzionali.",
       },
       {
-        "t": "quote",
-        "x": "E le cose opzionali vanno pagate: non moralmente, non punitivamente, ma temporalmente."
+        t: "quote",
+        x: "E le cose opzionali vanno pagate: non moralmente, non punitivamente, ma temporalmente.",
       },
       {
-        "t": "h2",
-        "x": "Il prezzo è vita futura"
+        t: "h2",
+        x: "Il prezzo è vita futura",
       },
       {
-        "t": "p",
-        "x": "In un'economia basata sul tempo, beni ed esperienze opzionali hanno un prezzo in vita futura. Non perché siano frivoli, ma perché consumano capacità che avresti potuto usare altrove."
+        t: "p",
+        x: "In un'economia basata sul tempo, beni ed esperienze opzionali hanno un prezzo in vita futura. Non perché siano frivoli, ma perché consumano capacità che avresti potuto usare altrove.",
       },
       {
-        "t": "p",
-        "x": "Una vacanza lunga non è costosa perché è un lusso; è costosa perché occupa tempo che avresti potuto allocare diversamente. Un dispositivo premium non è costoso perché superfluo; è costoso perché accelera certi risultati chiudendone altri."
+        t: "p",
+        x: "Una vacanza lunga non è costosa perché è un lusso; è costosa perché occupa tempo che avresti potuto allocare diversamente. Un dispositivo premium non è costoso perché superfluo; è costoso perché accelera certi risultati chiudendone altri.",
       },
       {
-        "t": "lead",
-        "x": "Quando una persona scelge un bene opzionale, non viene punita. Sta semplicemente spendendo vita opzionale futura."
+        t: "lead",
+        x: "Quando una persona scelge un bene opzionale, non viene punita. Sta semplicemente spendendo vita opzionale futura.",
       },
       {
-        "t": "h2",
-        "x": "Lavoro opzionale"
+        t: "h2",
+        x: "Lavoro opzionale",
       },
       {
-        "t": "p",
-        "x": "Per accedere ai livelli opzionali della vita, una persona deve accumulare tempo opzionale. E il tempo opzionale si accumula solo creando valore in eccesso. Il lavoro torna, ma in una forma diversa."
+        t: "p",
+        x: "Per accedere ai livelli opzionali della vita, una persona deve accumulare tempo opzionale. E il tempo opzionale si accumula solo creando valore in eccesso. Il lavoro torna, ma in una forma diversa.",
       },
       {
-        "t": "lead",
-        "x": "Non più come lavoro di sopravvivenza, ma come lavoro opzionale. Si lavora non per vivere, ma per ampliare la gamma delle proprie scelte future."
+        t: "lead",
+        x: "Non più come lavoro di sopravvivenza, ma come lavoro opzionale. Si lavora non per vivere, ma per ampliare la gamma delle proprie scelte future.",
       },
       {
-        "t": "p",
-        "x": "Se qualcuno scegle di non creare surplus, non si rompe nulla. Resta vivo. Sostenuto. Legittimo. Semplicemente rimane entro il livello base. Il sistema non lo giudica. Non lo costringe. Chiude soltanto i cancelli opzionali."
+        t: "p",
+        x: "Se qualcuno scegle di non creare surplus, non si rompe nulla. Resta vivo. Sostenuto. Legittimo. Semplicemente rimane entro il livello base. Il sistema non lo giudica. Non lo costringe. Chiude soltanto i cancelli opzionali.",
       },
       {
-        "t": "h2",
-        "x": "Non è una distopia"
+        t: "h2",
+        x: "Non è una distopia",
       },
       {
-        "t": "p",
-        "x": "È questa la distinzione decisiva rispetto alle letture distopiche. Nessuno è costretto a correre. Nessuno muore quando un contatore arriva a zero. La conseguenza del non guadagnare tempo opzionale non è la morte: è l'assenza di opzionalità."
+        t: "p",
+        x: "È questa la distinzione decisiva rispetto alle letture distopiche. Nessuno è costretto a correre. Nessuno muore quando un contatore arriva a zero. La conseguenza del non guadagnare tempo opzionale non è la morte: è l'assenza di opzionalità.",
       },
       {
-        "t": "lead",
-        "x": "E l'opzionalità, una volta visibile, motiva profondamente."
+        t: "lead",
+        x: "E l'opzionalità, una volta visibile, motiva profondamente.",
       },
       {
-        "t": "p",
-        "x": "Il Life Buffer One può crescere, ma può anche ridursi. Se una persona continua a consumare beni opzionali senza ricostituire il proprio surplus, il buffer si erode. Non crolla. Scende dolcemente verso il livello base. Il sistema la riassorbe senza punirla."
+        t: "p",
+        x: "Il Life Buffer One può crescere, ma può anche ridursi. Se una persona continua a consumare beni opzionali senza ricostituire il proprio surplus, il buffer si erode. Non crolla. Scende dolcemente verso il livello base. Il sistema la riassorbe senza punirla.",
       },
       {
-        "t": "p",
-        "x": "Burnout, debiti e rimpianti, patologie del sistema attuale, diventano misurabili molto prima di diventare catastrofici."
+        t: "p",
+        x: "Burnout, debiti e rimpianti, patologie del sistema attuale, diventano misurabili molto prima di diventare catastrofici.",
       },
       {
-        "t": "h2",
-        "x": "Ciò che cambia di più"
+        t: "h2",
+        x: "Ciò che cambia di più",
       },
       {
-        "t": "p",
-        "x": "Le persone smettono di ottimizzare il reddito e iniziano a ottimizzare la propria autonomia di vita. Smettono di chiedersi se qualcosa è accessibile e iniziano a chiedersi se valga il futuro che consuma."
+        t: "p",
+        x: "Le persone smettono di ottimizzare il reddito e iniziano a ottimizzare la propria autonomia di vita. Smettono di chiedersi se qualcosa è accessibile e iniziano a chiedersi se valga il futuro che consuma.",
       },
       {
-        "t": "p",
-        "x": "L'accumulo perde il suo fascino astratto. Accumulare per accumulare diventa incomprensibile. I segnali di status si indeboliscono quando il costo è espresso come consumo della propria vita invece che come valore simbolico."
+        t: "p",
+        x: "L'accumulo perde il suo fascino astratto. Accumulare per accumulare diventa incomprensibile. I segnali di status si indeboliscono quando il costo è espresso come consumo della propria vita invece che come valore simbolico.",
       },
       {
-        "t": "lead",
-        "x": "Il sistema non rende le persone uguali. Rende la disuguaglianza leggibile."
+        t: "lead",
+        x: "Il sistema non rende le persone uguali. Rende la disuguaglianza leggibile.",
       },
       {
-        "t": "p",
-        "x": "Soprattutto, l'economia si allinea alla realtà. Il tempo è l'unica risorsa che nessuno può stampare, prendere in prestito o rifinanziare. Ogni sistema finisce per ridursi a questo."
+        t: "p",
+        x: "Soprattutto, l'economia si allinea alla realtà. Il tempo è l'unica risorsa che nessuno può stampare, prendere in prestito o rifinanziare. Ogni sistema finisce per ridursi a questo.",
       },
       {
-        "t": "quote",
-        "x": "Il reddito di base non è la fine del lavoro. È la fine della liquidazione obbligatoria del tempo."
+        t: "quote",
+        x: "Il reddito di base non è la fine del lavoro. È la fine della liquidazione obbligatoria del tempo.",
       },
       {
-        "t": "p",
-        "x": "Ciò che lo sostituisce è qualcosa di più silenzioso e più esigente: la responsabilità verso il proprio sé futuro."
-      }
-    ]
+        t: "p",
+        x: "Ciò che lo sostituisce è qualcosa di più silenzioso e più esigente: la responsabilità verso il proprio sé futuro.",
+      },
+    ],
   },
   filosofia: {
     home: "YEARS",
@@ -1179,8 +1289,7 @@ const en: typeof it = {
       perMonth: "/ month",
       result: "Result",
       resultValue: "6 years 7 months",
-      resultCopyBefore:
-        "That is your autonomy if every source of income stopped today. Keep earning and it becomes",
+      resultCopyBefore: "That is your autonomy if every source of income stopped today. Keep earning and it becomes",
       resultCopyHighlight: "6 years and 11 months",
       resultCopyAfter: "within a year.",
       chartTitle: "Years of freedom over time",
@@ -1362,8 +1471,7 @@ const en: typeof it = {
       "Barcelona, Spain",
     ],
     citySearch: "Search for your city",
-    cityNote:
-      "Country and currency come from your device settings. No GPS permission required.",
+    cityNote: "Country and currency come from your device settings. No GPS permission required.",
     amountExampleIncome: "e.g. 2,450",
     amountExampleWealth: "e.g. 18,500",
     amountExampleSaving: "e.g. 450",
@@ -1489,7 +1597,29 @@ const en: typeof it = {
       qrAlt: "Scan to open Years on mobile",
     },
     notFound: { title: "Page not found", back: "Return to home" },
-    share: { unitYears: "years", unitMonths: "months", unitDays: "days", ofFreedom: "of freedom", perMonth: "/month", timeWealth: "Time Wealth", download: "Download", close: "Close", wrapped: "My time", statFreedom: "Freedom", statPerMonth: "Gain / month", statPerYear: "Gain / year", statDaysFree: "Days free", statWorldRank: "In the world", topPercent: "Top {pct}%", myFreedom: "My freedom", intro1Title: "Your year\nisn't measured\nin money.", intro1Sub: "It's measured in the time you bought back.", intro2Title: "So,\nhow much freedom\nhave you built?", intro2Sub: "Let's look at your numbers.", tapToContinue: "Tap to continue" },
+    share: {
+      unitYears: "years",
+      unitMonths: "months",
+      unitDays: "days",
+      ofFreedom: "of freedom",
+      perMonth: "/month",
+      timeWealth: "Time Wealth",
+      download: "Download",
+      close: "Close",
+      wrapped: "My time",
+      statFreedom: "Freedom",
+      statPerMonth: "Gain / month",
+      statPerYear: "Gain / year",
+      statDaysFree: "Days free",
+      statWorldRank: "In the world",
+      topPercent: "Top {pct}%",
+      myFreedom: "My freedom",
+      intro1Title: "Your year\nisn't measured\nin money.",
+      intro1Sub: "It's measured in the time you bought back.",
+      intro2Title: "So,\nhow much freedom\nhave you built?",
+      intro2Sub: "Let's look at your numbers.",
+      tapToContinue: "Tap to continue",
+    },
     paywall: {
       appName: "YEARS",
       planType: "Premium",
@@ -1629,7 +1759,6 @@ const en: typeof it = {
       milestoneCancel: "Cancel",
       milestoneNamePlaceholder: "Goal name (e.g. Boat)",
       milestoneCostPlaceholder: "Total cost",
-
     },
     purchase: {
       title: "Purchase",
@@ -1679,7 +1808,8 @@ const en: typeof it = {
       refresh: "Refresh",
       loading: "Loading…",
       unitYearsLong: "years",
-      defaultRecommendationFallback: "This investment carries moderate risk. Make sure you can afford to lose this time.",
+      defaultRecommendationFallback:
+        "This investment carries moderate risk. Make sure you can afford to lose this time.",
       signInToTrack: "Sign in to track your investments",
     },
     leaderboard: {
@@ -1721,7 +1851,8 @@ const en: typeof it = {
 
       displayNameLabel: "Display name",
       displayNamePlaceholder: "Name, surname or nickname",
-      displayNameHint: "Used on the leaderboard when public. Without a nickname we show the first letters of your email.",
+      displayNameHint:
+        "Used on the leaderboard when public. Without a nickname we show the first letters of your email.",
       save: "Save",
       saved: "Name saved",
 
@@ -1746,185 +1877,276 @@ const en: typeof it = {
     terms: {
       title: "Terms of Service",
       sections: [
-        { h: "1. Acceptance of Terms", p: ["By accessing and using Years, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service."], li: [] },
-        { h: "2. Service Description", p: ["Years is a personal finance visualization tool that helps users understand their wealth in terms of time. The service calculates your Life Buffer — how long you could sustain your lifestyle without income — and converts purchases into hours of life."], li: [] },
-        { h: "3. User Responsibilities", p: ["You agree to:"], li: ["Provide accurate financial information for calculations", "Maintain the confidentiality of your account credentials", "Use the service for personal, non-commercial purposes", "Not attempt to gain unauthorized access to the service"] },
-        { h: "4. Financial Disclaimer", p: ["Years provides educational insights and calculations only. We are not financial advisors. The information provided should not be considered as professional financial, investment, or tax advice. Please consult qualified professionals for financial guidance."], li: [] },
-        { h: "5. Privacy and Data", p: ["Your privacy is important to us. Financial data you enter is stored locally on your device. Please review our Privacy Policy to understand how we collect and protect your information."], li: [] },
-        { h: "6. Service Modifications", p: ["We reserve the right to modify or discontinue the service at any time. We shall not be liable for any modification, suspension, or discontinuation of the service."], li: [] },
+        {
+          h: "1. Acceptance of Terms",
+          p: [
+            "By accessing and using Years, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.",
+          ],
+          li: [],
+        },
+        {
+          h: "2. Service Description",
+          p: [
+            "Years is a personal finance visualization tool that helps users understand their wealth in terms of time. The service calculates your Life Buffer — how long you could sustain your lifestyle without income — and converts purchases into hours of life.",
+          ],
+          li: [],
+        },
+        {
+          h: "3. User Responsibilities",
+          p: ["You agree to:"],
+          li: [
+            "Provide accurate financial information for calculations",
+            "Maintain the confidentiality of your account credentials",
+            "Use the service for personal, non-commercial purposes",
+            "Not attempt to gain unauthorized access to the service",
+          ],
+        },
+        {
+          h: "4. Financial Disclaimer",
+          p: [
+            "Years provides educational insights and calculations only. We are not financial advisors. The information provided should not be considered as professional financial, investment, or tax advice. Please consult qualified professionals for financial guidance.",
+          ],
+          li: [],
+        },
+        {
+          h: "5. Privacy and Data",
+          p: [
+            "Your privacy is important to us. Financial data you enter is stored locally on your device. Please review our Privacy Policy to understand how we collect and protect your information.",
+          ],
+          li: [],
+        },
+        {
+          h: "6. Service Modifications",
+          p: [
+            "We reserve the right to modify or discontinue the service at any time. We shall not be liable for any modification, suspension, or discontinuation of the service.",
+          ],
+          li: [],
+        },
         { h: "7. Contact", p: [], li: [] },
       ],
     },
     privacy: {
       title: "Privacy Policy",
       sections: [
-        { h: "1. Information We Collect", p: ["We collect information that you provide directly to us, including:"], li: ["Account information (email address)", "Financial data you enter (income, expenses, net worth)", "Usage data and analytics"] },
-        { h: "2. How We Use Your Information", p: ["We use the information we collect to:"], li: ["Calculate your Life Buffer and time-based insights", "Provide personalized financial projections", "Improve our services and user experience", "Communicate with you about the service"] },
-        { h: "3. Local Storage", p: ["Your financial data is stored locally on your device. We do not store your income, expenses, or net worth on our servers unless you explicitly sync your data with an account."], li: [] },
-        { h: "4. Data Security", p: ["We implement industry-standard security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction."], li: [] },
-        { h: "5. Data Sharing", p: ["We do not sell your personal information. We may share your information only in the following circumstances:"], li: ["With your explicit consent", "To comply with legal obligations", "To protect our rights and safety"] },
-        { h: "6. Your Rights", p: ["You have the right to:"], li: ["Access your personal data", "Correct inaccurate data", "Request deletion of your data", "Clear all local data from Settings"] },
-        { h: "7. Changes to This Policy", p: ["We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page."], li: [] },
+        {
+          h: "1. Information We Collect",
+          p: ["We collect information that you provide directly to us, including:"],
+          li: [
+            "Account information (email address)",
+            "Financial data you enter (income, expenses, net worth)",
+            "Usage data and analytics",
+          ],
+        },
+        {
+          h: "2. How We Use Your Information",
+          p: ["We use the information we collect to:"],
+          li: [
+            "Calculate your Life Buffer and time-based insights",
+            "Provide personalized financial projections",
+            "Improve our services and user experience",
+            "Communicate with you about the service",
+          ],
+        },
+        {
+          h: "3. Local Storage",
+          p: [
+            "Your financial data is stored locally on your device. We do not store your income, expenses, or net worth on our servers unless you explicitly sync your data with an account.",
+          ],
+          li: [],
+        },
+        {
+          h: "4. Data Security",
+          p: [
+            "We implement industry-standard security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.",
+          ],
+          li: [],
+        },
+        {
+          h: "5. Data Sharing",
+          p: [
+            "We do not sell your personal information. We may share your information only in the following circumstances:",
+          ],
+          li: ["With your explicit consent", "To comply with legal obligations", "To protect our rights and safety"],
+        },
+        {
+          h: "6. Your Rights",
+          p: ["You have the right to:"],
+          li: [
+            "Access your personal data",
+            "Correct inaccurate data",
+            "Request deletion of your data",
+            "Clear all local data from Settings",
+          ],
+        },
+        {
+          h: "7. Changes to This Policy",
+          p: [
+            "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.",
+          ],
+          li: [],
+        },
         { h: "8. Contact Us", p: [], li: [] },
       ],
     },
   },
   ubi: {
-    "back": "Back",
-    "copyright": "© 2026 Years. Time is the only currency that matters.",
-    "badge": "The Future",
-    "title": "Universal Basic Income",
-    "sub": "Why UBI is inevitable, and what it means for time",
-    "cardZeroTitle": "Life Buffer Zero",
-    "cardZeroBody": "Measures survival time. If all income stopped today, how long could you continue to live? Net worth divided by monthly costs.",
-    "cardOneTitle": "Life Buffer One",
-    "cardOneBody": "Measures optional time. How much future life can you accumulate beyond survival? This buffer is about choice.",
-    "blocks": [
+    back: "Back",
+    copyright: "© 2026 Years. Time is the only currency that matters.",
+    badge: "The Future",
+    title: "Universal Basic Income",
+    sub: "Why UBI is inevitable, and what it means for time",
+    cardZeroTitle: "Life Buffer Zero",
+    cardZeroBody:
+      "Measures survival time. If all income stopped today, how long could you continue to live? Net worth divided by monthly costs.",
+    cardOneTitle: "Life Buffer One",
+    cardOneBody:
+      "Measures optional time. How much future life can you accumulate beyond survival? This buffer is about choice.",
+    blocks: [
       {
-        "t": "lead",
-        "x": "The transition to Universal Basic Income will not happen because society becomes generous. It will happen because the existing system becomes mathematically unstable."
+        t: "lead",
+        x: "The transition to Universal Basic Income will not happen because society becomes generous. It will happen because the existing system becomes mathematically unstable.",
       },
       {
-        "t": "p",
-        "x": "As automation expands and productivity decouples from human labor, the link between work and survival weakens. Fewer people are required to produce the same output. At the same time, the political cost of leaving large populations without income rises beyond what states can tolerate."
+        t: "p",
+        x: "As automation expands and productivity decouples from human labor, the link between work and survival weakens. Fewer people are required to produce the same output. At the same time, the political cost of leaving large populations without income rises beyond what states can tolerate.",
       },
       {
-        "t": "p",
-        "x": "UBI emerges not as an idealistic reform, but as a stabilizer: a way to ensure social continuity when labor is no longer the primary distribution mechanism."
+        t: "p",
+        x: "UBI emerges not as an idealistic reform, but as a stabilizer: a way to ensure social continuity when labor is no longer the primary distribution mechanism.",
       },
       {
-        "t": "p",
-        "x": "But once income is guaranteed, a deeper shift begins — one that is rarely discussed. When survival is no longer conditional on work, money loses its most powerful function: coercion. What remains is a quieter, more precise role."
+        t: "p",
+        x: "But once income is guaranteed, a deeper shift begins — one that is rarely discussed. When survival is no longer conditional on work, money loses its most powerful function: coercion. What remains is a quieter, more precise role.",
       },
       {
-        "t": "quote",
-        "x": "Money becomes a mechanism for allocating Time."
+        t: "quote",
+        x: "Money becomes a mechanism for allocating Time.",
       },
       {
-        "t": "h2",
-        "x": "A New Unit of Wealth"
+        t: "h2",
+        x: "A New Unit of Wealth",
       },
       {
-        "t": "p",
-        "x": "To understand this transition, we need a new unit of wealth. Not income. Not net worth. But buffers of time."
+        t: "p",
+        x: "To understand this transition, we need a new unit of wealth. Not income. Not net worth. But buffers of time.",
       },
       {
-        "t": "p",
-        "x": "A life buffer is a measure of how long a person can exist without being forced into action. It is not philosophical. It is arithmetic."
+        t: "p",
+        x: "A life buffer is a measure of how long a person can exist without being forced into action. It is not philosophical. It is arithmetic.",
       },
       {
-        "t": "cards",
-        "x": ""
+        t: "cards",
+        x: "",
       },
       {
-        "t": "h2",
-        "x": "UBI Changes Everything"
+        t: "h2",
+        x: "UBI Changes Everything",
       },
       {
-        "t": "p",
-        "x": "By design, UBI aligns monthly income with basic living costs. Survival time becomes guaranteed. Life Buffer Zero becomes socially provisioned. No one is required to sell their time simply to remain alive."
+        t: "p",
+        x: "By design, UBI aligns monthly income with basic living costs. Survival time becomes guaranteed. Life Buffer Zero becomes socially provisioned. No one is required to sell their time simply to remain alive.",
       },
       {
-        "t": "p",
-        "x": "This is not abundance. It is sufficiency. What disappears is desperation."
+        t: "p",
+        x: "This is not abundance. It is sufficiency. What disappears is desperation.",
       },
       {
-        "t": "p",
-        "x": "What emerges, slowly and inevitably, is an economy of optional life."
+        t: "p",
+        x: "What emerges, slowly and inevitably, is an economy of optional life.",
       },
       {
-        "t": "h2",
-        "x": "The Economy of Optional Life"
+        t: "h2",
+        x: "The Economy of Optional Life",
       },
       {
-        "t": "p",
-        "x": "Larger spaces. Travel. Speed. Privacy. Premium tools. Education beyond the baseline. Experiences that compress or expand time. These things do not disappear in a UBI world. They become explicitly optional."
+        t: "p",
+        x: "Larger spaces. Travel. Speed. Privacy. Premium tools. Education beyond the baseline. Experiences that compress or expand time. These things do not disappear in a UBI world. They become explicitly optional.",
       },
       {
-        "t": "quote",
-        "x": "And optional things must be paid for — not morally, not punitively, but temporally."
+        t: "quote",
+        x: "And optional things must be paid for — not morally, not punitively, but temporally.",
       },
       {
-        "t": "h2",
-        "x": "Priced in Future Life"
+        t: "h2",
+        x: "Priced in Future Life",
       },
       {
-        "t": "p",
-        "x": "In a time-based economy, optional goods and experiences are priced in future life. Not because they are frivolous, but because they consume capacity that could have been used elsewhere."
+        t: "p",
+        x: "In a time-based economy, optional goods and experiences are priced in future life. Not because they are frivolous, but because they consume capacity that could have been used elsewhere.",
       },
       {
-        "t": "p",
-        "x": "A long vacation is not expensive because it is indulgent; it is expensive because it occupies time that could have been allocated differently. A premium device is not costly because it is unnecessary; it is costly because it accelerates certain outcomes while closing others."
+        t: "p",
+        x: "A long vacation is not expensive because it is indulgent; it is expensive because it occupies time that could have been allocated differently. A premium device is not costly because it is unnecessary; it is costly because it accelerates certain outcomes while closing others.",
       },
       {
-        "t": "lead",
-        "x": "When a person chooses an optional good, they are not punished. They are simply spending future optional life."
+        t: "lead",
+        x: "When a person chooses an optional good, they are not punished. They are simply spending future optional life.",
       },
       {
-        "t": "h2",
-        "x": "Optional Labor"
+        t: "h2",
+        x: "Optional Labor",
       },
       {
-        "t": "p",
-        "x": "To access optional layers of life, a person must accumulate optional time. And optional time can only be accumulated by creating surplus value. Work returns, but in a different form."
+        t: "p",
+        x: "To access optional layers of life, a person must accumulate optional time. And optional time can only be accumulated by creating surplus value. Work returns, but in a different form.",
       },
       {
-        "t": "lead",
-        "x": "No longer as survival labor, but as optional labor. People work not to live, but to expand the range of their future choices."
+        t: "lead",
+        x: "No longer as survival labor, but as optional labor. People work not to live, but to expand the range of their future choices.",
       },
       {
-        "t": "p",
-        "x": "If someone chooses not to create surplus, nothing breaks. They remain alive. Supported. Legitimate. They simply remain within the baseline. The system does not shame them. It does not compel them. It simply closes the optional gates."
+        t: "p",
+        x: "If someone chooses not to create surplus, nothing breaks. They remain alive. Supported. Legitimate. They simply remain within the baseline. The system does not shame them. It does not compel them. It simply closes the optional gates.",
       },
       {
-        "t": "h2",
-        "x": "Not Dystopia"
+        t: "h2",
+        x: "Not Dystopia",
       },
       {
-        "t": "p",
-        "x": "This is the critical distinction from dystopian interpretations. No one is forced to run. No one dies when a counter reaches zero. The consequence of not earning optional time is not death — it is the absence of optionality."
+        t: "p",
+        x: "This is the critical distinction from dystopian interpretations. No one is forced to run. No one dies when a counter reaches zero. The consequence of not earning optional time is not death — it is the absence of optionality.",
       },
       {
-        "t": "lead",
-        "x": "And optionality, once visible, becomes deeply motivating."
+        t: "lead",
+        x: "And optionality, once visible, becomes deeply motivating.",
       },
       {
-        "t": "p",
-        "x": "Life Buffer One can grow, but it can also shrink. If a person continues to consume optional goods without replenishing their surplus, their buffer erodes. They do not collapse. They descend gently back to the baseline. The system absorbs them without punishment."
+        t: "p",
+        x: "Life Buffer One can grow, but it can also shrink. If a person continues to consume optional goods without replenishing their surplus, their buffer erodes. They do not collapse. They descend gently back to the baseline. The system absorbs them without punishment.",
       },
       {
-        "t": "p",
-        "x": "Burnout, debt, and regret — pathologies of the current system — become measurable long before they become catastrophic."
+        t: "p",
+        x: "Burnout, debt, and regret — pathologies of the current system — become measurable long before they become catastrophic.",
       },
       {
-        "t": "h2",
-        "x": "What Changes Most"
+        t: "h2",
+        x: "What Changes Most",
       },
       {
-        "t": "p",
-        "x": "People stop optimizing for income and start optimizing for life runway. They stop asking whether something is affordable and start asking whether it is worth the future it consumes."
+        t: "p",
+        x: "People stop optimizing for income and start optimizing for life runway. They stop asking whether something is affordable and start asking whether it is worth the future it consumes.",
       },
       {
-        "t": "p",
-        "x": "Accumulation loses its abstract appeal. Hoarding becomes unintelligible. Status signaling weakens when the cost is framed as personal life depletion rather than symbolic value."
+        t: "p",
+        x: "Accumulation loses its abstract appeal. Hoarding becomes unintelligible. Status signaling weakens when the cost is framed as personal life depletion rather than symbolic value.",
       },
       {
-        "t": "lead",
-        "x": "The system does not make people equal. It makes inequality legible."
+        t: "lead",
+        x: "The system does not make people equal. It makes inequality legible.",
       },
       {
-        "t": "p",
-        "x": "Most importantly, the economy becomes aligned with reality. Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into it."
+        t: "p",
+        x: "Most importantly, the economy becomes aligned with reality. Time is the one resource no one can print, borrow, or refinance. Every system eventually collapses into it.",
       },
       {
-        "t": "quote",
-        "x": "UBI is not the end of work. It is the end of compulsory time liquidation."
+        t: "quote",
+        x: "UBI is not the end of work. It is the end of compulsory time liquidation.",
       },
       {
-        "t": "p",
-        "x": "What replaces it is something quieter and more demanding: responsibility for one's future self."
-      }
-    ]
+        t: "p",
+        x: "What replaces it is something quieter and more demanding: responsibility for one's future self.",
+      },
+    ],
   },
   filosofia: {
     home: "YEARS",
