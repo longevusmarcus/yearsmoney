@@ -5,4 +5,5 @@
 # Editorial style across Years
 - [x] Remove the bottom-right domain from the landing hero.
 - [x] Extend the home typography and restrained surfaces to onboarding and all website pages, preserving workflows.
-- [ ] Verify onboarding, navigation and representative pages at wide and narrow widths.
+- [x] Verify onboarding, navigation and representative pages at wide and narrow widths.
+- [x] Remove the Calcola entry from the top bar on phones.
