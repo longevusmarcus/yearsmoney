@@ -120,7 +120,7 @@ const Hero = () => {
             <Link to="/auth" className="text-white/60 transition-colors hover:text-white">
               {t("nav.join")}
             </Link>
-            <Link to={APP_ENTRY} className="text-white transition-opacity hover:opacity-70">
+            <Link to={APP_ENTRY} className="hidden text-white transition-opacity hover:opacity-70 md:inline">
               {t("nav.calculate")}
             </Link>
           </div>
