@@ -154,6 +154,9 @@ const it = {
       cardAction: "Libertà",
       imgAlt: "Donna su un tetto urbano al tramonto con cielo viola e rosa",
     },
+    statement: {
+      sub: "Il denaro non è ricchezza. Il tempo è ricchezza. Ogni euro che accumuli è tempo messo da parte.",
+    },
     money: {
       title: "Il tuo denaro, reinventato",
       sub: "Ogni euro che spendi ha un secondo prezzo: il tempo. YEARS te lo mostra prima che tu decida.",
@@ -1136,6 +1139,9 @@ const en: typeof it = {
       cardValue: "5.4 years",
       cardAction: "Freedom",
       imgAlt: "Woman on an urban rooftop at sunset under a purple and pink sky",
+    },
+    statement: {
+      sub: "Money is not wealth. Time is wealth. Every dollar you accumulate is simply time set aside.",
     },
     money: {
       title: "Your money, reinvented",
