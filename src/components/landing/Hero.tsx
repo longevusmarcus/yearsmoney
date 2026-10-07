@@ -13,7 +13,10 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
    dictionary too, so the gradient lands on the right word in each language. */
 function TypedHeadline() {
   const { t } = useI18n();
-  const full = t("hero.headline");
+  const isMobile = useIsMobile();
+  // "\n" in the dictionary marks the desktop line break; mobile wraps naturally
+  const raw = t("hero.headline");
+  const full = isMobile ? raw.replace(/\n/g, " ") : raw;
   const highlight = t("hero.headlineHighlight");
   const hlStart = full.indexOf(highlight);
   const hlEnd = hlStart >= 0 ? hlStart + highlight.length : -1;

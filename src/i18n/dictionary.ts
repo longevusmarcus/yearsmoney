@@ -31,7 +31,7 @@ const it = {
   },
 
   hero: {
-    headline: "Misura e accresci la tua libertà.",
+    headline: "Misura e accresci\nla tua libertà.",
     /** Substring of `headline` that carries the gradient treatment. */
     headlineHighlight: "libertà",
     badgeChip: "YEARS",
@@ -1130,7 +1130,7 @@ const en: typeof it = {
   },
 
   hero: {
-    headline: "Measure your freedom.",
+    headline: "Measure & grow\nyour freedom.",
     headlineHighlight: "freedom",
     badgeChip: "YEARS",
     badge: "Read the philosophy",
