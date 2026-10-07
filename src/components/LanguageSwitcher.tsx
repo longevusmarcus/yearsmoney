@@ -90,7 +90,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
           onClick={() => setLang(code)}
           aria-pressed={lang === code}
           className={cn(
-            "h-full rounded-full px-3 text-sm font-medium tracking-[0.08em] transition-colors",
+            "h-full rounded-full px-3 font-medium tracking-[0.08em] transition-colors",
             lang === code
               ? "bg-white text-black"
               : "text-white/60 hover:text-white",
