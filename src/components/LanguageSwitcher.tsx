@@ -33,12 +33,15 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
   // Mobile dropdown: globe icon + current language, with a menu below.
   if (isMobile) {
     return (
-      <div ref={containerRef} className={cn("relative inline-flex shrink-0", className)}>
+      <div ref={containerRef} className="relative inline-flex shrink-0">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={t("common.language")}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 text-sm font-medium tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/10"
+          className={cn(
+            "inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 text-sm font-medium tracking-[0.04em] text-white backdrop-blur-md transition-colors hover:bg-white/10",
+            className,
+          )}
         >
           <Globe className="h-3.5 w-3.5" />
           {lang === "it" ? "IT" : "EN"}
