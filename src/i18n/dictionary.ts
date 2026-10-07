@@ -1135,7 +1135,7 @@ const en: typeof it = {
     badgeChip: "YEARS",
     badge: "Read the philosophy",
     sub: "YEARS shows you how long you could live on what you have today, and helps you plan for more freedom tomorrow.",
-    subSecondary: "So you can handle your money better and feel calmer about your choices.",
+    subSecondary: "*So you can handle your money better and feel calmer about your choices.",
     ctaPrimary: "Try the calculator",
     ctaSecondary: "Watch the demo",
     qrBadge: "Mobile only",
