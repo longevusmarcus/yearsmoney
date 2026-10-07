@@ -235,3 +235,12 @@
 .years-product :is([role="dialog"], [role="alertdialog"]) {
   border-radius: var(--editorial-surface-radius);
 }
+
+/* Titles stay thin even when pages hardcode font-medium/bold. */
+.years-product :is(h1, h2, h3):is(.font-medium, .font-semibold, .font-bold):not(.years-landing *) {
+  font-weight: 300;
+}
+
+.years-product .font-grotesk:not(.years-landing *) {
+  font-family: var(--editorial-font);
+}
