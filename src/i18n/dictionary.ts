@@ -37,7 +37,7 @@ const it = {
     badgeChip: "YEARS",
     badge: "Scopri la filosofia",
     sub: "YEARS ti fa vedere per quanto tempo puoi vivere con quello che hai oggi e ti aiuta a progettare come avere più libertà domani.",
-    subSecondary: "Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.",
+    subSecondary: "*Così puoi gestire meglio il tuo denaro e sentirti più tranquillo nelle tue scelte.",
     ctaPrimary: "Prova il calcolatore",
     ctaSecondary: "Guarda la demo",
     qrBadge: "Solo da mobile",
